@@ -1,6 +1,16 @@
 # FYP-21-S4-09
 -
--npm install -g ganache-cli
 
-To start blockchain 
--ganache-cli
+Before Everything, make sure you downloaded your npm and node.js:
+	NodeJs & NPM -> https://nodejs.org/en/
+
+
+https://www.npmjs.com/package/truffle
+	To install truffle -> npm install -g truffle
+	To install ganache -> npm install -g ganache-cli
+	To start blockchain -> ganache-cli
+
+
+	To compile truffle -> truffle compile
+	To migrate truffle to blockchain(Ganache) -> truffle migrate
+
