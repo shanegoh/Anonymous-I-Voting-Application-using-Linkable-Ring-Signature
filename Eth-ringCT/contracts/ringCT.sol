@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.4.22 <0.9.0;
+pragma solidity >=0.4.11 <0.9.0;
 
 
 contract ringCT {
@@ -66,11 +66,11 @@ contract ringCT {
         uint256 n = sArray.length; //number of range verify_range_proofs
         if(Cx != n) {
            LogErrorString("Mismatch in the dimension of the Ci matrix and other matrixes");
-           return;
+           return false;
         }
         if(Cx * Cy != CiArray.length) {
            LogErrorString("Mismatch in the dimension of the Ci matrix");
-           return;
+           return false;
         }
         res = true;
         for(uint256 i = 0; i < n; i++) {
@@ -93,7 +93,7 @@ contract ringCT {
         
         if(pkDim[0]*pkDim[1] != pkB.length) {
            LogErrorString("Mismatch in the dimension of the key matrix");
-           return;
+           return false;
         }
         PrintString(message);
 
@@ -180,7 +180,7 @@ contract ringCT {
             L[j] = JtoA(ecadd(L1(j, restOfStuff, mg), L2(j, restOfStuff, km)));
             R[j] = JtoA(ecadd(R1(j, restOfStuff, km, mg), R2(j, restOfStuff, mg)));
         }
-        c =  uint256(sha3(messageString, L, R));
+        c =  uint256(keccak256(abi.encodePacked(messageString, L, R)));
         return c;
     }
 
@@ -214,7 +214,7 @@ contract ringCT {
     // mg: contains the ss array needed for computing the first part of L
     function R1 (uint256 j, uint256[3] memory restOfStuff, pubKey[100] memory km, mgSig memory mg) internal returns (uint256[3] memory res) {
         uint256 A = mg.ss[restOfStuff[1] * restOfStuff[0] + j];
-        uint256 B = uint(sha256(km[restOfStuff[1] * restOfStuff[0] + j].key));
+        uint256 B = uint(keccak256(abi.encodePacked((km[restOfStuff[1] * restOfStuff[0] + j].key))));
         GA = [Gx, Gy];
         G = pubKey(GA);
         uint256[2] memory C = JtoA(ecmul(B, G.key));
@@ -246,7 +246,7 @@ contract ringCT {
     // s1: random hiding value represented as bytes32
     // s2: random hiding value represented as byzes32
     function verify_schnorr_non_linkable(uint256[2] memory P1, uint256[2] memory P2, uint256[2] memory L1, bytes32 s1, bytes32 s2) public {
-        uint256 c2 = uint256(sha256(L1));
+        uint256 c2 = uint256(keccak256(abi.encodePacked(L1)));
         uint256[3] memory x = ecmul(c2, P2);
         uint256[2] memory L2 = JtoA(ecadd(ecmul(uint256(s2), [gx,gy]), x));
         uint256 c1 = uint256(sha256(L2));
@@ -280,7 +280,7 @@ contract ringCT {
     // LHS: left hand side of siganture
     // RHS: right hand side of signature
     function VerASNLHelper(uint256 j, uint256[2] memory L1j, uint256[2] memory P1j, uint256[2] memory P2j, uint256 s2j, uint256[3] memory LHS, uint256[3] memory RHS) public returns (uint256[6] memory LRHS) {
-        uint256 c2 = uint256(sha256(L1j));
+        uint256 c2 = uint256(keccak256(abi.encodePacked(L1j)));
         uint256[3] memory L2 = ecadd(ecmul(s2j, [gx, gy]), ecmul(c2, P2j));
         uint256[3] memory LHS2 = [uint256(0), 0,0];
         if(j == uint256(0)) {
@@ -289,7 +289,7 @@ contract ringCT {
         else {
             LHS2 = ecadd(LHS, ecmul(1, L1j));
         }
-        uint256 c1 = uint256(sha256(JtoA(L2)));
+        uint256 c1 = uint256(keccak256(abi.encodePacked(JtoA(L2))));
         uint256[3] memory RHS2 = ecadd(RHS, ecmul(c1, P1j));
         LRHS[0] = LHS2[0];
         LRHS[1] = LHS2[1];
@@ -307,7 +307,7 @@ contract ringCT {
     function verify_range_proofs(uint256[2][] memory Ci, uint256[2][] memory L1, uint256[] memory s2, uint256 s) public returns (bool)  {
         GA = [Gx, Gy];
         G = pubKey(GA);
-        uint256[3] memory HPow2 = ecmul(uint256(sha256(uint(1))), G.key);
+        uint256[3] memory HPow2 = ecmul(uint256(keccak256(abi.encodePacked(uint(1)))), G.key);
         uint256[3][] memory H2 = new uint256[3][](64);
         for(uint256 i = 0; i < 64; i++) {
             H2[i] = HPow2; 
@@ -425,7 +425,7 @@ contract ringCT {
 
 
     // function for elliptic curve multiplication in jacobian coordinates using Double-and-add method
-    function ecmul(uint256[3] memory P, uint256 d) private returns (uint256[3] memory R) {
+    function ecmul(uint256[3] P, uint256 d) private returns (uint256[3] memory R) {
     
         R[0]=0;
         R[1]=0;
