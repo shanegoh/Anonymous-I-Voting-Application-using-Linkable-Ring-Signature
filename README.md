@@ -3,11 +3,11 @@
 Before Everything, make sure you downloaded your npm and node.js:
 	NodeJs & NPM -> https://nodejs.org/en/
 
-
+	Installation:
 	https://www.npmjs.com/package/truffle
 	To install truffle -> npm install -g truffle
 	To install ganache -> npm install -g ganache-cli
-	To start blockchain -> ganache-cli
+	
 
 
 	To compile truffle -> truffle compile
