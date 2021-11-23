@@ -1,6 +1,6 @@
 # FYP-21-S4-09
 
-	##Before Everything, make sure you downloaded your npm and node.js:
+#Before Everything, make sure you downloaded your npm and node.js:
 	NodeJs & NPM -> https://nodejs.org/en/
 
 
