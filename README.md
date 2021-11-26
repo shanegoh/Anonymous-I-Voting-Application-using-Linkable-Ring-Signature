@@ -12,4 +12,11 @@ Before Everything, make sure you downloaded your npm and node.js:
 	To start blockchain -> ganache-cli(Separate command line)
 	To compile truffle -> truffle compile
 	To migrate truffle to blockchain(Ganache) -> truffle migrate
+	
+	Front-End
+	client folder will be all the front end display
+	@ client folder -> yarn upgrade
+	
+# Instructions 
 
+On the main folder, 'truffle compile' first then change directory to client and run 'npm run start'
