@@ -3,20 +3,31 @@ https://trufflesuite.com/
 Before Everything, make sure you downloaded your npm and node.js:
 	NodeJs & NPM -> https://nodejs.org/en/
 
-	Installation:
-	https://www.npmjs.com/package/truffle
-	To install truffle -> npm install -g truffle
-	To install ganache -> npm install -g ganache-cli
+	Installation(Flask, Web3, virtualenv)
+	https://uoa-eresearch.github.io/eresearch-cookbook/recipe/2014/11/26/python-virtual-env/
+	-> pip install virtualenv
+	-> pip install flask
+	-> pip install Flask-Web3
+	-> pip install -r requirements.txt
 	
 	To Operate the system:
-	To start blockchain -> ganache-cli(Separate command line)
-	To compile truffle -> truffle compile
-	To migrate truffle to blockchain(Ganache) -> truffle migrate
+	(Front End)
+	Change Directory to frontend folder(Separate command prompt)
+	-> npm start
+	
+	(Back End)
+	Change Directory to backend folder(Separate command prompt)
+	-> set FLASK_APP=app (1st time only)
+	-> flask run
+	
+	(Blockchain RPC)
+	To start blockchain -> ganache-cli(Separate command prompt)
+	OR
+	Run your own Ganache interface
+	
 	
 	Front-End
 	client folder will be all the front end display
 	@ client folder -> yarn upgrade
 	
-# Instructions 
 
-On the main folder, 'truffle compile' first then change directory to client and run 'npm run start'
