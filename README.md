@@ -12,6 +12,7 @@ Before Everything, make sure you downloaded your npm and node.js:
 	To Operate the system:
 	(Front End)
 	Change Directory to frontend folder(Separate command prompt)
+	-> yarn install
 	-> npm start
 	
 	(Back End)
