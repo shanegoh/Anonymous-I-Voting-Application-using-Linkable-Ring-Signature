@@ -4,8 +4,9 @@ Before Everything, make sure you downloaded your npm and node.js:
 
 	Installation(Flask, Web3, virtualenv)
 	https://uoa-eresearch.github.io/eresearch-cookbook/recipe/2014/11/26/python-virtual-env/
+	Change directory to backend, run the command below:
 	-> pip install virtualenv
-	-> pip install flask
+	-> pip install Flask
 	-> pip install Flask-Web3
 	-> pip install -r requirements.txt
 	
@@ -18,7 +19,8 @@ Before Everything, make sure you downloaded your npm and node.js:
 	(Back End)
 	Change Directory to backend folder(Separate command prompt)
 	-> virtualEnv/Scripts/activate
-	-> set FLASK_APP=app.py
+	-> set FLASK_APP=flaskapp
+	-> set FLASK_ENV=development
 	-> flask run
 	
 	(Blockchain RPC)
