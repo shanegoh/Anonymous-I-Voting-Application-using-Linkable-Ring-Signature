@@ -17,7 +17,8 @@ Before Everything, make sure you downloaded your npm and node.js:
 	
 	(Back End)
 	Change Directory to backend folder(Separate command prompt)
-	-> set FLASK_APP=app (1st time only)
+	-> virtualEnv/Scripts/activate
+	-> set FLASK_APP=app.py
 	-> flask run
 	
 	(Blockchain RPC)
