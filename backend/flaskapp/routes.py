@@ -2,6 +2,7 @@ from flaskapp import app
 from flaskapp.__init__ import *
 from flaskapp.auth import *
 from flask_cors import cross_origin
+from flaskapp.db import mysql
 
 @app.route('/')
 def hello():
@@ -15,9 +16,24 @@ def hello():
 @requires_auth
 @requires_id_token
 def private():
-    
-    response = "Hello from a private endpoint! You need to be authenticated to see this." + session['email']
+    conn = mysql.connect()
+    try:
+        cursor = conn.cursor()
+        query = """SELECT role from users WHERE email = %s"""
+        email = session['email']
+        cursor.execute(query, email)
+        data = cursor.fetchone()
+        role_id = data[0]
+        cursor.close()
+        conn.close()
+ 
+    except:
+        print("Error: Unable to fetch any record")
+
+
+    response = "Hello, you are a " "admin" if role_id == 0 else "voter"
     return jsonify(message=response)
+
 
 # This needs authorization
 @app.route("/api/private-scoped")

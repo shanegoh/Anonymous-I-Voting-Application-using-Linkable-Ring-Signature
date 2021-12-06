@@ -1,3 +1,4 @@
+import os
 from flaskapp import app
 
 if __name__ == "__main__":
