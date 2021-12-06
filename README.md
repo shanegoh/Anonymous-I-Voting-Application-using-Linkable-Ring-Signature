@@ -18,6 +18,7 @@ Before Everything, make sure you downloaded your npm and node.js:
 	
 	(Back End)
 	Change Directory to backend folder(Separate command prompt)
+	-> virtualenv virtualEnv
 	-> virtualEnv/Scripts/activate
 	-> set FLASK_APP=flaskapp
 	-> set FLASK_ENV=development
