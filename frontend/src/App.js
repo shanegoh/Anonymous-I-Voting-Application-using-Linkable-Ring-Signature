@@ -4,7 +4,7 @@ import LoginButton from "./components/LoginButton";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import { createBrowserHistory } from "history";
 import { Auth0Provider, withAuthenticationRequired } from "@auth0/auth0-react";
-import VoterHome from "./VoterHome.js";
+import VoterHome from "./containers/VoterHome.js";
 
 export const history = createBrowserHistory();
 
@@ -19,12 +19,13 @@ const ProtectedRoute = ({ component, ...args }) => (
 
 export default function App() {
   return (
-    <div class="App-header">
+    <div className="App-header">
       <Auth0Provider
-        domain="dev-rkub2ofp.us.auth0.com"
-        clientId="aEImOFcUlG8TP5goxSaPL80IeI1UwhRC"
+        domain={process.env.REACT_APP_AUTH0_DOMAIN}
+        clientId={process.env.REACT_APP_AUTH0_CLIENTID}
         redirectUri={window.location.origin + "/voterhome"}
-        // onRedirectCallback={onRedirectCallback}
+        audience="https://dev-rkub2ofp.us.auth0.com/api/v2/"
+        scope="read:current_user"
       >
         <Router history={history}>
           <Switch>
