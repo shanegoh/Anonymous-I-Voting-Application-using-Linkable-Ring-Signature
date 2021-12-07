@@ -3,6 +3,7 @@ from flaskapp.__init__ import *
 from flaskapp.auth import *
 from flask_cors import cross_origin
 from flaskapp.db import mysql
+from flaskapp.roleEnum import Role
 
 @app.route('/')
 def hello():
@@ -16,8 +17,8 @@ def hello():
 @requires_auth
 @requires_id_token
 def private():
-    conn = mysql.connect()
     try:
+        conn = mysql.connect()
         cursor = conn.cursor()
         query = """SELECT role from users WHERE email = %s"""
         email = session['email']
@@ -26,13 +27,18 @@ def private():
         role_id = data[0]
         cursor.close()
         conn.close()
- 
     except:
-        print("Error: Unable to fetch any record")
+        print("Error: Unable to fetch any record related to the particular user.")
 
-
-    response = "Hello, you are a " "admin" if role_id == 0 else "voter"
-    return jsonify(message=response)
+    # Validate user role 
+    if role_id == Role.Admin.value:             # 0 = Admin
+        response = jsonify({"role_id": role_id,
+                            "sample": 123})
+    else:                                       # 1 = Voter
+        response = jsonify({"role_id": role_id,
+                            "sample": 456})
+    
+    return response
 
 
 # This needs authorization

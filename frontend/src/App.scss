@@ -1,0 +1,36 @@
+.App {
+  text-align: center;
+}
+
+.App-header {
+  background-color: #ffffff;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: rgb(0, 0, 0);
+}
+
+// .custom-btn {
+//   background-color: #f74141 !important ;
+// }
+
+@import "node_modules/bootstrap/scss/functions";
+@import "node_modules/bootstrap/scss/variables";
+
+$theme-colors: (
+  "primary": #0e1b75,
+  "danger": #f74141,
+);
+
+.color-nav {
+  background-color: #0e1b75;
+}
+
+.nav-links:hover {
+  text-decoration: underline;
+}
+
+@import "~bootstrap/scss/bootstrap";

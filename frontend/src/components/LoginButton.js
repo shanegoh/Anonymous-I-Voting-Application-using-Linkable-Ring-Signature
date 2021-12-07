@@ -1,8 +1,9 @@
 import React from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import Button from "react-bootstrap/Button";
-import "bootstrap/dist/css/bootstrap.min.css";
 import axios from "axios";
+import "../App.scss";
+import { BsArrowBarRight } from "react-icons/bs";
 
 const LoginButton = () => {
   const { loginWithRedirect } = useAuth0();
@@ -20,8 +21,14 @@ const LoginButton = () => {
   // };
 
   return (
-    <div>
-      <Button size="lg" variant="danger" onClick={() => loginWithRedirect()}>
+    <div className="App-header">
+      <Button
+        className="text-light"
+        size="lg"
+        variant="danger"
+        onClick={() => loginWithRedirect()}
+      >
+        <BsArrowBarRight />
         Log In
       </Button>
     </div>

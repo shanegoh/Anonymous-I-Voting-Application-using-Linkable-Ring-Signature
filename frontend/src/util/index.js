@@ -7,13 +7,36 @@ export const setIDToken = (token) => {
   localStorage.setItem("ID_TOKEN", token);
 };
 
+export const removeAccessToken = () => {
+  localStorage.removeItem("ACCESS_TOKEN");
+};
+
+export const removeIDToken = () => {
+  localStorage.removeItem("ID_TOKEN");
+};
+
+export const getAccessToken = () => {
+  return localStorage.getItem("ACCESS_TOKEN");
+};
+
 export const getIDToken = () => {
   return localStorage.getItem("ID_TOKEN");
 };
 
-export const removeAccessToken = () => {
-  localStorage.removeItem("ACCESS_TOKEN");
+export const setRoleID = (role_id) => {
+  localStorage.setItem("ROLE_ID", role_id);
 };
+
+export const removeRoleID = () => {
+  localStorage.removeItem("ROLE_ID");
+};
+
+export const isAdmin = () => {
+  return localStorage.getItem("ROLE_ID") === "0" ? true : false;
+};
+
+export const admin_role = 0;
+export const voter_role = 1;
 
 // export const checkExpiry = (token) => {
 //   if (token) {
