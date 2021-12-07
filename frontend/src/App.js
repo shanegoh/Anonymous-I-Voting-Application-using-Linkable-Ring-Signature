@@ -1,6 +1,6 @@
 import React from "react";
 import "./App.scss";
-import LoginButton from "./components/LoginButton";
+import Main from "./containers/Main.js";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import { createBrowserHistory } from "history";
 import { Auth0Provider, withAuthenticationRequired } from "@auth0/auth0-react";
@@ -31,7 +31,7 @@ export default function App() {
       >
         <Router history={history}>
           <Switch>
-            <Route path="/" exact component={LoginButton} />
+            <Route path="/main" exact component={Main} />
             <ProtectedRoute path="/redirect" exact component={Redirect} />
             <ProtectedRoute path="/admin/home" exact component={AdminHome} />
             <ProtectedRoute path="/voter/home" exact component={VoterHome} />

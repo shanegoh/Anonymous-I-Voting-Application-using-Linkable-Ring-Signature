@@ -12,7 +12,7 @@ const LogoutButton = () => {
     removeIDToken();
     removeAccessToken();
     removeRoleID();
-    logout({ returnTo: window.location.origin });
+    logout({ returnTo: window.location.origin + "/main" });
   };
 
   return (

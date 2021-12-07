@@ -21,7 +21,7 @@ const LoginButton = () => {
   // };
 
   return (
-    <div className="App-header">
+    <div>
       <Button
         className="text-light"
         size="lg"

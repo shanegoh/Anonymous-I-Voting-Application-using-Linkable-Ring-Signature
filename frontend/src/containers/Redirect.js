@@ -59,7 +59,7 @@ const Redirect = ({ history }) => {
     getUserMetadata();
   }, [getAccessTokenSilently, user?.sub]);
 
-  return isAuthenticated ? <div /> : <Redirect to="/" />;
+  return isAuthenticated ? <div /> : <Redirect to="/main" />;
 };
 
 export default Redirect;

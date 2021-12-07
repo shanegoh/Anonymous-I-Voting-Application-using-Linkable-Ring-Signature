@@ -3,7 +3,7 @@
 }
 
 .App-header {
-  background-color: #ffffff;
+  background-color: #0e1b75;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -11,11 +11,14 @@
   justify-content: center;
   font-size: calc(10px + 2vmin);
   color: rgb(0, 0, 0);
+  background-size: cover;
 }
-
-// .custom-btn {
-//   background-color: #f74141 !important ;
-// }
+.cardBody {
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  display: flex;
+}
 
 @import "node_modules/bootstrap/scss/functions";
 @import "node_modules/bootstrap/scss/variables";
