@@ -1,0 +1,60 @@
+.App {
+  text-align: center;
+}
+
+.App-header {
+  background-color: #0e1b75;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: rgb(0, 0, 0);
+  background-size: cover;
+}
+
+.cardBody {
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  display: flex;
+}
+
+.stack-align {
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  display: flex;
+}
+
+.cardNews {
+  // justify-content: center;
+  // align-items: center;
+  // flex-direction: column;
+  // display: flex;
+  background-color: #0e1b75;
+  border-radius: 1rem;
+}
+
+.cardHeader {
+  text-align: top;
+}
+
+@import "node_modules/bootstrap/scss/functions";
+@import "node_modules/bootstrap/scss/variables";
+
+$theme-colors: (
+  "primary": #0e1b75,
+  "danger": #f74141,
+);
+
+.color-nav {
+  background-color: #0e1b75;
+}
+
+.nav-links:hover {
+  text-decoration: underline;
+}
+
+@import "~bootstrap/scss/bootstrap";

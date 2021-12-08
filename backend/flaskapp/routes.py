@@ -3,6 +3,7 @@ from flaskapp.__init__ import *
 from flaskapp.auth import *
 from flask_cors import cross_origin
 from flaskapp.db import mysql
+from flaskapp.roleEnum import Role
 
 @app.route('/')
 def hello():
@@ -30,9 +31,15 @@ def private():
     except:
         print("Error: Unable to fetch any record")
 
-
-    response = "Hello, you are a " "admin" if role_id == 0 else "voter"
-    return jsonify(message=response)
+    # Validate user role 
+    if role_id == Role.Admin.value:             # 0 = Admin
+        response = jsonify({"role_id": role_id,
+                            "sample": 123})
+    else:                                       # 1 = Voter
+        response = jsonify({"role_id": role_id,
+                            "sample": 456})
+    
+    return response
 
 
 # This needs authorization
