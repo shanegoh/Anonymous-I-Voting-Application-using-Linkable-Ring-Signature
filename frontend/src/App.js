@@ -5,8 +5,10 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import { createBrowserHistory } from "history";
 import { Auth0Provider, withAuthenticationRequired } from "@auth0/auth0-react";
 import Redirect from "./containers/Redirect.js";
-import AdminHome from "./containers/AdminHome.js";
+import Admin from "./containers/Admin.js";
 import VoterHome from "./containers/VoterHome.js";
+import UpcomingElections from "./containers/UpcomingElections.js";
+import MyVoteStatus from "./containers/MyVoteStatus.js";
 
 export const history = createBrowserHistory();
 
@@ -33,8 +35,18 @@ export default function App() {
           <Switch>
             <Route path="/main" exact component={Main} />
             <ProtectedRoute path="/redirect" exact component={Redirect} />
-            <ProtectedRoute path="/admin/home" exact component={AdminHome} />
+            <ProtectedRoute path="/admin" exact component={Admin} />
             <ProtectedRoute path="/voter/home" exact component={VoterHome} />
+            <ProtectedRoute
+              path="/voter/upcomingelections"
+              exact
+              component={UpcomingElections}
+            />
+            <ProtectedRoute
+              path="/voter/myvotestatus"
+              exact
+              component={MyVoteStatus}
+            />
           </Switch>
         </Router>
       </Auth0Provider>

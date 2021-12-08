@@ -1,7 +1,5 @@
-import react from "react";
 import LoginButton from "../components/LoginButton.js";
 import { Card } from "react-bootstrap";
-import logo from "../img/MiMi.png";
 
 const Main = () => {
   return (

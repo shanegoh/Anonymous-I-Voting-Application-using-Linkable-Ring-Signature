@@ -21,6 +21,10 @@
   display: flex;
 }
 
+.div-nav {
+  padding-top: 3rem;
+}
+
 .stack-align {
   justify-content: center;
   align-items: center;
@@ -37,16 +41,21 @@
   border-radius: 1rem;
 }
 
-.cardHeader {
+.cardTitle {
   text-align: top;
 }
 
+.cardMain {
+  width: 20rem;
+  height: 25rem;
+}
 @import "node_modules/bootstrap/scss/functions";
 @import "node_modules/bootstrap/scss/variables";
 
 $theme-colors: (
   "primary": #0e1b75,
   "danger": #f74141,
+  "light": #666666,
 );
 
 .color-nav {
@@ -55,6 +64,17 @@ $theme-colors: (
 
 .nav-links:hover {
   text-decoration: underline;
+}
+
+@media only screen and (max-width: 640px) {
+  .stackBody {
+    flex-direction: column;
+    flex-wrap: wrap;
+  }
+  .btn-resize {
+    width: 90%;
+    font-size: 10rem;
+  }
 }
 
 @import "~bootstrap/scss/bootstrap";

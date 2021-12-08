@@ -8,10 +8,8 @@ import { Redirect } from "react-router-dom";
 import { Navbar, Container, Nav } from "react-bootstrap";
 import "../App.scss";
 
-const AdminHome = () => {
-  const { user, isAuthenticated, getAccessTokenSilently, getIdTokenClaims } =
-    useAuth0();
-  return isAuthenticated && isAdmin() ? (
+const Admin = () => {
+  return isAdmin() ? (
     <div>
       <Navbar className="color-nav" variant="dark" expand="lg">
         <Container fluid>
@@ -41,4 +39,4 @@ const AdminHome = () => {
   );
 };
 
-export default AdminHome;
+export default Admin;
