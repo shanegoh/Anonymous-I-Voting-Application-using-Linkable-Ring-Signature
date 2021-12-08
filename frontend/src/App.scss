@@ -13,11 +13,32 @@
   color: rgb(0, 0, 0);
   background-size: cover;
 }
+
 .cardBody {
   justify-content: center;
   align-items: center;
   flex-direction: column;
   display: flex;
+}
+
+.stack-align {
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  display: flex;
+}
+
+.cardNews {
+  // justify-content: center;
+  // align-items: center;
+  // flex-direction: column;
+  // display: flex;
+  background-color: #0e1b75;
+  border-radius: 1rem;
+}
+
+.cardHeader {
+  text-align: top;
 }
 
 @import "node_modules/bootstrap/scss/functions";
