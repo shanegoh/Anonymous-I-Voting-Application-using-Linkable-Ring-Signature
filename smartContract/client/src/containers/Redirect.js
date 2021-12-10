@@ -11,7 +11,7 @@ import {
   voter_role,
 } from "../util";
 
-const Redirect = ({ history }) => {
+export default function Redirect({ history }) {
   const { user, isAuthenticated, getAccessTokenSilently, getIdTokenClaims } =
     useAuth0();
 
@@ -60,6 +60,4 @@ const Redirect = ({ history }) => {
   }, [getAccessTokenSilently, user?.sub]);
 
   return isAuthenticated ? <div /> : <Redirect to="/main" />;
-};
-
-export default Redirect;
+}

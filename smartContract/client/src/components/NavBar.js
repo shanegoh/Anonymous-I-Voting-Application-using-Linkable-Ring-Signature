@@ -4,8 +4,15 @@ import { Navbar, Container, Nav } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import "../App.scss";
 import { ImHome } from "react-icons/im";
-import { BsFillCalendar2WeekFill, BsThreeDots } from "react-icons/bs";
-const NavBar = () => {
+import {
+  BsFillCalendar2WeekFill,
+  BsThreeDots,
+  BsBookmarkCheckFill,
+  BsCloudUploadFill,
+} from "react-icons/bs";
+import { isAdmin } from "../util";
+
+export default function NavBar() {
   return (
     <div>
       <Navbar className="color-nav" variant="dark" expand="lg">
@@ -19,7 +26,7 @@ const NavBar = () => {
             >
               <Nav.Link
                 as={Link}
-                to="/voter/home"
+                to={isAdmin() ? "/admin/home" : "/voter/home"}
                 className="text-center fw-bold"
               >
                 <ImHome />
@@ -28,17 +35,38 @@ const NavBar = () => {
               </Nav.Link>
               <Nav.Link
                 as={Link}
-                to="/voter/upcomingelections"
+                to={isAdmin() ? "/admin/result" : "/voter/upcomingelections"}
                 className="text-center fw-bold"
               >
-                <BsFillCalendar2WeekFill /> <br /> Elections
+                {isAdmin() ? (
+                  <div>
+                    <BsBookmarkCheckFill />
+                    <br /> Results
+                  </div>
+                ) : (
+                  <div>
+                    <BsFillCalendar2WeekFill />
+                    <br /> Elections
+                  </div>
+                )}
               </Nav.Link>
               <Nav.Link
                 as={Link}
-                to="/voter/myvotestatus"
+                to={isAdmin() ? "/admin/upload" : "/voter/myvotestatus"}
                 className="text-center fw-bold"
               >
-                <BsThreeDots /> <br /> Vote Status
+                {isAdmin() ? (
+                  <div>
+                    <BsCloudUploadFill />
+                    <br />
+                    Upload
+                  </div>
+                ) : (
+                  <div>
+                    <BsThreeDots />
+                    <br /> Vote Status
+                  </div>
+                )}
               </Nav.Link>
             </Nav>
             <Nav>
@@ -49,6 +77,4 @@ const NavBar = () => {
       </Navbar>
     </div>
   );
-};
-
-export default NavBar;
+}

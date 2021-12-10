@@ -1,11 +1,11 @@
 import React from "react";
-import { isAdmin } from "../util";
+import { isAdmin } from "../../util";
 import { Redirect } from "react-router-dom";
-import NavBar from "../components/NavBar.js";
+import NavBar from "../../components/NavBar.js";
 import { Table } from "react-bootstrap";
-import "../App.scss";
+import "../../App.scss";
 
-const MyVoteStatus = () => {
+export default function MyVoteStatus() {
   return !isAdmin() ? (
     <div>
       <NavBar />
@@ -34,6 +34,4 @@ const MyVoteStatus = () => {
   ) : (
     <Redirect to="/redirect" />
   );
-};
-
-export default MyVoteStatus;
+}

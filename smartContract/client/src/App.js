@@ -7,11 +7,13 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import { createBrowserHistory } from "history";
 import { Auth0Provider, withAuthenticationRequired } from "@auth0/auth0-react";
 import Redirect from "./containers/Redirect.js";
-import Admin from "./containers/Admin.js";
-import VoterHome from "./containers/VoterHome.js";
-import UpcomingElections from "./containers/UpcomingElections.js";
-import MyVoteStatus from "./containers/MyVoteStatus.js";
-import Poll from "./containers/Poll.js";
+import AdminHome from "./containers/admin/AdminHome.js";
+import VoterHome from "./containers/voter/VoterHome.js";
+import UpcomingElections from "./containers/voter/UpcomingElections.js";
+import MyVoteStatus from "./containers/voter/MyVoteStatus.js";
+import Poll from "./containers/voter/Poll.js";
+import Result from "./containers/admin/Result.js";
+import Upload from "./containers/admin/Upload.js";
 
 export const history = createBrowserHistory();
 
@@ -96,7 +98,9 @@ export default function App() {
           <Switch>
             <Route path="/main" exact component={Main} />
             <ProtectedRoute path="/redirect" exact component={Redirect} />
-            <ProtectedRoute path="/admin" exact component={Admin} />
+            <ProtectedRoute path="/admin/home" exact component={AdminHome} />
+            <ProtectedRoute path="/admin/result" exact component={Result} />
+            <ProtectedRoute path="/admin/upload" exact component={Upload} />
             <ProtectedRoute path="/voter/home" exact component={VoterHome} />
             <ProtectedRoute
               path="/voter/upcomingelections"

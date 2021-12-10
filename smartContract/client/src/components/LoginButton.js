@@ -4,7 +4,7 @@ import Button from "react-bootstrap/Button";
 import "../App.scss";
 import { BsArrowBarRight } from "react-icons/bs";
 
-const LoginButton = () => {
+export default function LoginButton() {
   const { loginWithRedirect } = useAuth0();
 
   // const attemptLogin = () => {
@@ -32,6 +32,4 @@ const LoginButton = () => {
       </Button>
     </div>
   );
-};
-
-export default LoginButton;
+}

@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import NavBar from "../components/NavBar.js";
+import NavBar from "../../components/NavBar.js";
 import { Table, Form, Button } from "react-bootstrap";
 import { BsFillPersonFill } from "react-icons/bs";
 import { ImBoxAdd } from "react-icons/im";
-import "../App.scss";
+import "../../App.scss";
 
 export default function Poll() {
   const [selected, setSelected] = useState();

@@ -2,7 +2,7 @@ import React from "react";
 import { Card, Stack } from "react-bootstrap";
 import "../App.scss";
 
-const Media = () => {
+export default function Media() {
   return (
     <div>
       <div className="div-nav">
@@ -65,9 +65,7 @@ const Media = () => {
       </div>
     </div>
   );
-};
-
-export default Media;
+}
 
 /* <div className="bg-light border">
 <Card style={{ width: "30rem", height: "10rem" }}>

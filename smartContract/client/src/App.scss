@@ -98,3 +98,12 @@ input[type="checkbox"]:checked {
 }
 
 @import "~bootstrap/scss/bootstrap";
+
+.btn-circle {
+  width: 3rem;
+  height: 3rem;
+  text-align: center;
+  padding: 1px 1px 0 2px;
+  font-size: 12px;
+  border-radius: 5rem;
+}

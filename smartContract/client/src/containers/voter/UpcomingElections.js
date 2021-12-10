@@ -1,11 +1,11 @@
 import React from "react";
-import NavBar from "../components/NavBar.js";
-import { isAdmin } from "../util";
+import NavBar from "../../components/NavBar.js";
+import { isAdmin } from "../../util";
 import { Redirect } from "react-router-dom";
 import { Button } from "react-bootstrap";
-import "../App.scss";
+import "../../App.scss";
 
-const UpcomingElections = () => {
+export default function UpcomingElections() {
   return !isAdmin() ? (
     <div>
       <NavBar />
@@ -21,6 +21,4 @@ const UpcomingElections = () => {
   ) : (
     <Redirect to="/redirect" />
   );
-};
-
-export default UpcomingElections;
+}
