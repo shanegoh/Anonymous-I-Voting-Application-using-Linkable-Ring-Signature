@@ -34,4 +34,8 @@ Before Everything, make sure you downloaded your npm and node.js:
 	client folder will be all the front end display
 	@ client folder -> yarn upgrade
 	
+	
+	Note:
+	The folder name 'smartContract' consist of ReactJs front end which is named 'client'
+	The smart contract solidity code is not yet implemented.
 
