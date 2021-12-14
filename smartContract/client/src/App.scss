@@ -107,3 +107,9 @@ input[type="checkbox"]:checked {
   font-size: 12px;
   border-radius: 5rem;
 }
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+@import "../node_modules/react-toastify/dist/ReactToastify.min.css";

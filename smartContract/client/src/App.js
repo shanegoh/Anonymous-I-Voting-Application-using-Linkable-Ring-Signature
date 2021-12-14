@@ -14,6 +14,7 @@ import MyVoteStatus from "./containers/voter/MyVoteStatus.js";
 import Poll from "./containers/voter/Poll.js";
 import Result from "./containers/admin/Result.js";
 import Upload from "./containers/admin/Upload.js";
+import CreateElection from "./containers/admin/CreateElection.js";
 
 export const history = createBrowserHistory();
 
@@ -101,6 +102,12 @@ export default function App() {
             <ProtectedRoute path="/admin/home" exact component={AdminHome} />
             <ProtectedRoute path="/admin/result" exact component={Result} />
             <ProtectedRoute path="/admin/upload" exact component={Upload} />
+            <ProtectedRoute
+              path="/admin/create"
+              exact
+              component={CreateElection}
+            />
+
             <ProtectedRoute path="/voter/home" exact component={VoterHome} />
             <ProtectedRoute
               path="/voter/upcomingelections"

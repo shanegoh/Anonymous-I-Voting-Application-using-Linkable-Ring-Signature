@@ -10,7 +10,7 @@ export default function Results() {
     <div>
       <NavBar />
       <div className="d-flex flex-column gap-2 pt-4 align-items-center">
-        <Button className="btn-origin btn-lg color-nav" active>
+        <Button className="btn-origin btn-lg color-nav btn-success" active>
           Tampines GRC election on 12 December 2021 4pm
         </Button>
       </div>
