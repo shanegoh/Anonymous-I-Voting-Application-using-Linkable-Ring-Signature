@@ -35,13 +35,13 @@ export default function NavBar() {
               </Nav.Link>
               <Nav.Link
                 as={Link}
-                to={isAdmin() ? "/admin/result" : "/voter/upcomingelections"}
+                to={isAdmin() ? "/admin/pastevent" : "/voter/upcomingelections"}
                 className="text-center fw-bold"
               >
                 {isAdmin() ? (
                   <div>
                     <BsBookmarkCheckFill />
-                    <br /> Results
+                    <br /> Past Election
                   </div>
                 ) : (
                   <div>

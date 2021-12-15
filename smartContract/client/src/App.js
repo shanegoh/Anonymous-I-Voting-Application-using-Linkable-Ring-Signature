@@ -12,6 +12,7 @@ import VoterHome from "./containers/voter/VoterHome.js";
 import UpcomingElections from "./containers/voter/UpcomingElections.js";
 import MyVoteStatus from "./containers/voter/MyVoteStatus.js";
 import Poll from "./containers/voter/Poll.js";
+import PastElection from "./containers/admin/PastElection.js";
 import Result from "./containers/admin/Result.js";
 import Upload from "./containers/admin/Upload.js";
 import CreateElection from "./containers/admin/CreateElection.js";
@@ -100,6 +101,11 @@ export default function App() {
             <Route path="/main" exact component={Main} />
             <ProtectedRoute path="/redirect" exact component={Redirect} />
             <ProtectedRoute path="/admin/home" exact component={AdminHome} />
+            <ProtectedRoute
+              path="/admin/pastevent"
+              exact
+              component={PastElection}
+            />
             <ProtectedRoute path="/admin/result" exact component={Result} />
             <ProtectedRoute path="/admin/upload" exact component={Upload} />
             <ProtectedRoute
