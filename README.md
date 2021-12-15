@@ -23,7 +23,9 @@ Make sure you installed pip and python version is 3.10.0
 	-> pip install Flask-Web3
 	-> pip install -r requirements.txt
 	-> virtualenv virtualEnv
-	-> virtualEnv/Scripts/activate
+	-> virtualEnv/Scripts/activate ( for windows )
+	-> source virtualEnv/bin/activate ( for mac os )
+	-> For other linux OS, please google online
 	
 	Start back-end Server
 	-> set FLASK_APP=flaskapp
