@@ -1,6 +1,7 @@
 # FYP-21-S4-09
 Before Everything, make sure you downloaded your npm and node.js(v16.13.1):
 	NodeJs & NPM -> https://nodejs.org/en/
+Make sure you installed pip and python version is 3.10.0
 
 	https://uoa-eresearch.github.io/eresearch-cookbook/recipe/2014/11/26/python-virtual-env/
 
