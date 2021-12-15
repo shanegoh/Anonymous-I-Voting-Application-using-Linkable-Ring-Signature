@@ -4,7 +4,6 @@ Before Everything, make sure you downloaded your npm and node.js(v16.13.1):
 
 	https://uoa-eresearch.github.io/eresearch-cookbook/recipe/2014/11/26/python-virtual-env/
 
-	To Operate the system:
 	(Front End)
 	Change Directory to smartContract -> client folder(Separate command prompt)
 	Installation
@@ -12,6 +11,8 @@ Before Everything, make sure you downloaded your npm and node.js(v16.13.1):
 	
 	Start front-end Server
 	-> npm run start
+	
+	
 	
 	(Back End) 
 	Change Directory to backend folder(Separate command prompt)
