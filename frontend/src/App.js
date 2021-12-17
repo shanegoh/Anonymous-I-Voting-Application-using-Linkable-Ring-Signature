@@ -5,21 +5,22 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import { createBrowserHistory } from "history";
 import { Auth0Provider, withAuthenticationRequired } from "@auth0/auth0-react";
 import Redirect from "./containers/Redirect.js";
-import Admin from "./containers/Admin.js";
-import VoterHome from "./containers/VoterHome.js";
-import UpcomingElections from "./containers/UpcomingElections.js";
-import MyVoteStatus from "./containers/MyVoteStatus.js";
+import AdminHome from "./containers/admin/AdminHome.js";
+import VoterHome from "./containers/voter/VoterHome.js";
+import UpcomingElections from "./containers/voter/UpcomingElections.js";
+import MyVoteStatus from "./containers/voter/MyVoteStatus.js";
+import Poll from "./containers/voter/Poll.js";
+import PastElection from "./containers/admin/PastElection.js";
+import Result from "./containers/admin/Result.js";
+import Upload from "./containers/admin/Upload.js";
+import EditElection from "./containers/admin/EditElection.js";
+import CreateElection from "./containers/admin/CreateElection.js";
 
 export const history = createBrowserHistory();
 
 const ProtectedRoute = ({ component, ...args }) => (
   <Route component={withAuthenticationRequired(component)} {...args} />
 );
-
-// const onRedirectCallback = (appState) => {
-//   // Use the router's history module to replace the url
-//   history.replace(appState?.returnTo || window.location.origin + "/voterhome");
-// };
 
 export default function App() {
   return (
@@ -35,7 +36,21 @@ export default function App() {
           <Switch>
             <Route path="/main" exact component={Main} />
             <ProtectedRoute path="/redirect" exact component={Redirect} />
-            <ProtectedRoute path="/admin" exact component={Admin} />
+            <ProtectedRoute path="/admin/home" exact component={AdminHome} />
+            <ProtectedRoute
+              path="/admin/pastevent"
+              exact
+              component={PastElection}
+            />
+            <ProtectedRoute path="/admin/edit" exact component={EditElection} />
+            <ProtectedRoute path="/admin/result" exact component={Result} />
+            <ProtectedRoute path="/admin/upload" exact component={Upload} />
+            <ProtectedRoute
+              path="/admin/create"
+              exact
+              component={CreateElection}
+            />
+
             <ProtectedRoute path="/voter/home" exact component={VoterHome} />
             <ProtectedRoute
               path="/voter/upcomingelections"
@@ -47,6 +62,7 @@ export default function App() {
               exact
               component={MyVoteStatus}
             />
+            <ProtectedRoute path="/voter/poll" exact component={Poll} />
           </Switch>
         </Router>
       </Auth0Provider>

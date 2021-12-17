@@ -5,9 +5,14 @@ from flask_cors import cross_origin
 from flaskapp.db import mysql
 from flaskapp.roleEnum import Role
 
-@app.route('/')
+@app.route('/wtf', methods=['GET'])
 def hello():
-    return 'Hello, World!'
+    return 'Hello, GET!'
+
+@app.route('/wtf', methods=['POST'])
+def zxc():
+    name = request.json['name']
+    return name;
 
     #Controllers API
 

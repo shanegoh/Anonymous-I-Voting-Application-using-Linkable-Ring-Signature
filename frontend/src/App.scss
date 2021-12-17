@@ -49,6 +49,7 @@
   width: 20rem;
   height: 25rem;
 }
+
 @import "node_modules/bootstrap/scss/functions";
 @import "node_modules/bootstrap/scss/variables";
 
@@ -77,4 +78,38 @@ $theme-colors: (
   }
 }
 
+.table-bordered th,
+.table-bordered td {
+  border: 0.5rem solid #0e1b75 !important;
+}
+
+input[type="checkbox"] {
+  width: 5rem;
+  height: 5rem;
+}
+
+input[type="checkbox"]:checked {
+  background-color: #0e1b75;
+}
+
+.table-radius {
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
 @import "~bootstrap/scss/bootstrap";
+
+.btn-circle {
+  width: 3rem;
+  height: 3rem;
+  text-align: center;
+  padding: 1px 1px 0 2px;
+  font-size: 12px;
+  border-radius: 5rem;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+@import "../node_modules/react-toastify/dist/ReactToastify.min.css";

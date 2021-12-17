@@ -12,11 +12,20 @@ export default function Admin({ history }) {
     history.push(path);
   };
 
+  const editEvent = () => {
+    let path = "/admin/edit";
+    history.push(path);
+  };
+
   return isAdmin() ? (
     <div>
       <NavBar />
       <div className="d-flex flex-column gap-2 pt-4 align-items-center">
-        <Button className="btn-origin btn-lg color-nav" active>
+        <Button
+          className="btn-origin btn-lg color-nav"
+          active
+          onClick={editEvent}
+        >
           Tampines GRC election on 12 December 2021 4pm
         </Button>
         <Button className="btn-origin btn-lg color-nav" active>

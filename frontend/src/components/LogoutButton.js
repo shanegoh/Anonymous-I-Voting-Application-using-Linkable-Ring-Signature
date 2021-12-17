@@ -5,7 +5,7 @@ import { removeAccessToken, removeIDToken, removeRoleID } from "../util";
 import "../App.scss";
 import { BsArrowBarRight } from "react-icons/bs";
 
-const LogoutButton = () => {
+export default function LogoutButton() {
   const { logout } = useAuth0();
 
   const attemptLogout = () => {
@@ -26,6 +26,4 @@ const LogoutButton = () => {
       Logout
     </Button>
   );
-};
-
-export default LogoutButton;
+}

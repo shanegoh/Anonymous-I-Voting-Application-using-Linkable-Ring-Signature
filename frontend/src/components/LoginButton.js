@@ -1,11 +1,11 @@
 import React from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import Button from "react-bootstrap/Button";
-import axios from "axios";
 import "../App.scss";
 import { BsArrowBarRight } from "react-icons/bs";
+import App from "../App";
 
-const LoginButton = () => {
+export default function LoginButton() {
   const { loginWithRedirect } = useAuth0();
 
   // const attemptLogin = () => {
@@ -33,6 +33,4 @@ const LoginButton = () => {
       </Button>
     </div>
   );
-};
-
-export default LoginButton;
+}
