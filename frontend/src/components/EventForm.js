@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import NavBar from "../components/NavBar.js";
 import { DateTimePicker } from "react-rainbow-components";
 import { Button, Form, Container } from "react-bootstrap";
 import { BsPlusLg } from "react-icons/bs";
 import { BiMinus } from "react-icons/bi";
 import { nanoid } from "nanoid";
+import axios from "axios";
 import "../App.scss";
 
 const initialStartDate = () => {
@@ -22,7 +23,13 @@ const initialEndDate = () => {
   return date;
 };
 
-export default function EventForm() {
+export default function EventForm({
+  event_electionType,
+  event_areaId,
+  event_startDateTime,
+  event_endDateTime,
+  event_candidate,
+}) {
   const [startDateTime, setStartDateTime] = useState(initialStartDate);
   const [endDateTime, setEndDateTime] = useState(initialEndDate);
   const [inputList, updateList] = useState([]); // Initial state of array
@@ -48,18 +55,56 @@ export default function EventForm() {
     updateList((inputList) => inputList.filter((obj) => obj !== object));
     // delete the object
   };
+
+  const [electionTypeList, setElectionTypeList] = useState([]);
+  const [areaList, setAreaList] = useState([]);
+
+  useEffect(() => {
+    axios
+      .get(`http://localhost:5000/findAllElectionType`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("ACCESS_TOKEN")}`,
+          id_token: `Bearer ${localStorage.getItem("ID_TOKEN")}`,
+        },
+      })
+      .then((res) => {
+        if (res.status === 200) {
+          console.log(res.data);
+          setElectionTypeList((electionTypeList) => res.data[0]);
+          setAreaList((areaList) => res.data[1]);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
+
   return (
     <div className="d-flex gap-5 pt-4 align-items-center flex-column">
       <div className="d-flex gap-5 w-75">
-        <Form.Select id="election_type">
-          <option disabled>Select Parliamentary / Presidential</option>
-          <option value="0">Group Representation Constituency(GRC)</option>
-          <option value="1">Single Member Constituency(SMC)</option>
-          <option value="2">Presidential Election(PE)</option>
+        <Form.Select defaultValue={0} id="election_type">
+          <option value="0" disabled>
+            Select Parliamentary / Presidential
+          </option>
+          {electionTypeList.map(function (record) {
+            return (
+              <option key={record.election_id} value={record.election_id}>
+                {record.election_name}
+              </option>
+            );
+          })}
         </Form.Select>
-        <Form.Select id="area">
-          <option disabled>Select</option>
-          <option value="0">Seng Kang GRC</option>
+        <Form.Select defaultValue={0} id="area">
+          <option value="0" disabled>
+            Select Area
+          </option>
+          {areaList.map(function (record) {
+            return (
+              <option key={record.area_id} value={record.area_id}>
+                {record.area_name}
+              </option>
+            );
+          })}
         </Form.Select>
       </div>
       <div className="d-flex gap-5 w-75">

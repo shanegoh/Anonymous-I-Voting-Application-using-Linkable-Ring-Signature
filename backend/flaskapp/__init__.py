@@ -10,7 +10,7 @@ CORS(app)
 app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
 app.config['CORS_HEADERS'] = 'Content-Type'
 web3 = Web3(Web3.HTTPProvider('http://127.0.0.1:7545'))
-#cors = CORS(app, resources={r"/api/private": {"origins": "http://localhost:3000"}})
+#cors = CORS(app, resources={r"/events/edit/<id>": {"origins": "http://localhost:3000"}})
 
 from flaskapp.routes import *
 
