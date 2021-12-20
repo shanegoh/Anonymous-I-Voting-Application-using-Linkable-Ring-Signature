@@ -57,7 +57,7 @@ export default function Admin({ history }) {
             >
               {record.area_name}
               <br />
-              {record.start_date_time}
+              {new Date(record.start_date_time).toString()}
             </Button>
           );
         })}

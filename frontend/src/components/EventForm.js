@@ -1,13 +1,9 @@
 import React, { useState, useEffect } from "react";
-import NavBar from "../components/NavBar.js";
 import { DateTimePicker } from "react-rainbow-components";
-import { Button, Form, Container } from "react-bootstrap";
-import { BsPlusLg } from "react-icons/bs";
-import { BiMinus } from "react-icons/bi";
-import { nanoid } from "nanoid";
+import { Form } from "react-bootstrap";
 import axios from "axios";
 import "../App.scss";
-
+import Candidate from "./Candidate.js";
 const initialStartDate = () => {
   var date = new Date();
   date.setSeconds(0);
@@ -23,16 +19,24 @@ const initialEndDate = () => {
   return date;
 };
 
+const DEFAULTSELECTOR = () => {
+  return "DEFAULT";
+};
+
 export default function EventForm({
+  event_id,
   event_electionType,
   event_areaId,
   event_startDateTime,
   event_endDateTime,
   event_candidate,
 }) {
-  const [startDateTime, setStartDateTime] = useState(initialStartDate);
-  const [endDateTime, setEndDateTime] = useState(initialEndDate);
-  const [inputList, updateList] = useState([]); // Initial state of array
+  const [startDateTime, setStartDateTime] = useState(initialStartDate); //Initial Start Date
+  const [endDateTime, setEndDateTime] = useState(initialEndDate); //Initial End Date
+  const [electionType, setElectionType] = useState(DEFAULTSELECTOR); //Initial electionType
+  const [areaId, setAreaId] = useState(DEFAULTSELECTOR); //Initial Area
+  const [electionTypeList, setElectionTypeList] = useState([]); //Initial state of election type list
+  const [areaList, setAreaList] = useState([]); //Initial state of area list
 
   const validateDateTime = () => {
     let result = endDateTime - startDateTime;
@@ -43,25 +47,9 @@ export default function EventForm({
     } else return true;
   };
 
-  const addCandidate = () => {
-    updateList((inputList) => [
-      ...inputList,
-      [nanoid(), nanoid(), nanoid(), nanoid()],
-    ]);
-    // Array object consist of 3 unique id
-  };
-
-  const removeCandidate = (object) => {
-    updateList((inputList) => inputList.filter((obj) => obj !== object));
-    // delete the object
-  };
-
-  const [electionTypeList, setElectionTypeList] = useState([]);
-  const [areaList, setAreaList] = useState([]);
-
   useEffect(() => {
     axios
-      .get(`http://localhost:5000/findAllElectionType`, {
+      .get("/findAllElectionType", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("ACCESS_TOKEN")}`,
           id_token: `Bearer ${localStorage.getItem("ID_TOKEN")}`,
@@ -77,13 +65,41 @@ export default function EventForm({
       .catch((err) => {
         console.log(err);
       });
+
+    // Need to specific undefined then dont load.
+    // If it's not undefined means that the action is editing and not creating
+    if (
+      typeof event_startDateTime !== "undefined" &&
+      typeof event_endDateTime !== "undefined"
+    ) {
+      setStartDateTime((startDateTime) => new Date(event_startDateTime));
+      setEndDateTime((endDateTime) => new Date(event_endDateTime));
+      setElectionType((electionType) => event_electionType);
+      setAreaId((areaId) => event_areaId);
+    }
   }, []);
+
+  const updateElectionType = (e) => {
+    console.log(e.currentTarget.value);
+    var value = e.currentTarget.value;
+    setElectionType((electionType) => value);
+  };
+
+  const updateAreaId = (e) => {
+    console.log(e.currentTarget.value);
+    var value = e.currentTarget.value;
+    setAreaId((areaId) => value);
+  };
 
   return (
     <div className="d-flex gap-5 pt-4 align-items-center flex-column">
       <div className="d-flex gap-5 w-75">
-        <Form.Select defaultValue={0} id="election_type">
-          <option value="0" disabled>
+        <Form.Select
+          value={electionType}
+          id="election_type"
+          onChange={(e) => updateElectionType(e)}
+        >
+          <option value="DEFAULT" disabled>
             Select Parliamentary / Presidential
           </option>
           {electionTypeList.map(function (record) {
@@ -94,8 +110,8 @@ export default function EventForm({
             );
           })}
         </Form.Select>
-        <Form.Select defaultValue={0} id="area">
-          <option value="0" disabled>
+        <Form.Select value={areaId} id="area" onChange={(e) => updateAreaId(e)}>
+          <option value="DEFAULT" disabled>
             Select Area
           </option>
           {areaList.map(function (record) {
@@ -111,10 +127,10 @@ export default function EventForm({
         <DateTimePicker
           required
           value={startDateTime}
-          id="datetimepicker-1"
+          id="start"
           label="Start Date Time"
           formatStyle="large"
-          onChange={(value) => setStartDateTime(value)}
+          onChange={(value) => setStartDateTime((startDateTime) => value)}
           error={
             validateDateTime() === false ? "Start time should be earlier." : ""
           }
@@ -122,50 +138,16 @@ export default function EventForm({
         <DateTimePicker
           required
           value={endDateTime} // Default 4 hrs vote
-          id="datetimepicker-1"
+          id="end"
           label="End Date Time"
           formatStyle="large"
-          onChange={(value) => setEndDateTime(value)}
+          onChange={(value) => setEndDateTime((setEndDateTime) => value)}
           error={
-            validateDateTime() === false ? "Start time should be earlier." : ""
+            validateDateTime() === false ? "End time should be later." : ""
           }
         />
       </div>
-      <div className="w-75">
-        <Container className="d-flex gap-3 align-items-center flex-column">
-          <Form.Label className="fs-5 color-nav text-light w-100 text-center table-radius ">
-            Candidates
-          </Form.Label>
-          {inputList.map((object) => (
-            <div
-              className="d-flex flex-row align-items-center gap-2"
-              key={object[0]}
-            >
-              <Form.Control key={object[1]} type="file" />
-              <Form.Control
-                className="btn-success"
-                style={{ width: "75%" }}
-                key={object[2]}
-                type="text"
-                placeholder="Candidate Name"
-              />
-              <Button key={object[3]} onClick={() => removeCandidate(object)}>
-                <BiMinus className="fs-3" />
-              </Button>
-            </div>
-          ))}
-          <Button
-            className="btn-circle btn-success"
-            id={inputList.length}
-            onClick={addCandidate}
-          >
-            <BsPlusLg className="fs-3" />
-          </Button>
-        </Container>
-      </div>
-      <Button disabled className="text-light" variant="danger">
-        Create
-      </Button>
+      <Candidate event_candidate={event_candidate} event_id={event_id} />
     </div>
   );
 }

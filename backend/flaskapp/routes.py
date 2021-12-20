@@ -81,7 +81,7 @@ def findAllEvent():
     
     return jsonify(payload)
 
-@app.route("/event/edit/<id>")
+@app.route("/findEventById/<id>")
 @cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'id_token'])
 @requires_auth
 @requires_id_token
@@ -91,13 +91,14 @@ def findEventById(id):
         cursor = conn.cursor()
         query = """SELECT election_type, 
                    area_id, 
-                   DATE_FORMAT(start_date_time, '%%m/%%d/%%y %%h:%%m:%%s'), 
-                   DATE_FORMAT(end_date_time, '%%m/%%d/%%y %%h:%%m:%%s'), 
+                   start_date_time, 
+                   end_date_time, 
                    candidate 
                    FROM event 
                    WHERE event_id = %s"""
         cursor.execute(query, id)
         data = cursor.fetchone()
+        print(data)
         cursor.close()
         conn.close()
  

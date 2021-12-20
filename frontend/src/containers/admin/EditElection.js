@@ -15,10 +15,11 @@ export default function EditElection() {
   const [startDateTime, setStartDateTime] = useState();
   const [endDateTime, setEndDateTime] = useState();
   const [candidate, setCandidate] = useState([]);
+  const [isLoaded, setLoadStatus] = useState(false);
 
   useEffect(() => {
     axios
-      .get(`http://localhost:5000/event/edit/${id}`, {
+      .get(`http://localhost:5000/findEventById/${id}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("ACCESS_TOKEN")}`,
           id_token: `Bearer ${localStorage.getItem("ID_TOKEN")}`,
@@ -32,6 +33,7 @@ export default function EditElection() {
           setStartDateTime((startDateTime) => res.data[0].start_date_time);
           setEndDateTime((endDateTime) => res.data[0].end_date_time);
           setCandidate((candidate) => res.data[0].candidate);
+          setLoadStatus((isLoaded) => true);
         }
       })
       .catch((err) => {
@@ -42,13 +44,18 @@ export default function EditElection() {
   return isAdmin() ? (
     <div>
       <NavBar />
-      <EventForm
-        event_electionType={electionType}
-        event_areaId={areaId}
-        event_startDateTime={startDateTime}
-        event_endDateTime={endDateTime}
-        event_candidate={candidate}
-      />
+      {isLoaded ? (
+        <EventForm
+          event_id={id}
+          event_electionType={electionType}
+          event_areaId={areaId}
+          event_startDateTime={startDateTime}
+          event_endDateTime={endDateTime}
+          event_candidate={candidate}
+        />
+      ) : (
+        <></>
+      )}
     </div>
   ) : (
     <Redirect to="/redirect" />
