@@ -7,9 +7,7 @@ from flaskapp.roleEnum import Role
 import datetime
 
 
-
-
-@app.route('/wtf', methods=['GET'])
+@app.route('/', methods=['GET'])
 def hello():
     return 'Hello, GET!'
 
@@ -62,8 +60,10 @@ def findAllEvent():
                    a.area_name, 
                    e.start_date_time
                    FROM event e JOIN
-                   area a ON e.area_id = a.area_id"""
-        cursor.execute(query)
+                   area a ON e.area_id = a.area_id
+                   WHERE e.del_flag = %s 
+                   AND a.del_flag = %s """
+        cursor.execute(query, (0,0))
         data = cursor.fetchall()
         cursor.close()
         conn.close()
@@ -95,8 +95,9 @@ def findEventById(id):
                    end_date_time, 
                    candidate 
                    FROM event 
-                   WHERE event_id = %s"""
-        cursor.execute(query, id)
+                   WHERE event_id = %s
+                   AND del_flag = %s"""
+        cursor.execute(query, (id, 0))
         data = cursor.fetchone()
         print(data)
         cursor.close()
@@ -116,7 +117,7 @@ def findEventById(id):
     return jsonify(payload)
 
 
-@app.route("/findAllElectionType")
+@app.route("/findAllElectionTypeAndArea")
 @cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'id_token'])
 @requires_auth
 @requires_id_token
@@ -125,12 +126,12 @@ def findAllElectionType():
     try:
         cursor = conn.cursor()
 
-        query =  """SELECT * FROM election_type""";
-        cursor.execute(query);
+        query =  """SELECT * FROM election_type WHERE del_flag = %s""";
+        cursor.execute(query, 0);
         result_A = cursor.fetchall()
 
-        query =  """SELECT * FROM area""";
-        cursor.execute(query);
+        query =  """SELECT * FROM area WHERE del_flag = %s""";
+        cursor.execute(query, 0);
         result_B = cursor.fetchall()
 
         cursor.close()
@@ -156,13 +157,59 @@ def findAllElectionType():
     electionArea_payload = []
     for record in result_B:
         areas = { 'area_id': record[0],
-                          'area_name': record[1]}
+                  'area_name': record[1],
+                  'election_type': record[2]}
         electionArea_payload.append(areas)
         areas = {}
 
     payload.append(electionArea_payload)
 
     return jsonify(payload)
+
+
+@app.route("/createEvent", methods=['POST'])
+@cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'id_token'])
+@requires_auth
+@requires_id_token
+def createForm():
+    # Need to add validation here
+    # ...
+    electionType = request.json['election_type']
+    areaId = request.json['area_id']
+    startDateTime = request.json['start_date_time']
+    endDateTime = request.json['end_date_time']
+    candidates = request.json['candidates']
+    return startDateTime;
+
+
+@app.route("/deleteEventById", methods=['POST'])
+@cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'id_token'])
+@requires_auth
+@requires_id_token
+def deleteEvent():
+    event_id = request.json['event_id']
+
+    conn = mysql.connect() 
+    try:
+        cursor = conn.cursor()
+
+        query =  """UPDATE event 
+                    SET del_flag = %s 
+                    WHERE event_id = %s""";
+        rowCount = cursor.execute(query, (1, event_id));
+        cursor.close()
+        conn.commit()
+        conn.close()
+ 
+    except:
+        print("Error: Unable to fetch any record of events") 
+
+    if rowCount > 0:
+        message = "SUCCESS"
+    else:
+        message = "FAIL"
+
+    return message;
 
 
 # This needs authorization

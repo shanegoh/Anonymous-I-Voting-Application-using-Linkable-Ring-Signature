@@ -52,3 +52,8 @@ export const axiosConfig = {
     id_token: `Bearer ${localStorage.getItem("ID_TOKEN")}`,
   },
 };
+
+// A function to check for undefined value
+export const isDefined = (value) => {
+  return typeof value !== "undefined";
+};

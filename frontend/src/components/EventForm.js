@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { DateTimePicker } from "react-rainbow-components";
-import { Form } from "react-bootstrap";
+import { Form, Alert } from "react-bootstrap";
+import Candidate from "./Candidate.js";
+import { isDefined } from "../util";
 import axios from "axios";
 import "../App.scss";
-import Candidate from "./Candidate.js";
+
+// Initial start date is current date
 const initialStartDate = () => {
   var date = new Date();
   date.setSeconds(0);
@@ -11,16 +14,13 @@ const initialStartDate = () => {
   return date;
 };
 
+// Initial end date is current date + 4 hours
 const initialEndDate = () => {
   var date = new Date();
   date.setHours(date.getHours() + 4);
   date.setSeconds(0);
   date.setMilliseconds(0);
   return date;
-};
-
-const DEFAULTSELECTOR = () => {
-  return "DEFAULT";
 };
 
 export default function EventForm({
@@ -31,25 +31,45 @@ export default function EventForm({
   event_endDateTime,
   event_candidate,
 }) {
+  // Constant value for default value
+  const DEFAULTSELECTOR = () => "DEFAULT";
   const [startDateTime, setStartDateTime] = useState(initialStartDate); //Initial Start Date
   const [endDateTime, setEndDateTime] = useState(initialEndDate); //Initial End Date
-  const [electionType, setElectionType] = useState(DEFAULTSELECTOR); //Initial electionType
-  const [areaId, setAreaId] = useState(DEFAULTSELECTOR); //Initial Area
+  const [electionType, setElectionType] = useState(DEFAULTSELECTOR); //Initial default value electionType
+  const [areaId, setAreaId] = useState(DEFAULTSELECTOR); //Initial default value Area
   const [electionTypeList, setElectionTypeList] = useState([]); //Initial state of election type list
-  const [areaList, setAreaList] = useState([]); //Initial state of area list
+  const [areaList, setAreaList] = useState([]); //Initial state of area list ( from server)
+  const [filteredAreaList, setFilteredAreaList] = useState([]); // For filtering display of areas base on selection
+  const [show, setShow] = useState(false); // Logic for displaying alert
+  const handleShow = () => setShow(true); // Logic for displaying alert
+  const handleDismiss = () => setShow(false); // Logic for closing alert
+  const [err, setErr] = useState([]); // Logic for storing all error messages
 
+  // Validate if the time difference is at least 4 hours
   const validateDateTime = () => {
-    let result = endDateTime - startDateTime;
+    const result = endDateTime - startDateTime;
+    return result >= 14400000 ? true : false;
+  };
 
-    if (result < 14400000) {
-      console.log("Start and end date wrong");
-      return false;
-    } else return true;
+  // On change, update the election_type id
+  const updateElectionType = (e) => {
+    const value = e.currentTarget.value;
+    setElectionType((electionType) => value);
+    // Filter the original area list to the filtered area list
+    setFilteredAreaList((filteredAreaList) =>
+      areaList.filter((object) => object.election_type == value)
+    );
+  };
+
+  // On change, update the area id
+  const updateAreaId = (e) => {
+    const value = e.currentTarget.value;
+    setAreaId((areaId) => value);
   };
 
   useEffect(() => {
     axios
-      .get("/findAllElectionType", {
+      .get("/findAllElectionTypeAndArea", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("ACCESS_TOKEN")}`,
           id_token: `Bearer ${localStorage.getItem("ID_TOKEN")}`,
@@ -58,20 +78,20 @@ export default function EventForm({
       .then((res) => {
         if (res.status === 200) {
           console.log(res.data);
+          // Set election type list and area list
           setElectionTypeList((electionTypeList) => res.data[0]);
           setAreaList((areaList) => res.data[1]);
+          setFilteredAreaList((filteredAreaList) => res.data[1]);
         }
       })
       .catch((err) => {
         console.log(err);
       });
 
-    // Need to specific undefined then dont load.
-    // If it's not undefined means that the action is editing and not creating
-    if (
-      typeof event_startDateTime !== "undefined" &&
-      typeof event_endDateTime !== "undefined"
-    ) {
+    // If it's defined means that the action is editing and not creating,
+    // need to set retrieve data
+    // Skip if user is creating
+    if (isDefined(event_startDateTime) && isDefined(event_endDateTime)) {
       setStartDateTime((startDateTime) => new Date(event_startDateTime));
       setEndDateTime((endDateTime) => new Date(event_endDateTime));
       setElectionType((electionType) => event_electionType);
@@ -79,20 +99,104 @@ export default function EventForm({
     }
   }, []);
 
-  const updateElectionType = (e) => {
-    console.log(e.currentTarget.value);
-    var value = e.currentTarget.value;
-    setElectionType((electionType) => value);
-  };
+  // On click submit, validate input and post to server
+  const submitEvent = (list) => {
+    var errors = [];
 
-  const updateAreaId = (e) => {
-    console.log(e.currentTarget.value);
-    var value = e.currentTarget.value;
-    setAreaId((areaId) => value);
+    // Convert candidates to json data in array
+    var jsonArray = [];
+    list.map((object) => {
+      let tmpData = { name: object[4], image: object[3] };
+      jsonArray.push(tmpData);
+    });
+
+    // Validate election type field
+    if (electionType === "DEFAULT") {
+      errors.push("Select parliamentary/presidential election.");
+    }
+
+    // Validate area field
+    if (areaId === "DEFAULT") {
+      errors.push("Select Area");
+    }
+
+    // Validate number of candidate
+    if (jsonArray.length < 2) {
+      errors.push("Insufficient Candidates.(At least 2)");
+    }
+
+    // Validate information of condidate
+    for (let x = 0; x < jsonArray.length; x++) {
+      if (jsonArray[x].name === "" || jsonArray[x].image === "") {
+        errors.push("Candidate value cannot be empty.");
+        break;
+      }
+    }
+
+    // Validate the duration of the time
+    if (!validateDateTime()) {
+      errors.push("Duration of the event must be at least 4 hours.");
+    }
+
+    // Show the Alert Box if there is error, else close and post data
+    if (errors.length > 0) {
+      setErr((err) => errors);
+      handleShow(); // Display alert box
+    } else {
+      handleDismiss(); // Close alert box
+      // Craft json payload
+      var event_payload = {
+        election_type: electionType,
+        area_id: areaId,
+        start_date_time: startDateTime,
+        end_date_time: endDateTime,
+        candidates: jsonArray,
+      };
+      console.log(event_payload);
+
+      // Time to post to server
+      axios
+        .post("http://localhost:5000/createEvent", event_payload, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("ACCESS_TOKEN")}`,
+            id_token: `Bearer ${localStorage.getItem("ID_TOKEN")}`,
+          },
+        })
+        .then((res) => {
+          if (res.status === 200) {
+            console.log(new Date(res.data));
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
   };
 
   return (
     <div className="d-flex gap-5 pt-4 align-items-center flex-column">
+      {show ? (
+        <Alert
+          className="w-75 d-flex flex-column"
+          variant="danger"
+          onClose={() => setShow(false)}
+          dismissible
+        >
+          <Alert.Heading>Oh snap! You got an error!</Alert.Heading>
+          <h5>Please update the following:</h5>
+          {err.map((object, i) => {
+            return (
+              <div>
+                <p>
+                  {i + 1}. &nbsp; {object}
+                </p>
+              </div>
+            );
+          })}
+        </Alert>
+      ) : (
+        <></>
+      )}
       <div className="d-flex gap-5 w-75">
         <Form.Select
           value={electionType}
@@ -114,7 +218,7 @@ export default function EventForm({
           <option value="DEFAULT" disabled>
             Select Area
           </option>
-          {areaList.map(function (record) {
+          {filteredAreaList.map(function (record) {
             return (
               <option key={record.area_id} value={record.area_id}>
                 {record.area_name}
@@ -147,7 +251,11 @@ export default function EventForm({
           }
         />
       </div>
-      <Candidate event_candidate={event_candidate} event_id={event_id} />
+      <Candidate
+        event_candidate={event_candidate}
+        event_id={event_id}
+        submitCandidateToParent={submitEvent}
+      />
     </div>
   );
 }

@@ -2,35 +2,42 @@ import React, { useState, useEffect } from "react";
 import { Button, Form, Container, Modal } from "react-bootstrap";
 import { BsPlusLg } from "react-icons/bs";
 import { BiMinus } from "react-icons/bi";
+import { isDefined } from "../util";
 import { nanoid } from "nanoid";
 import axios from "axios";
 import "../App.scss";
 
-export default function Candidate({ event_id, event_candidate }) {
-  const [show, setShow] = useState(false);
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
+const EMPTYSTRING = () => "";
+export default function Candidate({
+  event_id,
+  event_candidate,
+  submitCandidateToParent, // candidate list to be send back to parent component(EventForm)
+}) {
+  const [show, setShow] = useState(false); // For storing the state of Modal
+  const handleClose = () => setShow(false); // For dismissing Modal
+  const handleShow = () => setShow(true); // For displaying Modal
   const [inputList, updateList] = useState([]); // Initial state of array of candidate
-  const [candidate, setCandidate] = useState({});
 
   useEffect(() => {
-    if (typeof event_candidate !== "undefined") {
-      setCandidate((candidate) => JSON.parse(event_candidate));
+    // If it's defined means that the action is editing and not creating,
+    // need to set retrieve data
+    // Skip if user is creating
+    if (isDefined(event_candidate))
       updateCandidateList(JSON.parse(event_candidate));
-    }
   }, []);
 
   const addCandidate = () => {
     updateList((inputList) => [
       ...inputList,
-      [nanoid(), nanoid(), nanoid(), "", ""],
+      [nanoid(), nanoid(), nanoid(), EMPTYSTRING, EMPTYSTRING],
     ]);
-    // Array object consist of 3 unique id
+    // Array object consist of 3 unique id for react to idenfity object '
+    //and last 2 attributes for image and name
   };
 
   const updateCandidateList = (candidateList) => {
-    console.log("Working");
-    Object.values(candidateList).map((candidate, i) => {
+    //{"candidates": [{"name": "PAP", "image": "../../imgMiMi.png"}, {"name": "WP", "image": "../../imgMiMi.png"}]}
+    Object.values(candidateList).map((candidate) => {
       candidate.map((object) => {
         updateList((inputList) => [
           ...inputList,
@@ -40,24 +47,28 @@ export default function Candidate({ event_id, event_candidate }) {
     });
   };
 
+  // delete the candidate object
   const removeCandidate = (object) => {
     updateList((inputList) => inputList.filter((obj) => obj !== object));
-    // delete the object
   };
 
-  //   const updateName = (e) => {
-  //     var key = e.currentTarget.key;
-  //     var name = e.currentTarget.name;
-  //     inputList.forEach((object) => {
-  //       if (object.key === key) {
-  //         object.name = name;
-  //       }
-  //     });
-  //   };
+  // On change update name using dom id
+  const updateName = (e) => {
+    const key = e.target.id;
+    const name = e.target.value;
+    inputList.forEach((object) => {
+      // object[1] is candidate name field
+      if (object[1] === key) {
+        object[4] = name;
+        object[3] = "MiMi.png";
+      }
+    });
+  };
+
   const deleteEvent = () => {
+    const event_id_payload = { event_id: event_id };
     axios
-      .post("/deleteEventById", {
-        data: { event_id: event_id },
+      .post("/deleteEventById", event_id_payload, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("ACCESS_TOKEN")}`,
           id_token: `Bearer ${localStorage.getItem("ID_TOKEN")}`,
@@ -84,14 +95,16 @@ export default function Candidate({ event_id, event_candidate }) {
             <div className="d-flex flex-row align-items-center gap-2">
               <Form.Control key={object[0]} type="file" />
               <Form.Control
+                key={object[1]}
                 className="btn-success"
+                id={object[1]}
                 style={{ width: "75%" }}
                 type="text"
-                placeholder={"Candidate Name"}
+                placeholder="Candidate Name"
                 defaultValue={
                   typeof event_candidate === "undefined" ? "" : object[4]
                 }
-                key={object[1]}
+                onChange={(e) => updateName(e)}
               />
               <Button key={object[2]} onClick={() => removeCandidate(object)}>
                 <BiMinus className="fs-3" />
@@ -108,7 +121,11 @@ export default function Candidate({ event_id, event_candidate }) {
         </Container>
       </div>
       <div className="d-flex gap-3">
-        <Button className="text-light" variant="primary">
+        <Button
+          className="text-light"
+          variant="primary"
+          onClick={() => submitCandidateToParent(inputList)}
+        >
           Create
         </Button>
         {typeof event_candidate === "undefined" ? (
