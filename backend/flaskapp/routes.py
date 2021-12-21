@@ -4,7 +4,7 @@ from flaskapp.auth import *
 from flask_cors import cross_origin
 from flaskapp.db import mysql
 from flaskapp.roleEnum import Role
-import datetime
+from datetime import datetime
 
 
 @app.route('/', methods=['GET'])
@@ -167,49 +167,74 @@ def findAllElectionType():
     return jsonify(payload)
 
 
-@app.route("/createEvent", methods=['POST'])
+@app.route("/updateEvent/<id>", methods=['PUT'])
+@app.route("/updateEvent", methods=['PUT'])
 @cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'id_token'])
 @requires_auth
 @requires_id_token
-def createForm():
+def putEvent(id=""):
     # Need to add validation here
     # ...
     electionType = request.json['election_type']
+    print(electionType)
     areaId = request.json['area_id']
+    print(areaId)
     startDateTime = request.json['start_date_time']
+    print(startDateTime)
     endDateTime = request.json['end_date_time']
+    print(endDateTime)
     candidates = request.json['candidates']
-    return startDateTime;
+    print(candidates)
 
-
-@app.route("/deleteEventById", methods=['POST'])
-@cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'id_token'])
-@requires_auth
-@requires_id_token
-def deleteEvent():
-    event_id = request.json['event_id']
-
+    date = datetime.strptime(startDateTime, '%Y-%m-%dT%H:%M:%S.%fZ')
+    print(date)
     conn = mysql.connect() 
     try:
         cursor = conn.cursor()
+        query =  """SELECT COUNT(*) FROM election_type 
+                    WHERE election_id = %s
+                    AND del_flag = %s""";
+        cursor.execute(query, (electionType,0));  
+        result_A = cursor.fetchone()  
 
-        query =  """UPDATE event 
-                    SET del_flag = %s 
-                    WHERE event_id = %s""";
-        rowCount = cursor.execute(query, (1, event_id));
-        cursor.close()
-        conn.commit()
-        conn.close()
+        query =  """SELECT COUNT(*) FROM area 
+                    WHERE area_id = %s
+                    AND del_flag = %s""";
+        cursor.execute(query, (areaId,0));  
+        result_B = cursor.fetchone()  
  
+
     except:
         print("Error: Unable to fetch any record of events") 
 
-    if rowCount > 0:
-        message = "SUCCESS"
-    else:
-        message = "FAIL"
 
-    return message;
+    return startDateTime;
+
+
+@app.route("/deleteEventById/<id>", methods=['POST'])
+@cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'id_token'])
+@requires_auth
+@requires_id_token
+def deleteEvent(id):
+    conn = mysql.connect() 
+    try:
+        cursor = conn.cursor()
+        query =  """UPDATE event 
+                    SET del_flag = %s 
+                    WHERE event_id = %s""";
+        rowCount = cursor.execute(query, (1, id));
+        cursor.close()
+        conn.commit()
+        conn.close()
+    except:
+        print("Error: Record Not Found") 
+
+    if rowCount == 1:
+        messageJson = { "message" :"SUCCESS"}
+    else:
+        messageJson = { "message" :"FAIL"}
+
+    return messageJson;
 
 
 # This needs authorization

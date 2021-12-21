@@ -7,11 +7,13 @@ import { nanoid } from "nanoid";
 import axios from "axios";
 import "../App.scss";
 
-const EMPTYSTRING = () => "";
+const EMPTYSTRING = "";
 export default function Candidate({
   event_id,
   event_candidate,
   submitCandidateToParent, // candidate list to be send back to parent component(EventForm)
+  submitResponseToParent, // error message to be send back to parent component(EventForm)
+  history,
 }) {
   const [show, setShow] = useState(false); // For storing the state of Modal
   const handleClose = () => setShow(false); // For dismissing Modal
@@ -22,6 +24,7 @@ export default function Candidate({
     // If it's defined means that the action is editing and not creating,
     // need to set retrieve data
     // Skip if user is creating
+    console.log(event_candidate);
     if (isDefined(event_candidate))
       updateCandidateList(JSON.parse(event_candidate));
   }, []);
@@ -41,7 +44,7 @@ export default function Candidate({
       candidate.map((object) => {
         updateList((inputList) => [
           ...inputList,
-          [nanoid(), nanoid(), nanoid(), object.image_location, object.name],
+          [nanoid(), nanoid(), nanoid(), object.image, object.name],
         ]);
       });
     });
@@ -66,17 +69,27 @@ export default function Candidate({
   };
 
   const deleteEvent = () => {
-    const event_id_payload = { event_id: event_id };
+    handleClose(); // Close the confirmation dialog
+    // const event_id_payload = { event_id: event_id };
     axios
-      .post("/deleteEventById", event_id_payload, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("ACCESS_TOKEN")}`,
-          id_token: `Bearer ${localStorage.getItem("ID_TOKEN")}`,
-        },
-      })
+      .post(
+        `/deleteEventById/${event_id}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("ACCESS_TOKEN")}`,
+            id_token: `Bearer ${localStorage.getItem("ID_TOKEN")}`,
+          },
+        }
+      )
       .then((res) => {
         if (res.status === 200) {
           console.log(res.data);
+          if (res.data === "SUCCESS") {
+            history.push("/admin/home");
+          } else {
+            submitResponseToParent();
+          }
         }
       })
       .catch((err) => {
@@ -126,7 +139,7 @@ export default function Candidate({
           variant="primary"
           onClick={() => submitCandidateToParent(inputList)}
         >
-          Create
+          {typeof event_id === "undefined" ? "Create" : "Update"}
         </Button>
         {typeof event_candidate === "undefined" ? (
           <></>

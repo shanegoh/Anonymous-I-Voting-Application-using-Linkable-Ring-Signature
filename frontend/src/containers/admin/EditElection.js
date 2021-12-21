@@ -6,7 +6,7 @@ import EventForm from "../../components/EventForm.js";
 import axios from "axios";
 import "../../App.scss";
 
-export default function EditElection() {
+export default function EditElection({ history }) {
   // Event id
   const { id } = useParams();
 
@@ -52,6 +52,7 @@ export default function EditElection() {
           event_startDateTime={startDateTime}
           event_endDateTime={endDateTime}
           event_candidate={candidate}
+          history={history}
         />
       ) : (
         <></>

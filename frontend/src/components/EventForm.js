@@ -3,6 +3,7 @@ import { DateTimePicker } from "react-rainbow-components";
 import { Form, Alert } from "react-bootstrap";
 import Candidate from "./Candidate.js";
 import { isDefined } from "../util";
+import AlertBox from "./AlertBox.js";
 import axios from "axios";
 import "../App.scss";
 
@@ -30,9 +31,10 @@ export default function EventForm({
   event_startDateTime,
   event_endDateTime,
   event_candidate,
+  history,
 }) {
   // Constant value for default value
-  const DEFAULTSELECTOR = () => "DEFAULT";
+  const DEFAULTSELECTOR = "DEFAULT";
   const [startDateTime, setStartDateTime] = useState(initialStartDate); //Initial Start Date
   const [endDateTime, setEndDateTime] = useState(initialEndDate); //Initial End Date
   const [electionType, setElectionType] = useState(DEFAULTSELECTOR); //Initial default value electionType
@@ -44,6 +46,7 @@ export default function EventForm({
   const handleShow = () => setShow(true); // Logic for displaying alert
   const handleDismiss = () => setShow(false); // Logic for closing alert
   const [err, setErr] = useState([]); // Logic for storing all error messages
+  const [errMsg, setErrMsg] = useState();
 
   // Validate if the time difference is at least 4 hours
   const validateDateTime = () => {
@@ -55,6 +58,7 @@ export default function EventForm({
   const updateElectionType = (e) => {
     const value = e.currentTarget.value;
     setElectionType((electionType) => value);
+    setAreaId((areaId) => "DEFAULT");
     // Filter the original area list to the filtered area list
     setFilteredAreaList((filteredAreaList) =>
       areaList.filter((object) => object.election_type == value)
@@ -109,14 +113,14 @@ export default function EventForm({
       let tmpData = { name: object[4], image: object[3] };
       jsonArray.push(tmpData);
     });
-
+    console.log(jsonArray);
     // Validate election type field
-    if (electionType === "DEFAULT") {
+    if (electionType === DEFAULTSELECTOR) {
       errors.push("Select parliamentary/presidential election.");
     }
 
     // Validate area field
-    if (areaId === "DEFAULT") {
+    if (areaId === DEFAULTSELECTOR) {
       errors.push("Select Area");
     }
 
@@ -127,7 +131,7 @@ export default function EventForm({
 
     // Validate information of condidate
     for (let x = 0; x < jsonArray.length; x++) {
-      if (jsonArray[x].name === "" || jsonArray[x].image === "") {
+      if (jsonArray[x].name.length === 0 || jsonArray[x].image.length === 0) {
         errors.push("Candidate value cannot be empty.");
         break;
       }
@@ -154,9 +158,12 @@ export default function EventForm({
       };
       console.log(event_payload);
 
-      // Time to post to server
+      // Update Event if event_id is defined, else create
+      var url = "http://localhost:5000/updateEvent";
+      // If event_id is defined = update event
+      var path = isDefined(event_id) ? url + "/" + event_id : url;
       axios
-        .post("http://localhost:5000/createEvent", event_payload, {
+        .put(path, event_payload, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("ACCESS_TOKEN")}`,
             id_token: `Bearer ${localStorage.getItem("ID_TOKEN")}`,
@@ -173,30 +180,16 @@ export default function EventForm({
     }
   };
 
+  // Display alert box when fail to delete event
+  const displayResponse = () => {
+    const message = "Error! Failed to delete event. Please try again.";
+    setErrMsg((errMsg) => message);
+    handleShow();
+  };
+
   return (
     <div className="d-flex gap-5 pt-4 align-items-center flex-column">
-      {show ? (
-        <Alert
-          className="w-75 d-flex flex-column"
-          variant="danger"
-          onClose={() => setShow(false)}
-          dismissible
-        >
-          <Alert.Heading>Oh snap! You got an error!</Alert.Heading>
-          <h5>Please update the following:</h5>
-          {err.map((object, i) => {
-            return (
-              <div>
-                <p>
-                  {i + 1}. &nbsp; {object}
-                </p>
-              </div>
-            );
-          })}
-        </Alert>
-      ) : (
-        <></>
-      )}
+      {show ? <AlertBox err={err} setShow={setShow} errMsg={errMsg} /> : <></>}
       <div className="d-flex gap-5 w-75">
         <Form.Select
           value={electionType}
@@ -255,6 +248,8 @@ export default function EventForm({
         event_candidate={event_candidate}
         event_id={event_id}
         submitCandidateToParent={submitEvent}
+        submitResponseToParent={displayResponse}
+        history={history}
       />
     </div>
   );
