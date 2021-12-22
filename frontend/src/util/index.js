@@ -46,9 +46,14 @@ export const voter_role = 1;
 //   } else return false;
 // };
 
-// export const axiosConfig = {
-//   withCredentials: true,
-//   headers: {
-//     Authorization: localStorage.getItem("TOKEN"),
-//   },
-// };
+export const axiosConfig = {
+  headers: {
+    Authorization: `Bearer ${localStorage.getItem("ACCESS_TOKEN")}`,
+    id_token: `Bearer ${localStorage.getItem("ID_TOKEN")}`,
+  },
+};
+
+// A function to check for undefined value
+export const isDefined = (value) => {
+  return typeof value !== "undefined";
+};

@@ -17,7 +17,7 @@ export default function LogoutButton() {
 
   return (
     <Button
-      className="text-light"
+      className="text-light color-red"
       size="xxl"
       variant="danger"
       onClick={() => attemptLogout()}

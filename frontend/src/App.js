@@ -42,7 +42,11 @@ export default function App() {
               exact
               component={PastElection}
             />
-            <ProtectedRoute path="/admin/edit" exact component={EditElection} />
+            <ProtectedRoute
+              path="/admin/edit/:id"
+              exact
+              component={EditElection}
+            />
             <ProtectedRoute path="/admin/result" exact component={Result} />
             <ProtectedRoute path="/admin/upload" exact component={Upload} />
             <ProtectedRoute
