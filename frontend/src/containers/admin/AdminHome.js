@@ -51,7 +51,7 @@ export default function Admin({ history }) {
             <Button
               key={record.event_id}
               id={record.event_id}
-              className="btn-origin btn-lg color-nav"
+              className="btn-origin btn-lg color-nav border-0"
               active
               onClick={(e) => editEvent(e)}
             >
@@ -63,7 +63,7 @@ export default function Admin({ history }) {
         })}
 
         <Button
-          className="btn-circle btn-success"
+          className="btn-circle color-nav border-0"
           to={"/admin/create"}
           onClick={createEvent}
         >

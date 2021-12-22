@@ -1,24 +1,26 @@
 import React from "react";
 import { Alert } from "react-bootstrap";
+import { isDefined } from "../util";
 import "../App.scss";
 
-export default function AlertBox({ err, setShow, errMsg }) {
+export default function AlertBox({ err, setShow, errMsg, variant }) {
   return (
     <>
       <Alert
         className="w-75 d-flex flex-column"
-        variant="danger"
+        variant={variant}
         onClose={() => setShow(false)}
         dismissible
       >
-        <Alert.Heading>Oh snap! You got an error!</Alert.Heading>
-        {err.length !== 0 ? (
+        <Alert.Heading>
+          {variant === "danger" ? "Oh snap! You got an error!" : "Success!"}
+        </Alert.Heading>
+        {err.length !== 0 && variant === "danger" ? (
           <h5>Please update the following incorrect fields:</h5>
         ) : (
           <></>
         )}
-        {typeof errMsg !== "undefined" ? <p>{errMsg}</p> : <></>}
-
+        {isDefined(errMsg) ? <p>{errMsg}</p> : <></>}
         {err.map((object, i) => {
           return (
             <div>

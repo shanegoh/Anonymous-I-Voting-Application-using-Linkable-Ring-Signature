@@ -35,6 +35,8 @@ export default function EventForm({
 }) {
   // Constant value for default value
   const DEFAULTSELECTOR = "DEFAULT";
+  const DANGER = "danger";
+  const SUCCESS = "success";
   const [startDateTime, setStartDateTime] = useState(initialStartDate); //Initial Start Date
   const [endDateTime, setEndDateTime] = useState(initialEndDate); //Initial End Date
   const [electionType, setElectionType] = useState(DEFAULTSELECTOR); //Initial default value electionType
@@ -47,7 +49,7 @@ export default function EventForm({
   const handleDismiss = () => setShow(false); // Logic for closing alert
   const [err, setErr] = useState([]); // Logic for storing all error messages
   const [errMsg, setErrMsg] = useState();
-
+  const [variant, setVariant] = useState();
   // Validate if the time difference is at least 4 hours
   const validateDateTime = () => {
     const result = endDateTime - startDateTime;
@@ -145,6 +147,7 @@ export default function EventForm({
     // Show the Alert Box if there is error, else close and post data
     if (errors.length > 0) {
       setErr((err) => errors);
+      setVariant((variant) => DANGER);
       handleShow(); // Display alert box
     } else {
       handleDismiss(); // Close alert box
@@ -170,26 +173,42 @@ export default function EventForm({
           },
         })
         .then((res) => {
-          if (res.status === 200) {
-            console.log(new Date(res.data));
+          if (res.status === 200 || res.status === 201) {
+            console.log(res);
+            setErrMsg((errMsg) => res.data.message);
+            setVariant((variant) => SUCCESS);
+            handleShow(); // Display alert
           }
         })
         .catch((err) => {
-          console.log(err);
+          // Set error message
+          console.log(err.response.data.message);
+          setErrMsg((errMsg) => err.response.data.message);
+          setVariant((variant) => DANGER);
+          handleShow(); // Display alert
         });
     }
   };
 
   // Display alert box when fail to delete event
-  const displayResponse = () => {
-    const message = "Error! Failed to delete event. Please try again.";
+  const displayResponse = (message) => {
     setErrMsg((errMsg) => message);
+    setVariant((variant) => DANGER);
     handleShow();
   };
 
   return (
     <div className="d-flex gap-5 pt-4 align-items-center flex-column">
-      {show ? <AlertBox err={err} setShow={setShow} errMsg={errMsg} /> : <></>}
+      {show ? (
+        <AlertBox
+          err={err}
+          setShow={setShow}
+          errMsg={errMsg}
+          variant={variant}
+        />
+      ) : (
+        <></>
+      )}
       <div className="d-flex gap-5 w-75">
         <Form.Select
           value={electionType}

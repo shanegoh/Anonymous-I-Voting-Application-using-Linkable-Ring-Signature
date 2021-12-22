@@ -85,10 +85,10 @@ export default function Candidate({
       .then((res) => {
         if (res.status === 200) {
           console.log(res.data);
-          if (res.data === "SUCCESS") {
+          if (res.data.status === "SUCCESS") {
             history.push("/admin/home");
           } else {
-            submitResponseToParent();
+            submitResponseToParent(res.data.message);
           }
         }
       })
@@ -109,7 +109,6 @@ export default function Candidate({
               <Form.Control key={object[0]} type="file" />
               <Form.Control
                 key={object[1]}
-                className="btn-success"
                 id={object[1]}
                 style={{ width: "75%" }}
                 type="text"
@@ -119,13 +118,17 @@ export default function Candidate({
                 }
                 onChange={(e) => updateName(e)}
               />
-              <Button key={object[2]} onClick={() => removeCandidate(object)}>
+              <Button
+                className="color-nav border-0"
+                key={object[2]}
+                onClick={() => removeCandidate(object)}
+              >
                 <BiMinus className="fs-3" />
               </Button>
             </div>
           ))}
           <Button
-            className="btn-circle btn-success"
+            className="btn-circle color-nav border-0"
             id={inputList.length}
             onClick={addCandidate}
           >
@@ -135,8 +138,7 @@ export default function Candidate({
       </div>
       <div className="d-flex gap-3">
         <Button
-          className="text-light"
-          variant="primary"
+          variant="success"
           onClick={() => submitCandidateToParent(inputList)}
         >
           {typeof event_id === "undefined" ? "Create" : "Update"}
@@ -144,7 +146,11 @@ export default function Candidate({
         {typeof event_candidate === "undefined" ? (
           <></>
         ) : (
-          <Button className="text-light" variant="danger" onClick={handleShow}>
+          <Button
+            className="text-light color-red"
+            variant="danger"
+            onClick={handleShow}
+          >
             Delete
           </Button>
         )}
@@ -157,10 +163,10 @@ export default function Candidate({
           This action cannot be undone. This will permanently delete the event.
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="primary" onClick={handleClose}>
+          <Button className="color-nav border-0" onClick={handleClose}>
             Nevermind, bring me back
           </Button>
-          <Button variant="danger text-light" onClick={deleteEvent}>
+          <Button className="color-red border-0" onClick={deleteEvent}>
             Yes, I'm sure
           </Button>
         </Modal.Footer>

@@ -53,14 +53,12 @@
 @import "node_modules/bootstrap/scss/functions";
 @import "node_modules/bootstrap/scss/variables";
 
-$theme-colors: (
-  "primary": #0e1b75,
-  "danger": #f74141,
-  "light": #666666,
-);
-
 .color-nav {
-  background-color: #0e1b75;
+  background-color: #0e1b75 !important;
+}
+
+.color-red {
+  background-color: #f74141 !important;
 }
 
 .nav-links:hover {
