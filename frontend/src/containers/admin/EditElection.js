@@ -27,12 +27,11 @@ export default function EditElection({ history }) {
       })
       .then((res) => {
         if (res.status === 200) {
-          console.log(res.data);
           setElectionType((electionType) => res.data[0].election_type);
           setAreaId((areaId) => res.data[0].area_id);
           setStartDateTime((startDateTime) => res.data[0].start_date_time);
           setEndDateTime((endDateTime) => res.data[0].end_date_time);
-          setCandidate((candidate) => res.data[0].candidate);
+          setCandidate((candidate) => res.data[0].candidates);
           setLoadStatus((isLoaded) => true);
         }
       })

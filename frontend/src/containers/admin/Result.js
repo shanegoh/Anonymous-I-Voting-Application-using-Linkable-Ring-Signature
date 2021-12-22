@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import { isAdmin } from "../../util";
-import { Redirect } from "react-router-dom";
+import { Redirect, useParams } from "react-router-dom";
 import NavBar from "../../components/NavBar.js";
 import { Pie } from "react-chartjs-2";
 import { MDBContainer } from "mdbreact";
@@ -12,6 +12,12 @@ import "../../App.scss";
 Chart.register(ArcElement, Tooltip, Legend);
 
 export default function Result() {
+  // Event id
+  const { id } = useParams();
+
+  useEffect(()=> {
+    
+  })
   const data = {
     labels: ["Candidate 1", "Candidate 2"],
     datasets: [

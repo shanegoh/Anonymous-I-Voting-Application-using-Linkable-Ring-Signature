@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { isAdmin } from "../../util";
+import { isAdmin, dateFormat } from "../../util";
 import { Redirect } from "react-router-dom";
 import NavBar from "../../components/NavBar.js";
 import { Button } from "react-bootstrap";
 import { BsPlusLg } from "react-icons/bs";
-import { axiosConfig } from "../../util";
 import axios from "axios";
 import "../../App.scss";
 
@@ -25,7 +24,7 @@ export default function Admin({ history }) {
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/events", {
+      .get("http://localhost:5000/findEvent", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("ACCESS_TOKEN")}`,
           id_token: `Bearer ${localStorage.getItem("ID_TOKEN")}`,
@@ -33,7 +32,7 @@ export default function Admin({ history }) {
       })
       .then((res) => {
         if (res.status === 200) {
-          console.log(res.data);
+          console.log(res);
           setList((recordList) => res.data);
         }
       })
@@ -51,19 +50,19 @@ export default function Admin({ history }) {
             <Button
               key={record.event_id}
               id={record.event_id}
-              className="btn-origin btn-lg color-nav border-0"
+              className="btn-lg color-nav border-0 btn-hover-red admin-home-btn"
               active
               onClick={(e) => editEvent(e)}
             >
               {record.area_name}
               <br />
-              {new Date(record.start_date_time).toString()}
+              <small> {dateFormat(new Date(record.start_date_time))}</small>
             </Button>
           );
         })}
 
         <Button
-          className="btn-circle color-nav border-0"
+          className="btn-circle color-nav border-0 btn-hover-green"
           to={"/admin/create"}
           onClick={createEvent}
         >

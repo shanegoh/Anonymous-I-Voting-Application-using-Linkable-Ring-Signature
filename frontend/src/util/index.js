@@ -57,3 +57,14 @@ export const axiosConfig = {
 export const isDefined = (value) => {
   return typeof value !== "undefined";
 };
+
+export const dateFormat = (date) => {
+  return new Intl.DateTimeFormat("en-GB", {
+    dateStyle: "full",
+    timeStyle: "long",
+  }).format(date);
+};
+
+export const DEFAULTSELECTOR = "DEFAULT";
+export const DANGER = "danger";
+export const SUCCESS = "success";

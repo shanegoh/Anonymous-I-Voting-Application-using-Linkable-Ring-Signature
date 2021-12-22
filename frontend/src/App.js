@@ -47,7 +47,7 @@ export default function App() {
               exact
               component={EditElection}
             />
-            <ProtectedRoute path="/admin/result" exact component={Result} />
+            <ProtectedRoute path="/admin/result/:id" exact component={Result} />
             <ProtectedRoute path="/admin/upload" exact component={Upload} />
             <ProtectedRoute
               path="/admin/create"

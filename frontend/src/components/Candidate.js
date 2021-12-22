@@ -25,8 +25,7 @@ export default function Candidate({
     // need to set retrieve data
     // Skip if user is creating
     console.log(event_candidate);
-    if (isDefined(event_candidate))
-      updateCandidateList(JSON.parse(event_candidate));
+    if (isDefined(event_candidate)) updateCandidateList(event_candidate);
   }, []);
 
   const addCandidate = () => {
@@ -39,14 +38,17 @@ export default function Candidate({
   };
 
   const updateCandidateList = (candidateList) => {
-    //{"candidates": [{"name": "PAP", "image": "../../imgMiMi.png"}, {"name": "WP", "image": "../../imgMiMi.png"}]}
-    Object.values(candidateList).map((candidate) => {
-      candidate.map((object) => {
-        updateList((inputList) => [
-          ...inputList,
-          [nanoid(), nanoid(), nanoid(), object.image, object.name],
-        ]);
-      });
+    candidateList.forEach((candidate) => {
+      updateList((inputList) => [
+        ...inputList,
+        [
+          nanoid(),
+          nanoid(),
+          nanoid(),
+          candidate.candidate_image,
+          candidate.candidate_name,
+        ],
+      ]);
     });
   };
 
@@ -85,15 +87,12 @@ export default function Candidate({
       .then((res) => {
         if (res.status === 200) {
           console.log(res.data);
-          if (res.data.status === "SUCCESS") {
-            history.push("/admin/home");
-          } else {
-            submitResponseToParent(res.data.message);
-          }
+          history.push("/admin/home");
         }
       })
       .catch((err) => {
-        console.log(err);
+        console.log(err.response.data);
+        submitResponseToParent(err.response.data.message);
       });
   };
 
@@ -128,7 +127,7 @@ export default function Candidate({
             </div>
           ))}
           <Button
-            className="btn-circle color-nav border-0"
+            className="btn-circle color-nav border-0 btn-hover-green"
             id={inputList.length}
             onClick={addCandidate}
           >
