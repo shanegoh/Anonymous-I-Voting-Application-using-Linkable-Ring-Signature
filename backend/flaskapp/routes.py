@@ -203,7 +203,6 @@ def findAllElectionType():
 
     # Get all types of election
     payload = []
-
     electionType_payload = []
     for record in result_A:
         election_type = { 'election_id': record[0],
@@ -373,7 +372,7 @@ def putEvent(id=-1):
     except:
         message = 'Unable create event. Please try again.'
         print(message)
-        status = 406
+        return Response(json.dumps({"message": message}), 400, mimetype='application/json') 
                  
     return Response(json.dumps({"message": message}), status, mimetype='application/json') 
 
@@ -401,10 +400,52 @@ def deleteEvent(id):
     except:
         print("Error: Record Not Found") 
         message = 'Failed to delete record. Please try again'
-        Response(json.dumps({"message": message}), status, mimetype='application/json') 
+        return Response(json.dumps({"message": message}), 400, mimetype='application/json') 
 
     return Response(json.dumps({"message": message}), status, mimetype='application/json') 
 
+
+@app.route("/findResultById/<id>", methods=['GET'])
+@cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'id_token'])
+@requires_auth
+@requires_id_token
+def findResultById(id):
+    conn = mysql.connect() 
+    try:
+        cursor = conn.cursor()
+        query =  """SELECT e.area_id, 
+                    (SELECT area_name FROM area WHERE area_id = e.area_id) AS area_name, 
+                    c.candidate_name, 
+                    c.candidate_image, 
+                    c.vote_count 
+                    FROM candidate c
+                    JOIN event e
+                    ON c.event_id = e.event_id
+                    WHERE c.event_id = %s""";
+
+        cursor.execute(query, id);
+        result_A = cursor.fetchall()
+        cursor.close()
+        conn.close()
+
+        candidate_payload = []
+        for record in result_A:
+            candidate_content = { "area_id": record[0], 
+                                    "area_name": record[1],
+                                    "candidate_name": record[2], 
+                                    "candidate_image": record[3], 
+                                    "vote_count": record[4]}
+            candidate_payload.append(candidate_content)
+
+        message = "Successfully retrieve record."    
+        status = 200
+    except:
+        print("Error: Record Not Found") 
+        message = 'No record found. Please refresh.'
+        return Response(json.dumps({"message": message}), 404, mimetype='application/json') 
+
+    return Response(json.dumps({"message": message, "candidates": candidate_payload}), status, mimetype='application/json') 
+  
 
 # This needs authorization
 @app.route("/api/private-scoped")

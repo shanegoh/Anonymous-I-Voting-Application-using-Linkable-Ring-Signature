@@ -68,3 +68,9 @@ export const dateFormat = (date) => {
 export const DEFAULTSELECTOR = "DEFAULT";
 export const DANGER = "danger";
 export const SUCCESS = "success";
+
+export const fileType =
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
+export const fileExtension = ".xlsx";
+export const ELECTED = "Elected";
+export const NOTELECTED = "Not Elected";

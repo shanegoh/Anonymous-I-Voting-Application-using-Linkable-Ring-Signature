@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { isAdmin, dateFormat } from "../../util";
+import { isAdmin, dateFormat, DANGER } from "../../util";
 import { Redirect } from "react-router-dom";
 import NavBar from "../../components/NavBar.js";
 import { Button } from "react-bootstrap";
-import { DEFAULTSELECTOR, DANGER, SUCCESS } from "../../util";
 import AlertBox from "../../components/AlertBox.js";
 import axios from "axios";
 import "../../App.scss";
