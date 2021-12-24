@@ -57,3 +57,28 @@ export const axiosConfig = {
 export const isDefined = (value) => {
   return typeof value !== "undefined";
 };
+
+export const dateFormat = (date) => {
+  return new Intl.DateTimeFormat("en-GB", {
+    dateStyle: "full",
+    timeStyle: "long",
+  }).format(date);
+};
+
+export const DEFAULTSELECTOR = "DEFAULT";
+export const DANGER = "danger";
+export const SUCCESS = "success";
+export const INVALID_FILE_TYPE = "Invalid File Type";
+// "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
+export const fileType =
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+export const fileExtension = ".xlsx";
+export const ELECTED = "Elected";
+export const NOTELECTED = "Not Elected";
+export const SAMPLE_EXCEL_DATA = [
+  {
+    email: "example@credentials.gov",
+    role: "YOUR_ROLE_ID",
+    area_id: "YOUR_AREA_ID",
+  },
+];

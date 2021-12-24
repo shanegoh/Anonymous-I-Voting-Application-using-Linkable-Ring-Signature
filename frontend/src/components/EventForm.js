@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { DateTimePicker } from "react-rainbow-components";
-import { Form, Alert } from "react-bootstrap";
+import { Form } from "react-bootstrap";
 import Candidate from "./Candidate.js";
-import { isDefined } from "../util";
+import { isDefined, DEFAULTSELECTOR, DANGER, SUCCESS } from "../util";
 import AlertBox from "./AlertBox.js";
 import axios from "axios";
 import "../App.scss";
@@ -34,9 +34,6 @@ export default function EventForm({
   history,
 }) {
   // Constant value for default value
-  const DEFAULTSELECTOR = "DEFAULT";
-  const DANGER = "danger";
-  const SUCCESS = "success";
   const [startDateTime, setStartDateTime] = useState(initialStartDate); //Initial Start Date
   const [endDateTime, setEndDateTime] = useState(initialEndDate); //Initial End Date
   const [electionType, setElectionType] = useState(DEFAULTSELECTOR); //Initial default value electionType
@@ -112,7 +109,7 @@ export default function EventForm({
     // Convert candidates to json data in array
     var jsonArray = [];
     list.map((object) => {
-      let tmpData = { name: object[4], image: object[3] };
+      let tmpData = { candidate_name: object[4], candidate_image: object[3] };
       jsonArray.push(tmpData);
     });
     console.log(jsonArray);
@@ -133,7 +130,10 @@ export default function EventForm({
 
     // Validate information of condidate
     for (let x = 0; x < jsonArray.length; x++) {
-      if (jsonArray[x].name.length === 0 || jsonArray[x].image.length === 0) {
+      if (
+        jsonArray[x].candidate_name.length === 0 ||
+        jsonArray[x].candidate_image.length === 0
+      ) {
         errors.push("Candidate value cannot be empty.");
         break;
       }

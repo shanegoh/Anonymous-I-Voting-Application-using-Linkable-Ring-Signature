@@ -29,7 +29,7 @@ export default function App() {
         domain={process.env.REACT_APP_AUTH0_DOMAIN}
         clientId={process.env.REACT_APP_AUTH0_CLIENTID}
         redirectUri={window.location.origin + "/redirect"}
-        audience="https://dev-rkub2ofp.us.auth0.com/api/v2/"
+        audience="https://dev-i7062-qd.us.auth0.com/api/v2/"
         scope="read:current_user"
       >
         <Router history={history}>
@@ -47,7 +47,7 @@ export default function App() {
               exact
               component={EditElection}
             />
-            <ProtectedRoute path="/admin/result" exact component={Result} />
+            <ProtectedRoute path="/admin/result/:id" exact component={Result} />
             <ProtectedRoute path="/admin/upload" exact component={Upload} />
             <ProtectedRoute
               path="/admin/create"
