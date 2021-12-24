@@ -456,75 +456,83 @@ def findResultById(id):
 @cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'id_token'])
 @requires_auth
 @requires_id_token
-def uploadFile(): 
-    # Use Auth0 Client secret and public key to get management_access_token
-    conn = http.client.HTTPSConnection("dev-i7062-qd.us.auth0.com")
-    payload = "{\"client_id\":\"ziMcfPoiH2CFyrhKAaiOecnLsMs69lXF\",\"client_secret\":\"gsuu8u1O_qIylsmHry-8litgeu94wqLhPCbvJ56FBJ_kUgZp0qQ9ETCb17UOdm8E\",\"audience\":\"https://dev-i7062-qd.us.auth0.com/api/v2/\",\"grant_type\":\"client_credentials\"}"
-    headers = { 'content-type': "application/json" }
-    conn.request("POST", "/oauth/token", payload, headers)
-    res = conn.getresponse()
-    data = res.read()
-    jsonData = json.loads(data)
-    management_access_token = "Bearer " + jsonData["access_token"]
+def uploadFile():
+    conn = mysql.connect() 
+    try: 
+        cursor = conn.cursor()
+        # Use Auth0 Client secret and public key to get management_access_token
+        connnection = http.client.HTTPSConnection("dev-i7062-qd.us.auth0.com")
+        payload = "{\"client_id\":\"ziMcfPoiH2CFyrhKAaiOecnLsMs69lXF\",\"client_secret\":\"gsuu8u1O_qIylsmHry-8litgeu94wqLhPCbvJ56FBJ_kUgZp0qQ9ETCb17UOdm8E\",\"audience\":\"https://dev-i7062-qd.us.auth0.com/api/v2/\",\"grant_type\":\"client_credentials\"}"
+        headers = { 'content-type': "application/json" }
+        connnection.request("POST", "/oauth/token", payload, headers)
+        res = connnection.getresponse()
+        data = res.read()
+        jsonData = json.loads(data)
+        management_access_token = "Bearer " + jsonData["access_token"]
 
-    # Get the excel file
-    xlsx_file = request.files['file']
-    data_xls = pd.read_excel(xlsx_file)
+        # Get the excel file
+        xlsx_file = request.files['file']
+        data_xls = pd.read_excel(xlsx_file)
 
-    user_list = []
-    for i in data_xls.index:
-        # Password generator
-        ## characters to generate password from
-        characters = list(string.ascii_letters + string.digits + "!@#$%^&*()")   
-        ## picking random characters from the list
-        pass_phrase = []
-        length = 20
-        for k in range(length):
-            pass_phrase.append(characters[int.from_bytes(os.urandom(1), byteorder="big") % len(characters)])   
-        password = "".join(pass_phrase)
-        print(password)
+        user_list = []
+        for i in data_xls.index:
+            # Password generator
+            ## characters to generate password from
+            characters = list(string.ascii_letters + string.digits + "!@#$%^&*()")   
+            ## picking random characters from the list
+            pass_phrase = []
+            length = 20
+            for k in range(length):
+                pass_phrase.append(characters[int.from_bytes(os.urandom(1), byteorder="big") % len(characters)])   
+            password = "".join(pass_phrase)
 
-        # Store the details for later xlsx file
-        user = { "email": data_xls['email'][i], 
-                    "role": data_xls['role'][i], 
-                    "area_id":data_xls['area_id'][i], 
-                    "password": password}
-        user_list.append(user)
+            # Store the details for later xlsx file
+            user = { "email": data_xls['email'][i], 
+                        "role": data_xls['role'][i], 
+                        "area_id":data_xls['area_id'][i], 
+                        "password": password}
+            user_list.append(user)
 
-        # 
-        # payload = '{"email": "%s", '\
-        #             '"nickname": "%s", '\
-        #             '"connection": "Username-Password-Authentication", '\
-        #             '"password": "%s" }'%(data_xls['email'][i], "empty", password)
-        # # Use management_access_token to create user with auth0
-        # headers = {
-        #     'content-type': "application/json",
-        #     'authorization': management_access_token
-        #     }
-        # conn.request("POST", "/api/v2/users", payload, headers)
-        # res = conn.getresponse()
-        # data = res.read()
-        # print(data.decode("utf-8"))
+            # # add user
+            payload = '{"email": "%s", '\
+                        '"nickname": "%s", '\
+                        '"connection": "Username-Password-Authentication", '\
+                        '"password": "%s" }'%(data_xls['email'][i], "empty", password)
+            # Use management_access_token to create user with auth0
+            headers = {
+                'content-type': "application/json",
+                'authorization': management_access_token
+                }
+            connnection.request("POST", "/api/v2/users", payload, headers)
+            res = connnection.getresponse()
+            data = res.read()
+            #print(data.decode("utf-8"))
+        ############################################ End of for loop 
 
-    df = pd.DataFrame(user_list)
-    df.to_excel('Generated_Credentials.xlsx')
-    data = open('Generated_Credentials.xlsx', 'rb').read()
-    os.remove("Generated_Credentials.xlsx") # remove file after read
-    base64_encoded = base64.b64encode(data).decode('UTF-8')
-    # details = ""
-    # with open('Generated_Credentials.xlsx',"rb") as excel_file:
-    #     details = excel_file.read()
+        # Once mass creation is done, get all the email correspond with 
+        # the area_id and update each record
+        
+      
+        for user in user_list:
+            query = """UPDATE users SET area_id = %s WHERE email = %s """
+            result = cursor.execute(query, (user['area_id'],user['email']));
+            print(result)
+        cursor.close()
+        conn.commit()
+        conn.close()
 
-    # encoded_excel = base64.b64encode(details)
+        # Set user list into a excel format and encode the data
+        df = pd.DataFrame(user_list)
+        df.to_excel('Generated_Credentials.xlsx')
+        data = open('Generated_Credentials.xlsx', 'rb').read()
+        os.remove("Generated_Credentials.xlsx") # remove file after read
+        base64_encoded = base64.b64encode(data).decode('UTF-8')
+        message = "Success!"
+        status = 200
+    except:
+        print("error")
+        return Response(json.dumps({"message": "Fail"}), 400, mimetype='application/json') 
 
-
-    #user_list.to_excel('Generated_Credentials.xlsx')
-    # Once mass creation is done, get all the email correspond with the area_id and update each record
-    for user in user_list:
-        print("ok")
-    message = "ok"
-    status = 200
-    #return send_file('../Generated_Credentials.xlsx', mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
     return Response(json.dumps({"message": message, "excel_file": base64_encoded}), status, mimetype='application/json') 
        
 
