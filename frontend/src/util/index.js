@@ -35,8 +35,20 @@ export const isAdmin = () => {
   return localStorage.getItem("ROLE_ID") === "0" ? true : false;
 };
 
-export const admin_role = 0;
-export const voter_role = 1;
+export const setAreaID = (area_id) => {
+  localStorage.setItem("AREA_ID", area_id);
+};
+
+export const getAreaID = () => {
+  localStorage.getItem("AREA_ID");
+};
+
+export const removeAreaID = () => {
+  localStorage.removeItem("AREA_ID");
+};
+
+export const ADMIN_ROLE = 0;
+export const VOTER_ROLE = 1;
 
 // export const checkExpiry = (token) => {
 //   if (token) {
@@ -62,6 +74,13 @@ export const dateFormat = (date) => {
   return new Intl.DateTimeFormat("en-GB", {
     dateStyle: "full",
     timeStyle: "long",
+  }).format(date);
+};
+
+export const dateFormatForVoter = (date) => {
+  return new Intl.DateTimeFormat("en-GB", {
+    dateStyle: "medium",
+    timeStyle: "medium",
   }).format(date);
 };
 

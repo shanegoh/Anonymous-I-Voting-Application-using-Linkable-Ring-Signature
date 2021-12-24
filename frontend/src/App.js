@@ -66,7 +66,7 @@ export default function App() {
               exact
               component={MyVoteStatus}
             />
-            <ProtectedRoute path="/voter/poll" exact component={Poll} />
+            <ProtectedRoute path="/voter/poll/:id" exact component={Poll} />
           </Switch>
         </Router>
       </Auth0Provider>

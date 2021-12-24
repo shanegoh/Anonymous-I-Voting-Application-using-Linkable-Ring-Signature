@@ -24,7 +24,7 @@ export default function Admin({ history }) {
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/findEvent", {
+      .get("http://localhost:5000/findAllEvent", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("ACCESS_TOKEN")}`,
           id_token: `Bearer ${localStorage.getItem("ID_TOKEN")}`,

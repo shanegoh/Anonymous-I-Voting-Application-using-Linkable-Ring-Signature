@@ -25,40 +25,143 @@ def zxc():
     #Controllers API
 
 #This needs authentication
-@app.route("/api/private")
+@app.route("/findUserInformation")
 @cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'id_token'])
 @requires_auth
 @requires_id_token
-def private():
+def findUserInformation():
     conn = mysql.connect()
     try:
         cursor = conn.cursor()
-        query = """SELECT role from users WHERE email = %s"""
-        email = session['email']
-        cursor.execute(query, email)
+        query = """SELECT role, area_id from users WHERE email = %s"""
+        cursor.execute(query, session['email'])
         data = cursor.fetchone()
         role_id = data[0]
+        area_id = data[1]
         cursor.close()
         conn.close()
- 
+        message = "Successfully retrieve record."
+        status = 200
     except:
-        print("Error: Unable to fetch any record")
+        print("Could not get user information")
+        return Response(json.dumps({"message": "Could not get user information. Please refresh and try again. "\
+            "If the problem persist, please contact the administrator"}), 400, mimetype='application/json') 
 
     # Validate user role 
     if role_id == Role.Admin.value:             # 0 = Admin
-        response = jsonify({"role_id": role_id,
-                            "sample": 123})
+        response = {"role_id": role_id}
     else:                                       # 1 = Voter
-        response = jsonify({"role_id": role_id,
-                            "sample": 456})
+        response ={"role_id": role_id, "area_id": area_id}
     
-    return response
+    return Response(json.dumps({"message": message, "record": response}), status, mimetype='application/json') 
 
-@app.route("/findEvent", methods=['GET'])
+
+@app.route("/findElectionForVoter", methods=['GET'])
 @cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'id_token'])
 @requires_auth
 @requires_id_token
-def findEvent():
+def findElectionForVoter():
+    conn = mysql.connect()
+    try:
+        cursor = conn.cursor()
+        query = """SELECT area_id FROM users WHERE email = %s"""
+        cursor.execute(query, session['email'])
+        result_A = cursor.fetchone()
+        area_id = result_A[0]
+        print(area_id)
+        query = """SELECT e.event_id, 
+                   a.area_name, 
+                   e.start_date_time,
+                   e.end_date_time
+                   FROM event e JOIN
+                   area a ON e.area_id = a.area_id
+                   WHERE e.del_flag = %s 
+                   AND a.del_flag = %s 
+                   AND e.expire_flag = %s
+                   AND e.area_id = %s"""
+        cursor.execute(query,(0,0,0,area_id))
+        result_B = cursor.fetchone()
+        payload = { 'event_id': result_B[0],
+                    'area_name': result_B[1],
+                    'start_date_time': result_B[2],
+                    'end_date_time': result_B[3]}
+        cursor.close()
+        conn.close()
+    except:
+        print("Could not get any elections.")
+        return Response(json.dumps({"message": "There is no event for you."}), 400, mimetype='application/json') 
+    
+    return jsonify(payload)
+
+@app.route("/findCandidateByEventId/<id>", methods=['GET'])
+@cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'id_token'])
+@requires_auth
+@requires_id_token
+def findCandidateByEventId(id):
+    conn = mysql.connect()
+    try:
+        cursor = conn.cursor()
+        query = """SELECT (SELECT area_name FROM area WHERE area_id IN (SELECT area_id 
+                    FROM event WHERE event_id = 18)) as area_name, candidate_name, 
+                    candidate_image 
+                    FROM candidate 
+                    WHERE event_id = %s 
+                    AND del_flag = %s"""
+        cursor.execute(query, (id,0))
+        result_A = cursor.fetchall()
+        payload = []
+        for record in result_A:
+            content = { 'area_name': record[0],
+                        'candidate_name': record[1],
+                        'candiadte_image': record[2]}
+            payload.append(content)
+        cursor.close()
+        conn.close()
+    except:
+        print("Could not get any candidates")
+        return Response(json.dumps({"message": "Could not get any candidates"}), 400, mimetype='application/json') 
+    
+    return jsonify(payload)
+
+
+@app.route("/voteCandidate", methods=['PUT'])
+@cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'id_token'])
+@requires_auth
+@requires_id_token
+def voteCandidate():
+    conn = mysql.connect()
+    try:
+        candidate_name = request.json["candidate_name"]
+        event_id = request.json['event_id']
+        cursor = conn.cursor()
+        query = """UPDATE candidate SET vote_count = (vote_count + 1) 
+                    WHERE event_id = %s 
+                    AND candidate_name = %s
+                    AND del_flag = %s"""
+        result_A = cursor.execute(query,(event_id,candidate_name,0))
+        cursor.close()
+        conn.commit()
+        conn.close()
+        if (result_A):
+            message = "Successfully captured your vote!"
+            status = 200
+        else:
+            message = "Failed to captured your vote"
+            status = 400
+        
+
+    except:
+        print("Could not get your vote")
+        return Response(json.dumps({"message": "Could not get your vote"}), 400, mimetype='application/json') 
+    
+    return Response(json.dumps({"message": message}), status, mimetype='application/json') 
+
+
+@app.route("/findAllEvent", methods=['GET'])
+@cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'id_token'])
+@requires_auth
+@requires_id_token
+def findAllEvent():
     conn = mysql.connect() 
     try:
         cursor = conn.cursor()
@@ -76,14 +179,11 @@ def findEvent():
         conn.close()
         payload = []
         for record in data:
-            print(record[2])
             content = { 'event_id': record[0],
                         'area_name': record[1],
                         'start_date_time': record[2]}
             payload.append(content)
             content = {}
-        message = "Successfully retrieve all records."  
-        status = 200 
     except:
         print("Error: Unable to fetch any record of events")
         message = "Error: Unable to fetch any record of events"      
@@ -506,16 +606,13 @@ def uploadFile():
             connnection.request("POST", "/api/v2/users", payload, headers)
             res = connnection.getresponse()
             data = res.read()
-            #print(data.decode("utf-8"))
         ############################################ End of for loop 
 
         # Once mass creation is done, get all the email correspond with 
         # the area_id and update each record
-        
-      
         for user in user_list:
-            query = """UPDATE users SET area_id = %s WHERE email = %s """
-            result = cursor.execute(query, (user['area_id'],user['email']));
+            query = """UPDATE users SET area_id = %s, role = %s WHERE email = %s """
+            result = cursor.execute(query, (user['area_id'], user['role'], user['email']));
             print(result)
         cursor.close()
         conn.commit()
