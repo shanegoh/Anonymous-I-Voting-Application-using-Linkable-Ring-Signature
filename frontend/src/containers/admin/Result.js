@@ -19,7 +19,6 @@ import AlertBox from "../../components/AlertBox.js";
 import "../../App.scss";
 import * as FileSaver from "file-saver";
 import * as XLSX from "xlsx";
-import { BiMessageAltX } from "react-icons/bi";
 
 Chart.register(ArcElement, Tooltip, Legend);
 
