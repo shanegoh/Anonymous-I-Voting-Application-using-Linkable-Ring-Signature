@@ -104,8 +104,8 @@ export default function EventForm({
 
   // On click submit, validate input and post to server
   const submitEvent = (list) => {
+    console.log(list);
     var errors = [];
-
     // Convert candidates to json data in array
     var jsonArray = [];
     list.map((object) => {
@@ -162,9 +162,10 @@ export default function EventForm({
       console.log(event_payload);
 
       // Update Event if event_id is defined, else create
-      var url = "http://localhost:5000/updateEvent";
+      var url_update = `http://localhost:5000/updateEvent/${event_id}`;
+      var url_create = `http://localhost:5000/createEvent`;
       // If event_id is defined = update event
-      var path = isDefined(event_id) ? url + "/" + event_id : url;
+      var path = isDefined(event_id) ? url_update : url_create;
       axios
         .put(path, event_payload, {
           headers: {

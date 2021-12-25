@@ -1,8 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { Button, Form, Container, Modal } from "react-bootstrap";
+import {
+  Button,
+  Form,
+  Container,
+  Modal,
+  OverlayTrigger,
+  Tooltip,
+} from "react-bootstrap";
 import { BsPlusLg } from "react-icons/bs";
 import { BiMinus } from "react-icons/bi";
-import { isDefined } from "../util";
+import { isDefined, imageType } from "../util";
 import { nanoid } from "nanoid";
 import axios from "axios";
 import "../App.scss";
@@ -60,30 +67,59 @@ export default function Candidate({
   // On change update name using dom id
   const updateName = (e) => {
     const key = e.target.id;
-    const name = e.target.value;
     inputList.forEach((object) => {
       // object[1] is candidate name field
       if (object[1] === key) {
-        object[4] = name;
-        object[3] = "MiMi.png";
+        object[4] = e.target.value;
       }
     });
+  };
+
+  // On change update image file using dom id
+  const updateImage = (e) => {
+    const key = e.target.id;
+    // Check image type
+    if (e.target.files[0].type === imageType) {
+      inputList.forEach((object) => {
+        // object[1] is candidate name field
+        if (object[1] === key) {
+          getBase64(e.target.files[0], (result) => {
+            console.log(result);
+            object[3] = result;
+          });
+        }
+      });
+    } else {
+      submitResponseToParent("Image type must be .png");
+    }
+
+    inputList.forEach((object) => {
+      // object[1] is candidate name field
+      console.log(object);
+    });
+  };
+
+  const getBase64 = (file, cb) => {
+    let reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = function () {
+      cb(reader.result);
+    };
+    reader.onerror = function (error) {
+      console.log("Error: ", error);
+    };
   };
 
   const deleteEvent = () => {
     handleClose(); // Close the confirmation dialog
     // const event_id_payload = { event_id: event_id };
     axios
-      .post(
-        `/deleteEventById/${event_id}`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("ACCESS_TOKEN")}`,
-            id_token: `Bearer ${localStorage.getItem("ID_TOKEN")}`,
-          },
-        }
-      )
+      .delete(`/deleteEventById/${event_id}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("ACCESS_TOKEN")}`,
+          id_token: `Bearer ${localStorage.getItem("ID_TOKEN")}`,
+        },
+      })
       .then((res) => {
         if (res.status === 200) {
           console.log(res.data);
@@ -105,7 +141,23 @@ export default function Candidate({
           </Form.Label>
           {inputList.map((object) => (
             <div className="d-flex flex-row align-items-center gap-2">
-              <Form.Control key={object[0]} type="file" />
+              <OverlayTrigger
+                key={nanoid()}
+                placement={"left"}
+                overlay={
+                  <Tooltip id={nanoid()} style={{ margin: 0 }}>
+                    <strong>Only .png file are allowed.</strong>
+                  </Tooltip>
+                }
+              >
+                <Form.Control
+                  key={object[0]}
+                  id={object[1]}
+                  type="file"
+                  onChange={(e) => updateImage(e)}
+                />
+              </OverlayTrigger>
+
               <Form.Control
                 key={object[1]}
                 id={object[1]}

@@ -91,6 +91,7 @@ export const INVALID_FILE_TYPE = "Invalid File Type";
 // "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
 export const fileType =
   "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+export const imageType = "image/png";
 export const fileExtension = ".xlsx";
 export const ELECTED = "Elected";
 export const NOTELECTED = "Not Elected";

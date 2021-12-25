@@ -20,7 +20,7 @@ export default function AlertBox({ err, setShow, errMsg, variant }) {
         ) : (
           <></>
         )}
-        {isDefined(errMsg) ? <p>{errMsg}</p> : <></>}
+        {isDefined(errMsg) ? <p>*{errMsg}</p> : <></>}
         {err.map((object, i) => {
           return (
             <div>
