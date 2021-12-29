@@ -13,15 +13,6 @@ import http.client
 import string
 import base64
 
-@app.route('/', methods=['GET'])
-def hello():
-    return 'Hello, GET!'
-
-@app.route('/wtf', methods=['POST'])
-def zxc():
-    name = request.json['name']
-    return name;
-
     #Controllers API
 
 #This needs authentication
@@ -586,6 +577,7 @@ def uploadFile():
         data_xls = pd.read_excel(xlsx_file)
 
         user_list = []
+        private_key = []
         for i in data_xls.index:
             # Password generator
             ## characters to generate password from
@@ -596,6 +588,7 @@ def uploadFile():
             for k in range(length):
                 pass_phrase.append(characters[int.from_bytes(os.urandom(1), byteorder="big") % len(characters)])   
             password = "".join(pass_phrase)
+            # Generate key set
 
             # Store the details for later xlsx file
             user = { "email": data_xls['email'][i], 
@@ -644,15 +637,15 @@ def uploadFile():
     return Response(json.dumps({"message": message, "excel_file": base64_encoded}), status, mimetype='application/json') 
        
 
-# This needs authorization
-@app.route("/api/private-scoped")
-@cross_origin(headers=["Content-Type", "Authorization"])
-@requires_auth
-def private_scoped():
-    if requires_scope("read:messages"):
-        response = "Hello from a private endpoint! You need to be authenticated and have a scope of read:messages to see this."
-        return jsonify(message=response)
-    raise AuthError({
-        "code": "Unauthorized",
-        "description": "You don't have access to this resource"
-    }, 403)
+# # This needs authorization
+# @app.route("/api/private-scoped")
+# @cross_origin(headers=["Content-Type", "Authorization"])
+# @requires_auth
+# def private_scoped():
+#     if requires_scope("read:messages"):
+#         response = "Hello from a private endpoint! You need to be authenticated and have a scope of read:messages to see this."
+#         return jsonify(message=response)
+#     raise AuthError({
+#         "code": "Unauthorized",
+#         "description": "You don't have access to this resource"
+#     }, 403)
