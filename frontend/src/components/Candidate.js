@@ -48,13 +48,7 @@ export default function Candidate({
     candidateList.forEach((candidate) => {
       updateList((inputList) => [
         ...inputList,
-        [
-          nanoid(),
-          nanoid(),
-          nanoid(),
-          candidate.candidate_image,
-          candidate.candidate_name,
-        ],
+        [nanoid(), nanoid(), nanoid(), "", candidate.candidate_name], // might need to fix
       ]);
     });
   };

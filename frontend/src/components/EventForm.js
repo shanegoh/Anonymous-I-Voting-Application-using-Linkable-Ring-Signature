@@ -104,8 +104,8 @@ export default function EventForm({
 
   // On click submit, validate input and post to server
   const submitEvent = (list) => {
-    console.log(list);
     var errors = [];
+    setErrMsg((errMsg) => "");
     // Convert candidates to json data in array
     var jsonArray = [];
     list.map((object) => {
@@ -134,11 +134,12 @@ export default function EventForm({
         jsonArray[x].candidate_name.length === 0 ||
         jsonArray[x].candidate_image.length === 0
       ) {
-        errors.push("Candidate value cannot be empty.");
+        errors.push(
+          "Candidate value cannot be empty. Please make sure you have selected an image and entered candidate name."
+        );
         break;
       }
     }
-
     // Validate the duration of the time
     if (!validateDateTime()) {
       errors.push("Duration of the event must be at least 4 hours.");
@@ -151,6 +152,7 @@ export default function EventForm({
       handleShow(); // Display alert box
     } else {
       handleDismiss(); // Close alert box
+      setErr((err) => []); // Clear error msg if ok
       // Craft json payload
       var event_payload = {
         election_type: electionType,
