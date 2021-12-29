@@ -132,6 +132,7 @@ def requires_auth(f):
                         "description": "Unable to find appropriate key"}, 401)
     return decorated
 
+
 def requires_id_token(f):
     """Determines if the id Token is valid
     """

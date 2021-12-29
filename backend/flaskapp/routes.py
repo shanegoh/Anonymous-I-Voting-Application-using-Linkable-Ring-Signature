@@ -637,15 +637,26 @@ def uploadFile():
     return Response(json.dumps({"message": message, "excel_file": base64_encoded}), status, mimetype='application/json') 
        
 
-# # This needs authorization
-# @app.route("/api/private-scoped")
-# @cross_origin(headers=["Content-Type", "Authorization"])
-# @requires_auth
-# def private_scoped():
-#     if requires_scope("read:messages"):
-#         response = "Hello from a private endpoint! You need to be authenticated and have a scope of read:messages to see this."
-#         return jsonify(message=response)
-#     raise AuthError({
-#         "code": "Unauthorized",
-#         "description": "You don't have access to this resource"
-#     }, 403)
+@app.route("/findVoteStatus", methods=["GET"])
+@cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'id_token'])
+@requires_auth
+@requires_id_token
+def findVoteStatus():
+    conn = mysql.connect() 
+    try: 
+        cursor = conn.cursor()
+        query =  """SELECT a.area_name 
+                    FROM users u join area a ON a.area_id = u.area_id 
+                    WHERE u.email = %s AND u.del_flag = %s AND a.del_flag = %s""";
+        cursor.execute(query, (session['email'], 0, 0));
+        result_A = cursor.fetchone()
+        cursor.close()
+        conn.close()
+        status = 200
+    except:
+        message = "Fail to retrieve vote status"
+        print(message)
+        return Response(json.dumps({"message": message}), 400, mimetype='application/json') 
+
+    return Response(json.dumps({"area": result_A[0]}), status, mimetype='application/json')
+

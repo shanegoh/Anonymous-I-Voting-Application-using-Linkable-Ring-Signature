@@ -1,11 +1,32 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { isAdmin } from "../../util";
 import { Redirect } from "react-router-dom";
 import NavBar from "../../components/NavBar.js";
 import { Table } from "react-bootstrap";
+import axios from "axios";
 import "../../App.scss";
 
 export default function MyVoteStatus() {
+  const [area, setArea] = useState();
+  useEffect(() => {
+    axios
+      .get(`http://localhost:5000/findVoteStatus`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("ACCESS_TOKEN")}`,
+          id_token: `Bearer ${localStorage.getItem("ID_TOKEN")}`,
+        },
+      })
+      .then((res) => {
+        if (res.status === 200) {
+          console.log(res.data.area);
+          setArea((area) => res.data.area);
+        }
+      })
+      .catch((err) => {
+        // Set error message
+        console.log(err.response.message);
+      });
+  }, []);
   return !isAdmin() ? (
     <div>
       <NavBar />
@@ -24,8 +45,8 @@ export default function MyVoteStatus() {
           </thead>
           <tbody className="bg-light">
             <tr>
-              <td>Aljunied GRC</td>
-              <td>Submitted</td>
+              <td>{area}</td>
+              <td>?</td>
             </tr>
           </tbody>
         </Table>
