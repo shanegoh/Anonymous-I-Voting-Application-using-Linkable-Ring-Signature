@@ -46,7 +46,7 @@ def ring_signature(signing_key, key_idx, M, y, G=SECP256k1.generator, hash_func=
     n = len(y)
     c = [0] * n
     s = [0] * n
-
+    
     # STEP 1
     H = H2(y, hash_func=hash_func)
     Y =  H * signing_key
@@ -55,10 +55,11 @@ def ring_signature(signing_key, key_idx, M, y, G=SECP256k1.generator, hash_func=
     u = randrange(SECP256k1.order)
 
     c[(key_idx + 1) % n] = H1([y, Y, M, G * u, H * u], hash_func=hash_func)
-
+    print(key_idx)
     # STEP 3
     for i in [ i for i in range(key_idx + 1, n) ] + [i for i in range(key_idx)]:
-
+        print(i)
+        
         s[i] = randrange(SECP256k1.order)
 
         z_1 = (G * s[i]) + (y[i] * c[i])
@@ -373,7 +374,7 @@ def main():
         print ("Sorry, the candidate doesn't exist")
         return 0
 
-    signature = ring_signature(x[i], i, message, y)
+    signature = ring_signature(private_key, i, message, y)
     
     assert(verify_ring_signature(message, y, *signature))
     private_key = input("Please enter your private key : ")
