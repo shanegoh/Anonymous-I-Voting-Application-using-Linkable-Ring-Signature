@@ -1,5 +1,4 @@
 from flaskext.mysql import MySQL
-from flaskapp import app
 from flaskapp.__init__ import *
 
 

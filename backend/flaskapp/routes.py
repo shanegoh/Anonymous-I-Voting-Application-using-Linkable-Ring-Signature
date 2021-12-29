@@ -2,25 +2,27 @@ from flaskapp import app
 from flaskapp.__init__ import *
 from flaskapp.auth import *
 from flask_cors import cross_origin
+from flask import Response
 from flaskapp.db import mysql
 from flaskapp.roleEnum import Role
 from datetime import datetime , timezone
+from flaskapp.linkable_ring_signature import *
 import json
-import pytz
-from flask import Response, send_file
 import pandas as pd
 import http.client
 import string
 import base64
 
-    #Controllers API
-
+#Controllers API
 #This needs authentication
 @app.route("/findUserInformation")
 @cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'id_token'])
 @requires_auth
 @requires_id_token
 def findUserInformation():
+    x,y = generate_keys(5)
+    print(x)
+    print(y)
     conn = mysql.connect()
     try:
         cursor = conn.cursor()

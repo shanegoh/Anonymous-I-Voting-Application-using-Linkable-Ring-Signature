@@ -18,6 +18,7 @@ from ecdsa.util import randrange
 from ecdsa.ecdsa import curve_secp256k1
 from ecdsa.curves import SECP256k1
 from ecdsa import numbertheory
+from eth_abi.packed import encode_abi_packed
 
 def ring_signature(signing_key, key_idx, M, y, G=SECP256k1.generator, hash_func=hashlib.sha256):
     """
