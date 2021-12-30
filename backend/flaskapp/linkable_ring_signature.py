@@ -11,14 +11,11 @@
 import os
 import hashlib
 import functools
-import ecdsa
-import sys
+from flaskapp.ecdsa.util import randrange
+from flaskapp.ecdsa.ecdsa import curve_secp256k1
+from flaskapp.ecdsa.curves import SECP256k1
+from flaskapp.ecdsa import numbertheory
 
-from ecdsa.util import randrange
-from ecdsa.ecdsa import curve_secp256k1
-from ecdsa.curves import SECP256k1
-from ecdsa import numbertheory
-from eth_abi.packed import encode_abi_packed
 
 def ring_signature(signing_key, key_idx, M, y, G=SECP256k1.generator, hash_func=hashlib.sha256):
     """
@@ -306,6 +303,16 @@ def export_private_keys(s_keys, foler_name='./data', file_name='secrets.txt'):
         arch.write('{}\n'.format(key))
 
     arch.close()
+
+def export_private_keys_in_list(s_keys):
+    """ Exports a set  of private keys to a list.
+    Each record in list is one key.
+"""
+    keys = []
+    for key in s_keys:
+        keys.append(format(key))
+    
+    return keys
 
 
 def export_signature_javascript(y, message, signature, foler_name='./data', file_name='signature.js'):
