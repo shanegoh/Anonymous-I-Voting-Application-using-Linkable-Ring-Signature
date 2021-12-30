@@ -20,16 +20,21 @@ export default function AlertBox({ err, setShow, errMsg, variant }) {
         ) : (
           <></>
         )}
-        {isDefined(errMsg) ? <p>*{errMsg}</p> : <></>}
-        {err.map((object, i) => {
-          return (
-            <div>
-              <p>
-                {i + 1}. &nbsp; {object}
-              </p>
-            </div>
-          );
-        })}
+        {isDefined(errMsg) ? (
+          <p>*{errMsg}</p>
+        ) : (
+          <div>
+            {err.map((object, i) => {
+              return (
+                <div>
+                  <p>
+                    {i + 1}. &nbsp; {object}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </Alert>
     </>
   );

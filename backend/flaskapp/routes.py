@@ -106,9 +106,12 @@ def findCandidateByEventId(id):
         result_A = cursor.fetchall()
         payload = []
         for record in result_A:
+            # Encode png as base64
+            with open(record[2], "rb") as image_file:
+                encoded_string = base64.b64encode(image_file.read())
             content = { 'area_name': record[0],
                         'candidate_name': record[1],
-                        'candiadte_image': record[2]}
+                        'candidate_image': encoded_string.decode('UTF-8')}
             payload.append(content)
         cursor.close()
         conn.close()
@@ -124,32 +127,79 @@ def findCandidateByEventId(id):
 @requires_auth
 @requires_id_token
 def voteCandidate():
+    print(request.json['candidate_name'])
+    print(request.json['event_id'])
+    print(request.json['private_key'])
     conn = mysql.connect()
     try:
-        candidate_name = request.json["candidate_name"]
-        event_id = request.json['event_id']
         cursor = conn.cursor()
-        query = """UPDATE candidate SET vote_count = (vote_count + 1) 
-                    WHERE event_id = %s 
-                    AND candidate_name = %s
-                    AND del_flag = %s"""
-        result_A = cursor.execute(query,(event_id,candidate_name,0))
+        query = """SELECT COUNT(*) as number_of_participants 
+                    FROM users WHERE area_id 
+                    IN (SELECT area_id FROM event where event_id = %s)"""
+        cursor.execute(query, request.json['event_id'])
+        result_A = cursor.fetchone()
+        number_of_participants = result_A[0]
+        print(number_of_participants)    
         cursor.close()
-        conn.commit()
         conn.close()
-        if (result_A):
-            message = "Successfully captured your vote!"
-            status = 200
-        else:
-            message = "Failed to captured your vote"
-            status = 400
-        
+
+        private_key = int(request.json['private_key'])
+        i = 0
+        j = 0
+        for k in range(0,number_of_participants):
+            if private_key == x[k]:
+                i = k   
+                break
+            j += 1
 
     except:
-        print("Could not get your vote")
-        return Response(json.dumps({"message": "Could not get your vote"}), 400, mimetype='application/json') 
+        message = "Error, please try again."
+        print(message)
+        return Response(json.dumps({"message": message}), 400, mimetype='application/json') 
+
+
+
     
-    return Response(json.dumps({"message": message}), status, mimetype='application/json') 
+
+
+    # if j == number_participants:
+    #     print ("Sorry, wrong private key. Try again")
+    #     return 0
+
+    # message = input("Whom do you want to cast your vote among the 3 candidate? ")
+    # message = int(message)
+
+    # if message >= 3:
+    #     print ("Sorry, the candidate doesn't exist")
+    #     return 0
+
+    # signature = ring_signature(private_key, i, message, y)
+    # conn = mysql.connect()
+    # try:
+    #     # candidate_name = request.json["candidate_name"]
+    #     # event_id = request.json['event_id']
+    #     # cursor = conn.cursor()
+    #     # query = """UPDATE candidate SET vote_count = (vote_count + 1) 
+    #     #             WHERE event_id = %s 
+    #     #             AND candidate_name = %s
+    #     #             AND del_flag = %s"""
+    #     # result_A = cursor.execute(query,(event_id,candidate_name,0))
+    #     # cursor.close()
+    #     # conn.commit()
+    #     # conn.close()
+    #     # if (result_A):
+    #     #     message = "Successfully captured your vote!"
+    #     #     status = 200
+    #     # else:
+    #     #     message = "Failed to captured your vote"
+    #     #     status = 400
+        
+
+    # except:
+    #     print("Could not get your vote")
+    #     return Response(json.dumps({"message": "Could not get your vote"}), 400, mimetype='application/json') 
+    
+    return Response(json.dumps({"message": "ok"}), 200, mimetype='application/json') 
 
 
 @app.route("/findAllEvent", methods=['GET'])
@@ -444,10 +494,11 @@ def putEvent(id=-1):
                     status = (201 if result_H else 406)   
                  
             conn.commit()
+          
             # First "remove" the old candidates
             query = """UPDATE candidate SET del_flag = %s WHERE event_id = %s""";
             cursor.execute(query,(1,id))
-
+          
             query = """SELECT event_id FROM event WHERE 
                         election_type = %s AND
                         area_id = %s AND
@@ -461,14 +512,16 @@ def putEvent(id=-1):
                                         datetime.strptime(endDateTime, '%Y-%m-%dT%H:%M:%S.%fZ'),0,0))
             result_F = cursor.fetchone()
             id = result_F[0]
+         
             # Insert back the new candidates
             query = """INSERT INTO candidate 
             (event_id, candidate_name, candidate_image)  
             VALUES""";
             for record in candidate_payload:
-                    query += """ (%s, '%s', '%s'),""" %(id,record['candidate_name'], record['candidate_image'])
-
+                    query += """ (%s, "%s", "%s"),""" %(id,record['candidate_name'], record['candidate_image'])
+            print(query)
             cursor.execute(query[:-1]);
+            print("Reach here")
             cursor.close()
             conn.commit()
             conn.close()  
@@ -578,9 +631,15 @@ def uploadFile():
         # Get the excel file
         xlsx_file = request.files['file']
         data_xls = pd.read_excel(xlsx_file)
+        number_of_participants = len(data_xls); # Check number of participants within the list.
 
+        # Generate keys based on number of participants on the same area
+        privateKey, publicKey = generate_keys(number_of_participants)
+        private_key_list = export_private_keys_in_list(privateKey)
+        public_key_list = export_private_keys_in_list(publicKey)
+        print(private_key_list)
+        print(public_key_list)
         user_list = []
-        private_key = []
         for i in data_xls.index:
             # Password generator
             ## characters to generate password from
@@ -593,14 +652,15 @@ def uploadFile():
             password = "".join(pass_phrase)
             # Generate key set
 
-            # Store the details for later xlsx file
+            # Store the details for later xlsx file output
             user = { "email": data_xls['email'][i], 
                         "role": data_xls['role'][i], 
                         "area_id":data_xls['area_id'][i], 
-                        "password": password}
+                        "password": password,
+                        "private_key": private_key_list[i]}
             user_list.append(user)
 
-            # # add user
+            # add user to auth0
             payload = '{"email": "%s", '\
                         '"nickname": "%s", '\
                         '"connection": "Username-Password-Authentication", '\
@@ -615,11 +675,14 @@ def uploadFile():
             data = res.read()
         ############################################ End of for loop 
 
+        print("Running Here before update")
+        print(user_list)
         # Once mass creation is done, get all the email correspond with 
-        # the area_id and update each record
-        for user in user_list:
-            query = """UPDATE users SET area_id = %s, role = %s WHERE email = %s """
-            result = cursor.execute(query, (user['area_id'], user['role'], user['email']));
+        # the area_id and update each record respectively
+        for i, user in enumerate(user_list):
+            print(public_key_list[i])
+            query = """UPDATE users SET area_id = %s, role = %s, public_key = %s WHERE email = %s """
+            result = cursor.execute(query, (user['area_id'], user['role'], public_key_list[i], user['email']));
             print(result)
         cursor.close()
         conn.commit()
@@ -630,7 +693,7 @@ def uploadFile():
         df.to_excel('Generated_Credentials.xlsx')
         data = open('Generated_Credentials.xlsx', 'rb').read()
         os.remove("Generated_Credentials.xlsx") # remove file after read
-        base64_encoded = base64.b64encode(data).decode('UTF-8')
+        base64_encoded = base64.b64encode(data).decode('UTF-8') # encode for sending back to front end
         message = "Success!"
         status = 200
     except:
@@ -650,8 +713,8 @@ def findVoteStatus():
         cursor = conn.cursor()
         query =  """SELECT a.area_name 
                     FROM users u join area a ON a.area_id = u.area_id 
-                    WHERE u.email = %s AND u.del_flag = %s AND a.del_flag = %s""";
-        cursor.execute(query, (session['email'], 0, 0));
+                    WHERE u.email = %s AND a.del_flag = %s""";
+        cursor.execute(query, (session['email'], 0));
         result_A = cursor.fetchone()
         cursor.close()
         conn.close()
