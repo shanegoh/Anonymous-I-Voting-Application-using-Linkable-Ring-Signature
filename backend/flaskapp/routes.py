@@ -2,25 +2,29 @@ from flaskapp import app
 from flaskapp.__init__ import *
 from flaskapp.auth import *
 from flask_cors import cross_origin
+from flask import Response
 from flaskapp.db import mysql
 from flaskapp.roleEnum import Role
 from datetime import datetime , timezone
+from flaskapp.linkable_ring_signature import *
 import json
-import pytz
-from flask import Response, send_file
 import pandas as pd
 import http.client
 import string
 import base64
 
-    #Controllers API
-
+#Controllers API
 #This needs authentication
 @app.route("/findUserInformation")
 @cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'id_token'])
 @requires_auth
 @requires_id_token
 def findUserInformation():
+    x, y = generate_keys(1)
+    private_key = export_private_keys_in_list(x)
+    public_key = export_private_keys_in_list(y)
+    print("Private Key: %s"%private_key[0])
+    print("Public Key: %s"%public_key[0])
     conn = mysql.connect()
     try:
         cursor = conn.cursor()
@@ -658,4 +662,3 @@ def findVoteStatus():
         return Response(json.dumps({"message": message}), 400, mimetype='application/json') 
 
     return Response(json.dumps({"area": result_A[0]}), status, mimetype='application/json')
-
