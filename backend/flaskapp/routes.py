@@ -1,3 +1,4 @@
+from numpy import result_type
 from flaskapp import app
 from flaskapp.__init__ import *
 from flaskapp.auth import *
@@ -12,6 +13,9 @@ import pandas as pd
 import http.client
 import string
 import base64
+import numpy as np
+import traceback
+import ast
 
 #Controllers API
 #This needs authentication
@@ -84,7 +88,7 @@ def findElectionForVoter():
         conn.close()
     except:
         print("Could not get any elections.")
-        return Response(json.dumps({"message": "There is no event for you."}), 400, mimetype='application/json') 
+        return Response(json.dumps({"message": "There is no event for you."}), 404, mimetype='application/json') 
     
     return jsonify(payload)
 
@@ -127,21 +131,32 @@ def findCandidateByEventId(id):
 @requires_auth
 @requires_id_token
 def voteCandidate():
-    print(request.json['candidate_name'])
-    print(request.json['event_id'])
-    print(request.json['private_key'])
     conn = mysql.connect()
     try:
         cursor = conn.cursor()
+        # query to count total participants
         query = """SELECT COUNT(*) as number_of_participants 
                     FROM users WHERE area_id 
                     IN (SELECT area_id FROM event where event_id = %s)"""
         cursor.execute(query, request.json['event_id'])
         result_A = cursor.fetchone()
         number_of_participants = result_A[0]
-        print(number_of_participants)    
-        cursor.close()
-        conn.close()
+
+        # query to find all private and public key to respective event
+        query = """SELECT private_key, public_key FROM users WHERE area_id 
+                    IN (SELECT area_id FROM event 
+                    WHERE event_id = %s AND del_flag = %s AND expire_flag = %s)"""
+        cursor.execute(query, (request.json['event_id'],0,0))
+        result_B = cursor.fetchall()
+
+        x = []  # list of all secret keys
+        y = []  # list of all public keys
+        for record in result_B:
+            x.append(int(record[0]))
+            assert record[1][0] == "(" and record[1][-1] == ")"
+            e1 = int(record[1][1:-1].split(",")[0])
+            e2 = int(record[1][1:-1].split(",")[1])
+            y.append(ecdsa.ellipticcurve.Point(curve_secp256k1, e1, e2)) # convert to Point object
 
         private_key = int(request.json['private_key'])
         i = 0
@@ -151,55 +166,44 @@ def voteCandidate():
                 i = k   
                 break
             j += 1
+        assert (j == number_of_participants) == False, "Please check that you have entered a valid key."
 
-    except:
-        message = "Error, please try again."
-        print(message)
-        return Response(json.dumps({"message": message}), 400, mimetype='application/json') 
-
-
-
-    
-
-
-    # if j == number_participants:
-    #     print ("Sorry, wrong private key. Try again")
-    #     return 0
-
-    # message = input("Whom do you want to cast your vote among the 3 candidate? ")
-    # message = int(message)
-
-    # if message >= 3:
-    #     print ("Sorry, the candidate doesn't exist")
-    #     return 0
-
-    # signature = ring_signature(private_key, i, message, y)
-    # conn = mysql.connect()
-    # try:
-    #     # candidate_name = request.json["candidate_name"]
-    #     # event_id = request.json['event_id']
-    #     # cursor = conn.cursor()
-    #     # query = """UPDATE candidate SET vote_count = (vote_count + 1) 
-    #     #             WHERE event_id = %s 
-    #     #             AND candidate_name = %s
-    #     #             AND del_flag = %s"""
-    #     # result_A = cursor.execute(query,(event_id,candidate_name,0))
-    #     # cursor.close()
-    #     # conn.commit()
-    #     # conn.close()
-    #     # if (result_A):
-    #     #     message = "Successfully captured your vote!"
-    #     #     status = 200
-    #     # else:
-    #     #     message = "Failed to captured your vote"
-    #     #     status = 400
+        signature = ring_signature(private_key, i, request.json['candidate_name'], y)
+        assert verify_ring_signature(request.json['candidate_name'], y, *signature) == True, "Invalid Signature"
         
+        # fetch signature from database record
+        query = """SELECT signature FROM users WHERE private_key = %s"""
+        cursor.execute(query, request.json['private_key'])
+        result_C = cursor.fetchone()
 
-    # except:
-    #     print("Could not get your vote")
-    #     return Response(json.dumps({"message": "Could not get your vote"}), 400, mimetype='application/json') 
-    
-    return Response(json.dumps({"message": "ok"}), 200, mimetype='application/json') 
+        # If voter's record doesnt have the signature
+        if(str(result_C[0]) == "None"):
+            # add signature
+            query = """UPDATE users SET signature = %s WHERE private_key = %s"""
+            assert cursor.execute(query, (get_image_from_signature(signature), request.json['private_key'])) == 1, "Failed to update signature"
+            query = """UPDATE candidate SET vote_count = (vote_count + 1) 
+                        WHERE event_id = %s 
+                        AND candidate_name = %s
+                        AND del_flag = %s"""
+            assert cursor.execute(query,(request.json['event_id'],request.json["candidate_name"],0))
+            cursor.close()
+            conn.commit()
+            conn.close()
+            message = "Success!"
+            status = 200
+        else:
+            keyImage = ast.literal_eval(result_C[0]) # convert string list to list
+            assert check_keyImage(signature, keyImage) == True, "There might be some error."
+            print("hre")
+            message = "You are only allowed to vote once."
+            status = 400
+    except Exception:
+        traceback.print_exc()
+        message = traceback.format_exc() #continue here!
+        print("Hello")
+        return Response(json.dumps({"message": message}), 400, mimetype='application/json') 
+   
+    return Response(json.dumps({"message": message}), status, mimetype='application/json') 
 
 
 @app.route("/findAllEvent", methods=['GET'])
@@ -657,7 +661,8 @@ def uploadFile():
                         "role": data_xls['role'][i], 
                         "area_id":data_xls['area_id'][i], 
                         "password": password,
-                        "private_key": private_key_list[i]}
+                        "private_key": private_key_list[i],
+                        "public_key": public_key_list[i]}
             user_list.append(user)
 
             # add user to auth0
@@ -681,8 +686,8 @@ def uploadFile():
         # the area_id and update each record respectively
         for i, user in enumerate(user_list):
             print(public_key_list[i])
-            query = """UPDATE users SET area_id = %s, role = %s, public_key = %s WHERE email = %s """
-            result = cursor.execute(query, (user['area_id'], user['role'], public_key_list[i], user['email']));
+            query = """UPDATE users SET area_id = %s, role = %s, public_key = %s, private_key = %s WHERE email = %s """
+            result = cursor.execute(query, (user['area_id'], user['role'], public_key_list[i], private_key_list[i], user['email']));
             print(result)
         cursor.close()
         conn.commit()
@@ -700,7 +705,8 @@ def uploadFile():
         print("error")
         return Response(json.dumps({"message": "Fail"}), 400, mimetype='application/json') 
 
-    return Response(json.dumps({"message": message, "excel_file": base64_encoded}), status, mimetype='application/json') 
+    return Response(json.dumps({"message": message, "excel_file": base64_encoded}), status, mimetype='application/json')
+   
        
 
 @app.route("/findVoteStatus", methods=["GET"])
@@ -711,17 +717,18 @@ def findVoteStatus():
     conn = mysql.connect() 
     try: 
         cursor = conn.cursor()
-        query =  """SELECT a.area_name 
+        query =  """SELECT a.area_name, IF(ISNULL(u.signature), "Not Submitted","Submitted")
                     FROM users u join area a ON a.area_id = u.area_id 
                     WHERE u.email = %s AND a.del_flag = %s""";
         cursor.execute(query, (session['email'], 0));
-        result_A = cursor.fetchone()
+        result = cursor.fetchone()
         cursor.close()
         conn.close()
+        payload = {"area": result[0], "status": result[1]}
         status = 200
     except:
-        message = "Fail to retrieve vote status"
+        message = "Failed to retrieve vote status"
         print(message)
         return Response(json.dumps({"message": message}), 400, mimetype='application/json') 
 
-    return Response(json.dumps({"area": result_A[0]}), status, mimetype='application/json')
+    return Response(json.dumps(payload), status, mimetype='application/json')

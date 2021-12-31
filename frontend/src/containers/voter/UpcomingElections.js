@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from "react";
 import NavBar from "../../components/NavBar.js";
-import { isAdmin, dateFormatForVoter } from "../../util";
+import { isAdmin, dateFormatForVoter, isDefined } from "../../util";
 import { Redirect } from "react-router-dom";
-import { Button } from "react-bootstrap";
+import { Button, Form, Alert } from "react-bootstrap";
 import axios from "axios";
 import "../../App.scss";
 
 export default function UpcomingElections({ history }) {
   const [recordJson, setRecordJson] = useState();
   const [isLoaded, setLoadStatus] = useState(false);
+  const [msg, setMsg] = useState();
   useEffect(() => {
     axios
       .get(`http://localhost:5000/findElectionForVoter`, {
@@ -26,7 +27,8 @@ export default function UpcomingElections({ history }) {
       })
       .catch((err) => {
         // Set error message
-        console.log(err.response.message);
+        console.log(err.response.data.message);
+        setMsg((msg) => err.response.data.message);
       });
   }, []);
 
@@ -39,6 +41,13 @@ export default function UpcomingElections({ history }) {
   return !isAdmin() ? (
     <div>
       <NavBar />
+      {isDefined(msg) ? (
+        <Alert className="d-flex flex-column align-items-center" variant="info">
+          {msg}
+        </Alert>
+      ) : (
+        <></>
+      )}
       {isLoaded ? (
         <div className="d-flex flex-column gap-2 pt-4 align-items-center">
           <Button

@@ -61,8 +61,8 @@ export default function Poll({ history }) {
         })
         .catch((err) => {
           // Set error message
-          console.log(err.response.message);
-          setErrMsg((errMsg) => err.response.message);
+          console.log(err.response.data.message);
+          setErrMsg((errMsg) => err.response.data.message);
           handleShow();
         });
     }
@@ -85,7 +85,7 @@ export default function Poll({ history }) {
       })
       .catch((err) => {
         // Set error message
-        console.log(err.response.message);
+        console.log(err.response.data.message);
       });
   }, []);
 

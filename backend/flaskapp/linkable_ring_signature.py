@@ -15,7 +15,7 @@ from flaskapp.ecdsa.util import randrange
 from flaskapp.ecdsa.ecdsa import curve_secp256k1
 from flaskapp.ecdsa.curves import SECP256k1
 from flaskapp.ecdsa import numbertheory
-
+from flaskapp import ecdsa
 
 def ring_signature(signing_key, key_idx, M, y, G=SECP256k1.generator, hash_func=hashlib.sha256):
     """
@@ -44,22 +44,17 @@ def ring_signature(signing_key, key_idx, M, y, G=SECP256k1.generator, hash_func=
     n = len(y)
     c = [0] * n
     s = [0] * n
-    
     # STEP 1
     H = H2(y, hash_func=hash_func)
     Y =  H * signing_key
-
     # STEP 2
     u = randrange(SECP256k1.order)
 
     c[(key_idx + 1) % n] = H1([y, Y, M, G * u, H * u], hash_func=hash_func)
-    print(key_idx)
+
     # STEP 3
     for i in [ i for i in range(key_idx + 1, n) ] + [i for i in range(key_idx)]:
-        print(i)
-        
         s[i] = randrange(SECP256k1.order)
-
         z_1 = (G * s[i]) + (y[i] * c[i])
         z_2 = (H * s[i]) + (Y * c[i])
 
@@ -154,8 +149,6 @@ def H1(msg, hash_func=hashlib.sha256):
         -------
             Integer representation of hexadecimal digest from hash function.
     """
-
-    # print ("H1=",int('0x'+ hash_func(concat(msg)).hexdigest(), 16))
     return int('0x'+ hash_func(concat(msg)).hexdigest(), 16)
 
 
@@ -197,26 +190,23 @@ def concat(params):
         -------
             concatenated bytes of all values.
     """
+ 
     n = len(params)
     bytes_value = [0] * n
-
+   
     for i in range(n):
 
         if type(params[i]) is int:
             bytes_value[i] = params[i].to_bytes(32, 'big')
-            # print (bytes_value[i])
         if type(params[i]) is list:
             bytes_value[i] = concat(params[i])
-            # print (bytes_value[i])
         if type(params[i]) is ecdsa.ellipticcurve.Point:
             bytes_value[i] = params[i].x().to_bytes(32, 'big') + params[i].y().to_bytes(32, 'big')
         if type(params[i]) is str:
             bytes_value[i] = params[i].encode()
-            # print (bytes_value[i])
         if bytes_value[i] == 0:
             bytes_value[i] = params[i].x().to_bytes(32, 'big') + params[i].y().to_bytes(32, 'big')
 
-    # print (bytes_value)
     return functools.reduce(lambda x, y: x + y, bytes_value)
 
 
@@ -290,6 +280,24 @@ def export_signature(y, message, signature, foler_name='./data', file_name='sign
     arch.close()
 
 
+def get_image_from_signature(signature):
+    """ Exports a signature to a specific folder and  pfilenamerovided.
+        The file contains the signature, the ring used to generate signature
+        and the message being signed.
+    """
+    for k in range(0,len(signature[1])):
+        signature[1][k] = hex(int(signature[1][k]))
+
+    keyimage = [0, 0]
+    keyimage[0] = hex(signature[2].x())
+    keyimage[1] = hex(signature[2].y())
+    Y = keyimage
+
+    dump = '{}'.format(Y) # Format is ['0x...', '0x...'] -> KeyImage Point object (x,y)
+    print(dump)
+    return dump
+
+
 def export_private_keys(s_keys, foler_name='./data', file_name='secrets.txt'):
     """ Exports a set  of private keys to a file.
         Each line in the file is one key.
@@ -344,10 +352,13 @@ def check_keyImage(signature,keyimage):
     n_keyimage = [0, 0]
     n_keyimage[0] = hex(signature[2].x())
     n_keyimage[1] = hex(signature[2].y())
+    voted = False
     if keyimage != "" and n_keyimage != keyimage:
         print("Vote Accepted")
     else:
         print("You are only allowed to vote once.")
+        
+    return False if keyimage != "" and n_keyimage != keyimage else True
     
 def generate_keys(numOfParticipants):
     # x = [5612102642020642792203604729503329546870419488994227640238410962336591034111,97148831986497178251981347099741561152929354799719003736306468101246934956731,73582564991556101489090114036789577051420144847960038776033502314051350434733,58959788109781048630827926226104720045842317320518204126269224311951440226761,41745480486210574223547556272772914684478811935146531809992005566760468807878]
