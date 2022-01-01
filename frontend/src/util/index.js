@@ -50,14 +50,6 @@ export const removeAreaID = () => {
 export const ADMIN_ROLE = 0;
 export const VOTER_ROLE = 1;
 
-// export const checkExpiry = (token) => {
-//   if (token) {
-//     const decodedToken = jwt_decode(token);
-//     if (decodedToken.exp * 1000 < new Date().getTime()) return true;
-//     else return false;
-//   } else return false;
-// };
-
 export const axiosConfig = {
   headers: {
     Authorization: `Bearer ${localStorage.getItem("ACCESS_TOKEN")}`,
@@ -87,6 +79,7 @@ export const dateFormatForVoter = (date) => {
 export const DEFAULTSELECTOR = "DEFAULT";
 export const DANGER = "danger";
 export const SUCCESS = "success";
+export const INFO = "info";
 export const INVALID_FILE_TYPE = "Invalid File Type";
 // "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
 export const fileType =

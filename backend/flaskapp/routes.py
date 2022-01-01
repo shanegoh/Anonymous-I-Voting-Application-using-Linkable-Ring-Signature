@@ -16,6 +16,7 @@ import base64
 import numpy as np
 import traceback
 import ast
+import sys
 
 #Controllers API
 #This needs authentication
@@ -63,11 +64,15 @@ def findElectionForVoter():
     conn = mysql.connect()
     try:
         cursor = conn.cursor()
-        query = """SELECT area_id FROM users WHERE email = %s"""
+        # Query to find area_id 
+        query = """SELECT area_id, key_image FROM users WHERE email = %s"""
         cursor.execute(query, session['email'])
         result_A = cursor.fetchone()
         area_id = result_A[0]
-        print(area_id)
+        print(result_A[1] is None)
+        assert ((result_A[1] is None) == True), "There is no event for you at the moment."
+
+
         query = """SELECT e.event_id, 
                    a.area_name, 
                    e.start_date_time,
@@ -86,9 +91,10 @@ def findElectionForVoter():
                     'end_date_time': result_B[3]}
         cursor.close()
         conn.close()
-    except:
-        print("Could not get any elections.")
-        return Response(json.dumps({"message": "There is no event for you."}), 404, mimetype='application/json') 
+    except Exception:
+        message = str(sys.exc_info()[1]) 
+        print(message)
+        return Response(json.dumps({"message": message}), 404, mimetype='application/json') 
     
     return jsonify(payload)
 
@@ -98,15 +104,22 @@ def findElectionForVoter():
 @requires_id_token
 def findCandidateByEventId(id):
     conn = mysql.connect()
+    # need to add a validation : search base on email
     try:
         cursor = conn.cursor()
-        query = """SELECT (SELECT area_name FROM area WHERE area_id IN (SELECT area_id 
-                    FROM event WHERE event_id = 18)) as area_name, candidate_name, 
-                    candidate_image 
-                    FROM candidate 
-                    WHERE event_id = %s 
-                    AND del_flag = %s"""
-        cursor.execute(query, (id,0))
+        query = """SELECT a.area_name, c.candidate_name, c.candidate_image 
+                            FROM candidate c JOIN event e 
+                            ON c.event_id = e.event_id JOIN area a 
+                            ON e.area_id = a.area_id JOIN users u 
+                            ON a.area_id = u.area_id 
+                            WHERE u.email = %s
+                            AND isnull(key_image)
+                            AND c.event_id = %s
+                            AND e.del_flag = %s
+                            AND e.expire_flag = %s
+                            AND c.del_flag = %s
+                            AND a.del_flag = %s"""
+        assert (cursor.execute(query, (session['email'],id,0,0,0,0)) > 0), "No such event, redirecting..." 
         result_A = cursor.fetchall()
         payload = []
         for record in result_A:
@@ -119,9 +132,10 @@ def findCandidateByEventId(id):
             payload.append(content)
         cursor.close()
         conn.close()
-    except:
-        print("Could not get any candidates")
-        return Response(json.dumps({"message": "Could not get any candidates"}), 400, mimetype='application/json') 
+    except Exception:
+        message = str(sys.exc_info()[1]) 
+        print(message)
+        return Response(json.dumps({"message": message}), 400, mimetype='application/json') 
     
     return jsonify(payload)
 
@@ -149,6 +163,13 @@ def voteCandidate():
         cursor.execute(query, (request.json['event_id'],0,0))
         result_B = cursor.fetchall()
 
+        # query to find if the private key given is theirs
+        query = """SELECT email FROM users WHERE private_key = %s"""
+        cursor.execute(query, request.json['private_key'])
+        result_C = cursor.fetchone()
+        assert (session['email'] == result_C[0]) == True, "Private key does not belong to you!"
+
+        # Adding all private and public keys into each list
         x = []  # list of all secret keys
         y = []  # list of all public keys
         for record in result_B:
@@ -158,29 +179,27 @@ def voteCandidate():
             e2 = int(record[1][1:-1].split(",")[1])
             y.append(ecdsa.ellipticcurve.Point(curve_secp256k1, e1, e2)) # convert to Point object
 
-        private_key = int(request.json['private_key'])
+        # Getting the index_idx for signature
         i = 0
-        j = 0
         for k in range(0,number_of_participants):
-            if private_key == x[k]:
+            if int(request.json['private_key']) == x[k]:
                 i = k   
                 break
-            j += 1
-        assert (j == number_of_participants) == False, "Please check that you have entered a valid key."
 
-        signature = ring_signature(private_key, i, request.json['candidate_name'], y)
+        # Create and verify signature
+        signature = ring_signature(int(request.json['private_key']), i, request.json['candidate_name'], y)
         assert verify_ring_signature(request.json['candidate_name'], y, *signature) == True, "Invalid Signature"
         
-        # fetch signature from database record
-        query = """SELECT signature FROM users WHERE private_key = %s"""
+        # fetch key_image from database record
+        query = """SELECT key_image FROM users WHERE private_key = %s"""
         cursor.execute(query, request.json['private_key'])
-        result_C = cursor.fetchone()
+        result_D = cursor.fetchone()
 
-        # If voter's record doesnt have the signature
-        if(str(result_C[0]) == "None"):
-            # add signature
-            query = """UPDATE users SET signature = %s WHERE private_key = %s"""
-            assert cursor.execute(query, (get_image_from_signature(signature), request.json['private_key'])) == 1, "Failed to update signature"
+        # If voter's record doesnt have key_image
+        if(str(result_D[0]) == "None"):
+            # add key_image
+            query = """UPDATE users SET key_image = %s WHERE private_key = %s"""
+            assert cursor.execute(query, (get_image_from_signature(signature), request.json['private_key'])) == 1, "Failed to update key image"
             query = """UPDATE candidate SET vote_count = (vote_count + 1) 
                         WHERE event_id = %s 
                         AND candidate_name = %s
@@ -191,16 +210,15 @@ def voteCandidate():
             conn.close()
             message = "Success!"
             status = 200
-        else:
-            keyImage = ast.literal_eval(result_C[0]) # convert string list to list
+        else:   # Else, if have, means voted already
+            keyImage = ast.literal_eval(result_D[0]) # convert string list to list
             assert check_keyImage(signature, keyImage) == True, "There might be some error."
             print("hre")
             message = "You are only allowed to vote once."
             status = 400
     except Exception:
-        traceback.print_exc()
-        message = traceback.format_exc() #continue here!
-        print("Hello")
+        message = str(sys.exc_info()[1]) 
+        print(message)
         return Response(json.dumps({"message": message}), 400, mimetype='application/json') 
    
     return Response(json.dumps({"message": message}), status, mimetype='application/json') 
@@ -292,13 +310,14 @@ def findEventById(id):
                    start_date_time, 
                    end_date_time
                    FROM event 
-                   WHERE event_id = %s
+                   WHERE CURRENT_TIMESTAMP < start_date_time
+                   AND event_id = %s
                    AND del_flag = %s
                    AND expire_flag = %s"""
-        cursor.execute(query, (id,0,0))
+        assert (cursor.execute(query, (id,0,0)) != 0), "No event found. Please try again."
         result_A = cursor.fetchone()
-        print(result_A)
 
+        # Query for all candidate name and iamge
         query = """SELECT candidate_name, candidate_image
                    FROM candidate 
                    WHERE event_id = %s
@@ -323,10 +342,10 @@ def findEventById(id):
                         'end_date_time':  result_A[3], 
                         'candidates': candidate_payload}    
         payload.append(event_content)
-    except:
-        print("Error: Unable to fetch any record of events")  
-        message = "Unable to fetch any record of events. Please refresh."
-        return Response(json.dumps({"message": message}), 400, mimetype='application/json') 
+    except Exception:
+        message = str(sys.exc_info()[1]) 
+        print(message)
+        return Response(json.dumps({"message": message}), 404, mimetype='application/json') 
         
     return jsonify(payload)
 
@@ -717,7 +736,7 @@ def findVoteStatus():
     conn = mysql.connect() 
     try: 
         cursor = conn.cursor()
-        query =  """SELECT a.area_name, IF(ISNULL(u.signature), "Not Submitted","Submitted")
+        query =  """SELECT a.area_name, IF(ISNULL(u.key_image), "Not Submitted","Submitted")
                     FROM users u join area a ON a.area_id = u.area_id 
                     WHERE u.email = %s AND a.del_flag = %s""";
         cursor.execute(query, (session['email'], 0));

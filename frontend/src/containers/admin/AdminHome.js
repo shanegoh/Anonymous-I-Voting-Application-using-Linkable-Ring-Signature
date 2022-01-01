@@ -53,6 +53,7 @@ export default function Admin({ history }) {
               className="btn-lg color-nav border-0 btn-hover-red admin-home-btn"
               active
               onClick={(e) => editEvent(e)}
+              disabled={new Date() > new Date(record.start_date_time)}
             >
               {record.area_name}
               <br />
