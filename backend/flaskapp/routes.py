@@ -234,7 +234,8 @@ def findAllEvent():
         cursor = conn.cursor()
         query = """SELECT e.event_id, 
                    a.area_name, 
-                   e.start_date_time
+                   e.start_date_time,
+                   e.end_date_time
                    FROM event e JOIN
                    area a ON e.area_id = a.area_id
                    WHERE e.del_flag = %s 
@@ -248,7 +249,8 @@ def findAllEvent():
         for record in data:
             content = { 'event_id': record[0],
                         'area_name': record[1],
-                        'start_date_time': record[2]}
+                        'start_date_time': record[2],
+                        'end_date_time': record[3]}
             payload.append(content)
             content = {}
     except:
@@ -479,12 +481,12 @@ def putEvent(id=-1):
                             WHERE event_id = %s
                             AND del_flag = %s
                             AND expire_flag = %s""";
-                cursor.execute(query, 
+                assert cursor.execute(query, 
                                 (electionType, 
                                     areaId, 
                                     datetime.strptime(startDateTime, '%Y-%m-%dT%H:%M:%S.%fZ'), 
                                     datetime.strptime(endDateTime, '%Y-%m-%dT%H:%M:%S.%fZ'),
-                                    id,0,0))
+                                    id,0,0)) == 1, "Event Failed to update"
 
                 message = "Event Successfully Updated"
                 print(message)
@@ -492,36 +494,34 @@ def putEvent(id=-1):
             else:
                 print("Attempt Inserting")
                 query =  """SELECT * FROM event WHERE area_id = %s AND del_flag = %s AND expire_flag = %s"""
-                result_G = cursor.execute(query, (areaId, 0,0))
-                message = "This event has already been created. Multiple events with same area are not allowed."
-                status = 406
+                assert cursor.execute(query, (areaId, 0,0)) == 0, "This event has already been created. Multiple events with same area are not allowed."
 
                 # If result not found = no duplicate, insert data
-                if (not result_G):
-                    query =  """INSERT INTO event 
-                    (election_type, 
-                    area_id, 
-                    start_date_time, 
-                    end_date_time, 
-                    del_flag,
-                    expire_flag) VALUES 
-                                ( %s, %s, %s, %s, %s, %s)""";
-                            
-                    result_H = cursor.execute(query, 
-                                                (electionType,
-                                                    areaId, 
-                                                    datetime.strptime(startDateTime, '%Y-%m-%dT%H:%M:%S.%fZ'), 
-                                                    datetime.strptime(endDateTime, '%Y-%m-%dT%H:%M:%S.%fZ'),
-                                                    0,0))    
-                    message = ("Event Successfully Created" if result_H else "Event Not Created")    
-                    status = (201 if result_H else 406)   
-                 
+                query =  """INSERT INTO event 
+                (election_type, 
+                area_id, 
+                start_date_time, 
+                end_date_time, 
+                del_flag,
+                expire_flag) VALUES 
+                            ( %s, %s, %s, %s, %s, %s)""";
+                        
+                assert cursor.execute(query, 
+                                            (electionType,
+                                                areaId, 
+                                                datetime.strptime(startDateTime, '%Y-%m-%dT%H:%M:%S.%fZ'), 
+                                                datetime.strptime(endDateTime, '%Y-%m-%dT%H:%M:%S.%fZ'),
+                                                0,0)) == 1, "Event Not Created"
+                message = "Event Created"
+                print(message)
+                status = 200                   
             conn.commit()
           
             # First "remove" the old candidates
             query = """UPDATE candidate SET del_flag = %s WHERE event_id = %s""";
             cursor.execute(query,(1,id))
           
+            # Find the just inserted event id
             query = """SELECT event_id FROM event WHERE 
                         election_type = %s AND
                         area_id = %s AND
@@ -529,10 +529,10 @@ def putEvent(id=-1):
                         end_date_time = %s AND
                         del_flag = %s AND
                         expire_flag = %s"""
-            cursor.execute(query,(electionType,
+            assert cursor.execute(query,(electionType,
                                     areaId,
                                         datetime.strptime(startDateTime, '%Y-%m-%dT%H:%M:%S.%fZ'),
-                                        datetime.strptime(endDateTime, '%Y-%m-%dT%H:%M:%S.%fZ'),0,0))
+                                        datetime.strptime(endDateTime, '%Y-%m-%dT%H:%M:%S.%fZ'),0,0)) == 1, "Fail to retrieve inserted event."
             result_F = cursor.fetchone()
             id = result_F[0]
          
@@ -542,9 +542,7 @@ def putEvent(id=-1):
             VALUES""";
             for record in candidate_payload:
                     query += """ (%s, "%s", "%s"),""" %(id,record['candidate_name'], record['candidate_image'])
-            print(query)
-            cursor.execute(query[:-1]);
-            print("Reach here")
+            assert cursor.execute(query[:-1]) == 2, "Failed to update candidate."
             cursor.close()
             conn.commit()
             conn.close()  
@@ -553,8 +551,8 @@ def putEvent(id=-1):
             print(message)
             status = 406
  
-    except:
-        message = 'Unable create event. Please try again.'
+    except Exception:
+        message = str(sys.exc_info()[1]) 
         print(message)
         return Response(json.dumps({"message": message}), 400, mimetype='application/json') 
                  
@@ -677,7 +675,6 @@ def uploadFile():
 
             # Store the details for later xlsx file output
             user = { "email": data_xls['email'][i], 
-                        "role": data_xls['role'][i], 
                         "area_id":data_xls['area_id'][i], 
                         "password": password,
                         "private_key": private_key_list[i],
@@ -706,7 +703,7 @@ def uploadFile():
         for i, user in enumerate(user_list):
             print(public_key_list[i])
             query = """UPDATE users SET area_id = %s, role = %s, public_key = %s, private_key = %s WHERE email = %s """
-            result = cursor.execute(query, (user['area_id'], user['role'], public_key_list[i], private_key_list[i], user['email']));
+            result = cursor.execute(query, (user['area_id'], Role.Voter.value, public_key_list[i], private_key_list[i], user['email']));
             print(result)
         cursor.close()
         conn.commit()

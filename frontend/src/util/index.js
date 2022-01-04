@@ -64,7 +64,13 @@ export const isDefined = (value) => {
 
 export const dateFormat = (date) => {
   return new Intl.DateTimeFormat("en-GB", {
-    dateStyle: "full",
+    dateStyle: "medium",
+    timeStyle: "medium",
+  }).format(date);
+};
+
+export const dateFormatTwo = (date) => {
+  return new Intl.DateTimeFormat("en-GB", {
     timeStyle: "long",
   }).format(date);
 };
@@ -90,8 +96,7 @@ export const ELECTED = "Elected";
 export const NOTELECTED = "Not Elected";
 export const SAMPLE_EXCEL_DATA = [
   {
-    email: "example@credentials.gov",
-    role: "YOUR_ROLE_ID",
+    email: "example@sg.gov",
     area_id: "YOUR_AREA_ID",
   },
 ];

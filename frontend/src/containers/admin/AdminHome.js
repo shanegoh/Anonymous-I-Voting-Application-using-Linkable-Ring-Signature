@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { isAdmin, dateFormat } from "../../util";
+import { isAdmin, dateFormat, dateFormatTwo } from "../../util";
 import { Redirect } from "react-router-dom";
 import NavBar from "../../components/NavBar.js";
 import { Button } from "react-bootstrap";
@@ -57,7 +57,8 @@ export default function Admin({ history }) {
             >
               {record.area_name}
               <br />
-              <small> {dateFormat(new Date(record.start_date_time))}</small>
+              <small> {dateFormat(new Date(record.start_date_time))}</small> -
+              <small> {dateFormatTwo(new Date(record.end_date_time))}</small>
             </Button>
           );
         })}
