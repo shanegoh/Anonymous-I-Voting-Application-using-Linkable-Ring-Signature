@@ -18,6 +18,24 @@ import traceback
 import ast
 import sys
 
+
+@app.route("/")
+@cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'id_token'])
+def zxc():
+    conn = mysql.connect()
+    try:    
+        cursor = conn.cursor()
+        query = """SHOW SESSION STATUS LIKE 'Ssl_cipher'"""
+        cursor.execute(query)
+        data = cursor.fetchone()
+        print(data)
+        cursor.close()
+        conn.close()
+    except:
+        print("huh")
+
+    return Response(json.dumps({"message": "ok"}), 200, mimetype='application/json') 
+
 #Controllers API
 #This needs authentication
 @app.route("/findUserInformation")

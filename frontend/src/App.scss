@@ -123,4 +123,8 @@ input[type="checkbox"]:checked {
   margin-bottom: 1rem;
 }
 
+body {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
 @import "../node_modules/react-toastify/dist/ReactToastify.min.css";

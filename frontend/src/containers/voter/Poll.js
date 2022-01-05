@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import NavBar from "../../components/NavBar.js";
-import { Table, Form, Button } from "react-bootstrap";
+import { Table, Form, Button, Modal } from "react-bootstrap";
 import { Redirect, useParams } from "react-router-dom";
 import AlertBox from "../../components/AlertBox.js";
 import { ImBoxAdd } from "react-icons/im";
@@ -19,6 +19,9 @@ export default function Poll({ history }) {
   const handleDismiss = () => setShow(false); // Logic for closing alert
   const [errMsg, setErrMsg] = useState(); // Logic setting error msg
   const [err, setErr] = useState([]); // Logic for storing all error messages
+  const [showModal, setShowModal] = useState(false);
+  const handleCloseModal = () => setShowModal(false);
+  const handleShowModal = () => setShowModal(true);
 
   const onSelectedChange = (e) => {
     console.log(e.target.id);
@@ -26,6 +29,7 @@ export default function Poll({ history }) {
   };
 
   const submitVote = () => {
+    handleCloseModal();
     var errors = [];
     if (!isDefined(selected)) {
       errors.push("Please select a candidate.");
@@ -98,6 +102,27 @@ export default function Poll({ history }) {
   return !isAdmin() ? (
     <div>
       <NavBar />
+      {showModal ? (
+        <>
+          <Modal show={showModal} onHide={handleCloseModal}>
+            <Modal.Header>
+              <Modal.Title>Vote Confirmation</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>Are you sure?</Modal.Body>
+            <Modal.Footer>
+              <Button variant="danger" onClick={() => handleCloseModal()}>
+                No, bring me back
+              </Button>
+              &nbsp;
+              <Button variant="success" onClick={() => submitVote()}>
+                Yes I am sure
+              </Button>
+            </Modal.Footer>
+          </Modal>
+        </>
+      ) : (
+        <></>
+      )}
       {isLoaded ? (
         <div className="d-flex flex-column gap-2 pt-4 align-items-center">
           {show ? (
@@ -153,7 +178,7 @@ export default function Poll({ history }) {
             className="text-light"
             size="lg"
             variant="success"
-            onClick={() => submitVote()}
+            onClick={() => handleShowModal()}
           >
             <ImBoxAdd />
             &nbsp; Vote
