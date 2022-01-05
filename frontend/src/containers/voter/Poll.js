@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
 import NavBar from "../../components/NavBar.js";
-import { Table, Form, Button, Modal } from "react-bootstrap";
+import { Table, Form, Button, Modal, Accordion } from "react-bootstrap";
 import { Redirect, useParams } from "react-router-dom";
 import AlertBox from "../../components/AlertBox.js";
 import { ImBoxAdd } from "react-icons/im";
 import { isAdmin, DANGER, isDefined } from "../../util";
+import { FiCheck, FiX } from "react-icons/fi";
+import { FcHighPriority } from "react-icons/fc";
 import axios from "axios";
 import "../../App.scss";
 
@@ -110,7 +112,7 @@ export default function Poll({ history }) {
             </Modal.Header>
             <Modal.Body>Are you sure?</Modal.Body>
             <Modal.Footer>
-              <Button variant="danger" onClick={() => handleCloseModal()}>
+              <Button color="red" onClick={() => handleCloseModal()}>
                 No, bring me back
               </Button>
               &nbsp;
@@ -125,6 +127,81 @@ export default function Poll({ history }) {
       )}
       {isLoaded ? (
         <div className="d-flex flex-column gap-2 pt-4 align-items-center">
+          <Accordion defaultActiveKey="0" className="w-50">
+            <Accordion.Item eventKey="0">
+              <Accordion.Header>
+                <div className="text-success fs-3">
+                  <FiCheck size={32} /> Do
+                </div>
+              </Accordion.Header>
+              <Accordion.Body className="ajust-fs">
+                <blockquote>
+                  <li>
+                    You are allowed to use your <b>smart phones or computers</b>
+                    &nbsp;to vote.
+                  </li>
+                </blockquote>
+                <blockquote>
+                  <li>
+                    Please select your choice by <b>tapping</b> or{" "}
+                    <b>clicking</b> on the check box.
+                  </li>
+                </blockquote>
+                <blockquote>
+                  <li>
+                    <b>Your vote is secret.</b> Please attempt your vote in a
+                    secluded environment.
+                  </li>
+                </blockquote>
+              </Accordion.Body>
+            </Accordion.Item>
+            <Accordion.Item eventKey="1">
+              <Accordion.Header>
+                <div className="text-danger fs-3">
+                  <FiX size={32} /> Do NOT
+                </div>
+              </Accordion.Header>
+              <Accordion.Body>
+                <blockquote>
+                  <li>
+                    <b>Do not vote for any other person</b>. Impersonating
+                    another voter is an offence.
+                  </li>
+                </blockquote>
+                <blockquote>
+                  <li>
+                    <b>Do not avoid voting</b>. It is against the law for not
+                    voting.
+                  </li>
+                </blockquote>
+                <blockquote>
+                  <li>
+                    <b>Do not</b> try to find out how any other voter has voted
+                    or intends to vote
+                  </li>
+                </blockquote>
+              </Accordion.Body>
+            </Accordion.Item>
+            <Accordion.Item eventKey="2">
+              <Accordion.Header>
+                <div className="text-info fs-3">
+                  <FcHighPriority /> &nbsp;PDPA Consent Clause
+                </div>
+              </Accordion.Header>
+              <Accordion.Body>
+                <blockquote>
+                  The purpose of the collection of your vote are for election
+                  purposes only. MiMi only uses the vote for vote tabulation and
+                  will not disclose any vote information and personal data.
+                </blockquote>
+                <blockquote>
+                  All information collected from voters will be kept protected.
+                  MiMi shall not disclose any information without voter's
+                  consent.
+                </blockquote>
+              </Accordion.Body>
+            </Accordion.Item>
+          </Accordion>
           {show ? (
             <AlertBox
               err={err}

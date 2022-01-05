@@ -87,8 +87,9 @@ def findElectionForVoter():
         cursor.execute(query, session['email'])
         result_A = cursor.fetchone()
         area_id = result_A[0]
-        print(result_A[1] is None)
-        assert ((result_A[1] is None) == True), "There is no event for you at the moment."
+        print(area_id)
+        print( (result_A[1] is None) == True)
+        assert (result_A[1] is None) == True, "There is no event for you at the moment."
 
 
         query = """SELECT e.event_id, 
@@ -289,7 +290,8 @@ def findPastEvent():
         cursor = conn.cursor()
         query = """SELECT e.event_id, 
                    a.area_name, 
-                   e.start_date_time
+                   e.start_date_time,
+                   e.end_date_time
                    FROM event e JOIN
                    area a ON e.area_id = a.area_id
                    WHERE e.del_flag = %s 
@@ -305,7 +307,8 @@ def findPastEvent():
             print(record[2])
             content = { 'event_id': record[0],
                         'area_name': record[1],
-                        'start_date_time': record[2]}
+                        'start_date_time': record[2],
+                        'end_date_time': record[3]}
             payload.append(content)
             content = {}
         message = "Successfully retrieve all records."  
@@ -617,7 +620,6 @@ def findResultById(id):
         query =  """SELECT e.area_id, 
                     (SELECT area_name FROM area WHERE area_id = e.area_id) AS area_name, 
                     c.candidate_name, 
-                    c.candidate_image, 
                     c.vote_count 
                     FROM candidate c
                     JOIN event e
@@ -634,8 +636,7 @@ def findResultById(id):
             candidate_content = { "area_id": record[0], 
                                     "area_name": record[1],
                                     "candidate_name": record[2], 
-                                    "candidate_image": record[3], 
-                                    "vote_count": record[4]}
+                                    "vote_count": record[3]}
             candidate_payload.append(candidate_content)
 
         message = "Successfully retrieve record."    
@@ -693,10 +694,9 @@ def uploadFile():
 
             # Store the details for later xlsx file output
             user = { "email": data_xls['email'][i], 
-                        "area_id":data_xls['area_id'][i], 
+                        "area_id": data_xls['area_id'][i], 
                         "password": password,
-                        "private_key": private_key_list[i],
-                        "public_key": public_key_list[i]}
+                        "private_key": private_key_list[i]}
             user_list.append(user)
 
             # add user to auth0

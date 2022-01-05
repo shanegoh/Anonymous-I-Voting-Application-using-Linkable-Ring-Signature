@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { isAdmin, dateFormat, DANGER } from "../../util";
 import { Redirect } from "react-router-dom";
 import NavBar from "../../components/NavBar.js";
-import { Button } from "react-bootstrap";
+import { Button, Alert } from "react-bootstrap";
 import AlertBox from "../../components/AlertBox.js";
 import axios from "axios";
 import "../../App.scss";
@@ -48,6 +48,9 @@ export default function PastEvent({ history }) {
     <div>
       <NavBar />
       <div className="d-flex flex-column gap-2 pt-4 align-items-center">
+        <Alert className="btn-lg w-100 text-center text-light bg-black">
+          Event Completed
+        </Alert>
         {show ? (
           <AlertBox
             err={[]}
@@ -69,7 +72,8 @@ export default function PastEvent({ history }) {
             >
               {record.area_name}
               <br />
-              <small> {dateFormat(new Date(record.start_date_time))}</small>
+              <small> {dateFormat(new Date(record.start_date_time))}</small> -
+              <small> {dateFormat(new Date(record.end_date_time))}</small>
             </Button>
           );
         })}

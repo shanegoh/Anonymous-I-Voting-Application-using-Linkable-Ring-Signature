@@ -12,7 +12,7 @@ import { Redirect } from "react-router-dom";
 import NavBar from "../../components/NavBar.js";
 import "../../App.scss";
 import { Form } from "react-bootstrap";
-import { Button, Accordion } from "react-bootstrap";
+import { Button, Accordion, Spinner } from "react-bootstrap";
 import { AiOutlineFileExcel } from "react-icons/ai";
 import AlertBox from "../../components/AlertBox.js";
 import * as FileSaver from "file-saver";
@@ -27,6 +27,7 @@ export default function Upload() {
   const [variant, setVariant] = useState();
   const [selectedFile, setSelectedFile] = useState();
   const [btnStatus, setBtnStatus] = useState(true);
+  const [isLoading, setIsLoadingStatus] = useState(false);
 
   const changeHandler = (e) => {
     console.log(e.target.files[0]);
@@ -50,6 +51,8 @@ export default function Upload() {
   }
 
   const onUpload = () => {
+    setIsLoadingStatus(true);
+    setBtnStatus(true); // disable upload button
     // If file is correctly selected
     const data = new FormData();
     data.append("file", selectedFile);
@@ -62,6 +65,8 @@ export default function Upload() {
       })
       .then((res) => {
         if (res.status === 200) {
+          setIsLoadingStatus(false);
+          setBtnStatus(false);
           console.log(res.data.excel_file);
           var blob = new Blob([s2ab(atob(res.data.excel_file))], {
             type: fileType,
@@ -80,6 +85,8 @@ export default function Upload() {
         setErrMsg((errMsg) => err.response.data.message);
         setVariant((variant) => DANGER);
         handleShow(); // Display alert
+        setIsLoadingStatus(false);
+        setBtnStatus(false);
       });
   };
 
@@ -137,7 +144,22 @@ export default function Upload() {
             onClick={() => onUpload()}
             disabled={btnStatus ? true : false}
           >
-            <AiOutlineFileExcel /> &nbsp;Upload
+            {isLoading ? (
+              <>
+                <Spinner
+                  as="span"
+                  animation="grow"
+                  size="sm"
+                  role="status"
+                  aria-hidden="true"
+                />
+                Loading..
+              </>
+            ) : (
+              <>
+                <AiOutlineFileExcel /> &nbsp;Upload
+              </>
+            )}
           </Button>
         </Form>
       </div>

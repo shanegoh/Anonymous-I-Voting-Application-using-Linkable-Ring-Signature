@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { isAdmin, dateFormat, dateFormatTwo } from "../../util";
+import { isAdmin, dateFormat } from "../../util";
 import { Redirect } from "react-router-dom";
 import NavBar from "../../components/NavBar.js";
-import { Button } from "react-bootstrap";
+import { Button, Alert } from "react-bootstrap";
 import { BsPlusLg } from "react-icons/bs";
 import axios from "axios";
 import "../../App.scss";
@@ -45,6 +45,9 @@ export default function Admin({ history }) {
     <div>
       <NavBar />
       <div className="d-flex flex-column gap-2 pt-4 align-items-center">
+        <Alert className="btn-lg w-100 text-center text-light bg-black">
+          Current/Upcoming Events
+        </Alert>
         {recordList.map(function (record) {
           return (
             <Button
@@ -58,7 +61,7 @@ export default function Admin({ history }) {
               {record.area_name}
               <br />
               <small> {dateFormat(new Date(record.start_date_time))}</small> -
-              <small> {dateFormatTwo(new Date(record.end_date_time))}</small>
+              <small> {dateFormat(new Date(record.end_date_time))}</small>
             </Button>
           );
         })}
