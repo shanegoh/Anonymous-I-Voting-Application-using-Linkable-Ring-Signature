@@ -39,18 +39,33 @@ export default function Poll({ history }) {
   };
 
   const submitVote = () => {
+    //clear error msg
+    console.log(privateKey);
+    setErr((err) => []);
+    setErrMsg((errMsg) => "");
+    handleDismiss();
     setBtnStatus((btnStatus) => true);
     handleCloseModal();
     var errors = [];
+
+    // Check if candidate selected
     if (!isDefined(selected)) {
       errors.push("Please select a candidate.");
     }
-    if (!isDefined(privateKey)) {
+
+    // Check if private key is not empty
+    if (!isDefined(privateKey) || privateKey === "") {
       errors.push("Private Key cannot be empty.");
+    }
+
+    // Check if it is only digits
+    if (!Number(privateKey)) {
+      errors.push("Private Key contains only digits");
     }
     // If there is error, display error
     if (errors.length > 0) {
       setErr((err) => errors);
+      setBtnStatus((btnStatus) => false);
       handleShow();
     } else {
       const payload = {
@@ -78,6 +93,7 @@ export default function Poll({ history }) {
           // Set error message
           console.log(err.response.data.message);
           setErrMsg((errMsg) => err.response.data.message);
+          setBtnStatus((btnStatus) => false);
           handleShow();
         });
     }
@@ -134,19 +150,18 @@ export default function Poll({ history }) {
       ) : (
         <></>
       )}
-      {show ? (
-        <AlertBox
-          err={err}
-          setShow={setShow}
-          errMsg={errMsg}
-          variant={DANGER}
-        />
-      ) : (
-        <></>
-      )}
-
       {isLoaded ? (
         <div className="d-flex flex-column gap-2 pt-4 align-items-center">
+          {show ? (
+            <AlertBox
+              err={err}
+              setShow={setShow}
+              errMsg={errMsg}
+              variant={DANGER}
+            />
+          ) : (
+            <></>
+          )}
           <Accordion defaultActiveKey="0" className="w-50">
             <Accordion.Item eventKey="0">
               <Accordion.Header>

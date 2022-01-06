@@ -120,10 +120,11 @@ export default function Upload() {
               <Accordion.Body>
                 This uploader only accept a single file format <b>'.xlsx'</b>.
                 The purpose of this uploader is to{" "}
-                <b>generate passwords and private keys</b> tagged to each login
-                identifier provided. Please upload each set of voters based on
-                their <b>area identification</b>. You will receive an excel file
-                in short while. Please wait patiently after submitting. <br />
+                <b>generate passwords, private keys and public keys</b> tagged
+                to each login identifier provided. Please upload each set of
+                voters based on their <b>area identification</b>. You will
+                receive an excel file in short while. Please wait patiently
+                after submitting. <br />
                 <br />
                 Below is a sample format you need to follow:
                 <br />

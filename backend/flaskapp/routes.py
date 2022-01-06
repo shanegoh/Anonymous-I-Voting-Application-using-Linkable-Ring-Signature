@@ -88,7 +88,7 @@ def findElectionForVoter():
         result_A = cursor.fetchone()
         area_id = result_A[0]
         print(area_id)
- 
+        print( result_A[1] is None)
         assert result_A[1] is None, "There is no event for you at the moment."
         print("reach here")
 
@@ -102,8 +102,9 @@ def findElectionForVoter():
                    AND a.del_flag = %s 
                    AND e.expire_flag = %s
                    AND e.area_id = %s"""
-        cursor.execute(query,(0,0,0,area_id))
+        x = cursor.execute(query,(0,0,0,area_id))
         result_B = cursor.fetchone()
+        assert result_B is not None, "There is no event for you at the moment."
         payload = { 'event_id': result_B[0],
                     'area_name': result_B[1],
                     'start_date_time': result_B[2],
@@ -186,6 +187,7 @@ def voteCandidate():
         query = """SELECT email FROM users WHERE private_key = %s"""
         cursor.execute(query, request.json['private_key'])
         result_C = cursor.fetchone()
+        assert result_C is not None, "Invalid private key."
         assert (session['email'] == result_C[0]) == True, "Private key does not belong to you!"
 
         # Adding all private and public keys into each list

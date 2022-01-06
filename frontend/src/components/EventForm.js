@@ -124,7 +124,7 @@ export default function EventForm({
     console.log(jsonArray);
 
     // Validate if start date time is in future
-    if (new Date(startDateTime) <= new Date()) {
+    if (new Date(startDateTime) < new Date()) {
       errors.push("Start date time must be in the future.");
     }
 
@@ -160,11 +160,11 @@ export default function EventForm({
     if (!validateDateTime()) {
       errors.push("Duration of the event must be at least 4 hours.");
     }
-
+    console.log(err);
     // Show the Alert Box if there is error, else close and post data
     if (errors.length > 0) {
       setErr((err) => errors);
-      console.log(err);
+
       setVariant((variant) => DANGER);
       handleShow(); // Display alert box
     } else {
