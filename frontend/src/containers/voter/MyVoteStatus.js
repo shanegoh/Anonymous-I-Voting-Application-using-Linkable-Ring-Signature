@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { isAdmin, DANGER } from "../../util";
 import { Redirect } from "react-router-dom";
 import NavBar from "../../components/NavBar.js";
-import { Table } from "react-bootstrap";
+import { Table, Spinner } from "react-bootstrap";
 import AlertBox from "../../components/AlertBox.js";
 import axios from "axios";
 import "../../App.scss";
@@ -14,6 +14,7 @@ export default function MyVoteStatus() {
   const [area, setArea] = useState();
   const [status, setStatus] = useState();
   const [isLoaded, setLoadStatus] = useState(false);
+  const [isLoading, setLoadingStatus] = useState(true);
 
   useEffect(() => {
     axios
@@ -29,12 +30,14 @@ export default function MyVoteStatus() {
           setArea((area) => res.data.area);
           setStatus((status) => res.data.status);
           setLoadStatus((isLoaded) => true);
+          setLoadingStatus((isLoading) => false);
         }
       })
       .catch((err) => {
         // Set error message
         console.log(err.response.message);
         setErrMsg((errMsg) => err.response.message);
+        setLoadingStatus((isLoading) => false);
         handleShow();
       });
   }, []);
@@ -72,6 +75,15 @@ export default function MyVoteStatus() {
               </tr>
             </tbody>
           </Table>
+        ) : (
+          <></>
+        )}
+        {isLoading ? (
+          <>
+            <Spinner animation="border" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </Spinner>
+          </>
         ) : (
           <></>
         )}

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { isAdmin, dateFormat, DANGER } from "../../util";
 import { Redirect } from "react-router-dom";
 import NavBar from "../../components/NavBar.js";
-import { Button, Alert } from "react-bootstrap";
+import { Button, Alert, Spinner } from "react-bootstrap";
 import AlertBox from "../../components/AlertBox.js";
 import axios from "axios";
 import "../../App.scss";
@@ -14,6 +14,7 @@ export default function PastEvent({ history }) {
   const [recordList, setList] = useState([]);
   const [errMsg, setErrMsg] = useState();
   const [variant, setVariant] = useState();
+  const [isLoading, setLoadingStatus] = useState(true);
 
   useEffect(() => {
     axios
@@ -27,6 +28,7 @@ export default function PastEvent({ history }) {
         if (res.status === 200) {
           console.log(res.data);
           setList((recordList) => res.data);
+          setLoadingStatus((isLoading) => false);
         }
       })
       .catch((err) => {
@@ -35,6 +37,7 @@ export default function PastEvent({ history }) {
         setErrMsg((errMsg) => err.response.data.message);
         setVariant((variant) => DANGER);
         handleShow(); // Display alert
+        setLoadingStatus((isLoading) => false);
       });
   }, []);
 
@@ -52,31 +55,39 @@ export default function PastEvent({ history }) {
           Event Completed
         </Alert>
         {show ? (
-          <AlertBox
-            err={[]}
-            setShow={setShow}
-            errMsg={errMsg}
-            variant={variant}
-          />
+          <Alert
+            className="d-flex flex-column align-items-center text-dark"
+            variant="info"
+          >
+            <b>{errMsg}</b>
+          </Alert>
         ) : (
           <></>
         )}
-        {recordList.map(function (record) {
-          return (
-            <Button
-              key={record.event_id}
-              id={record.event_id}
-              className="btn-lg color-nav border-0 btn-hover-red admin-home-btn"
-              active
-              onClick={(e) => redirectToResult(e)}
-            >
-              {record.area_name}
-              <br />
-              <small> {dateFormat(new Date(record.start_date_time))}</small> -
-              <small> {dateFormat(new Date(record.end_date_time))}</small>
-            </Button>
-          );
-        })}
+        {!isLoading ? (
+          recordList.map(function (record) {
+            return (
+              <Button
+                key={record.event_id}
+                id={record.event_id}
+                className="btn-lg color-nav border-0 btn-hover-red admin-home-btn"
+                active
+                onClick={(e) => redirectToResult(e)}
+              >
+                {record.area_name}
+                <br />
+                <small> {dateFormat(new Date(record.start_date_time))}</small> -
+                <small> {dateFormat(new Date(record.end_date_time))}</small>
+              </Button>
+            );
+          })
+        ) : (
+          <>
+            <Spinner animation="border" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </Spinner>
+          </>
+        )}
       </div>
     </div>
   ) : (

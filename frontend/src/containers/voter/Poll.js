@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from "react";
 import NavBar from "../../components/NavBar.js";
-import { Table, Form, Button, Modal, Accordion } from "react-bootstrap";
+import {
+  Table,
+  Form,
+  Button,
+  Modal,
+  Accordion,
+  Spinner,
+} from "react-bootstrap";
 import { Redirect, useParams } from "react-router-dom";
 import AlertBox from "../../components/AlertBox.js";
 import { ImBoxAdd } from "react-icons/im";
@@ -24,6 +31,7 @@ export default function Poll({ history }) {
   const [showModal, setShowModal] = useState(false);
   const handleCloseModal = () => setShowModal(false);
   const handleShowModal = () => setShowModal(true);
+  const [btnStatus, setBtnStatus] = useState(false);
 
   const onSelectedChange = (e) => {
     console.log(e.target.id);
@@ -31,6 +39,7 @@ export default function Poll({ history }) {
   };
 
   const submitVote = () => {
+    setBtnStatus((btnStatus) => true);
     handleCloseModal();
     var errors = [];
     if (!isDefined(selected)) {
@@ -125,6 +134,17 @@ export default function Poll({ history }) {
       ) : (
         <></>
       )}
+      {show ? (
+        <AlertBox
+          err={err}
+          setShow={setShow}
+          errMsg={errMsg}
+          variant={DANGER}
+        />
+      ) : (
+        <></>
+      )}
+
       {isLoaded ? (
         <div className="d-flex flex-column gap-2 pt-4 align-items-center">
           <Accordion defaultActiveKey="0" className="w-50">
@@ -202,16 +222,6 @@ export default function Poll({ history }) {
               </Accordion.Body>
             </Accordion.Item>
           </Accordion>
-          {show ? (
-            <AlertBox
-              err={err}
-              setShow={setShow}
-              errMsg={errMsg}
-              variant={DANGER}
-            />
-          ) : (
-            <></>
-          )}
           <Table className="w-25 text-center table-bordered table-radius">
             <thead className="color-nav text-light">
               <tr>
@@ -256,13 +266,33 @@ export default function Poll({ history }) {
             size="lg"
             variant="success"
             onClick={() => handleShowModal()}
+            disabled={btnStatus ? true : false}
           >
-            <ImBoxAdd />
-            &nbsp; Vote
+            {btnStatus ? (
+              <>
+                <Spinner
+                  as="span"
+                  animation="grow"
+                  size="sm"
+                  role="status"
+                  aria-hidden="true"
+                />
+                Loading...
+              </>
+            ) : (
+              <>
+                <ImBoxAdd />
+                &nbsp; Vote
+              </>
+            )}
           </Button>
         </div>
       ) : (
-        <></>
+        <div className="d-flex pt-4 justify-content-center">
+          <Spinner animation="border" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </Spinner>
+        </div>
       )}
     </div>
   ) : (

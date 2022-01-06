@@ -2,7 +2,13 @@ import React, { useState, useEffect } from "react";
 import { DateTimePicker } from "react-rainbow-components";
 import { Form } from "react-bootstrap";
 import Candidate from "./Candidate.js";
-import { isDefined, DEFAULTSELECTOR, DANGER, SUCCESS } from "../util";
+import {
+  isDefined,
+  DEFAULTSELECTOR,
+  DANGER,
+  SUCCESS,
+  addMinutes,
+} from "../util";
 import AlertBox from "./AlertBox.js";
 import axios from "axios";
 import "../App.scss";
@@ -12,6 +18,7 @@ const initialStartDate = () => {
   var date = new Date();
   date.setSeconds(0);
   date.setMilliseconds(0);
+  date = addMinutes(date);
   return date;
 };
 
@@ -19,6 +26,7 @@ const initialStartDate = () => {
 const initialEndDate = () => {
   var date = new Date();
   date.setHours(date.getHours() + 4);
+  date = addMinutes(date);
   date.setSeconds(0);
   date.setMilliseconds(0);
   return date;
@@ -47,6 +55,7 @@ export default function EventForm({
   const [err, setErr] = useState([]); // Logic for storing all error messages
   const [errMsg, setErrMsg] = useState();
   const [variant, setVariant] = useState();
+
   // Validate if the time difference is at least 4 hours
   const validateDateTime = () => {
     const result = endDateTime - startDateTime;
@@ -113,6 +122,12 @@ export default function EventForm({
       jsonArray.push(tmpData);
     });
     console.log(jsonArray);
+
+    // Validate if start date time is in future
+    if (new Date(startDateTime) <= new Date()) {
+      errors.push("Start date time must be in the future.");
+    }
+
     // Validate election type field
     if (electionType === DEFAULTSELECTOR) {
       errors.push("Select parliamentary/presidential election.");
@@ -120,7 +135,7 @@ export default function EventForm({
 
     // Validate area field
     if (areaId === DEFAULTSELECTOR) {
-      errors.push("Select Area");
+      errors.push("You need to select an area");
     }
 
     // Validate number of candidate
@@ -134,6 +149,7 @@ export default function EventForm({
         jsonArray[x].candidate_name.length === 0 ||
         jsonArray[x].candidate_image.length === 0
       ) {
+        console.log(jsonArray[x].candidate_image.length);
         errors.push(
           "Candidate value cannot be empty. Please make sure you have selected an image and entered candidate name."
         );
@@ -148,6 +164,7 @@ export default function EventForm({
     // Show the Alert Box if there is error, else close and post data
     if (errors.length > 0) {
       setErr((err) => errors);
+      console.log(err);
       setVariant((variant) => DANGER);
       handleShow(); // Display alert box
     } else {
@@ -216,6 +233,7 @@ export default function EventForm({
         <Form.Select
           value={electionType}
           id="election_type"
+          disabled={isDefined(event_id)}
           onChange={(e) => updateElectionType(e)}
         >
           <option value="DEFAULT" disabled>
@@ -229,7 +247,12 @@ export default function EventForm({
             );
           })}
         </Form.Select>
-        <Form.Select value={areaId} id="area" onChange={(e) => updateAreaId(e)}>
+        <Form.Select
+          value={areaId}
+          id="area"
+          disabled={isDefined(event_id)}
+          onChange={(e) => updateAreaId(e)}
+        >
           <option value="DEFAULT" disabled>
             Select Area
           </option>
@@ -249,9 +272,12 @@ export default function EventForm({
           id="start"
           label="Start Date Time"
           formatStyle="large"
+          minDate={initialStartDate()}
           onChange={(value) => setStartDateTime((startDateTime) => value)}
           error={
-            validateDateTime() === false ? "Start time should be earlier." : ""
+            validateDateTime() === false
+              ? "Start time should be at least 4 hours earlier."
+              : ""
           }
         />
         <DateTimePicker
@@ -260,9 +286,12 @@ export default function EventForm({
           id="end"
           label="End Date Time"
           formatStyle="large"
+          minDate={initialStartDate()}
           onChange={(value) => setEndDateTime((setEndDateTime) => value)}
           error={
-            validateDateTime() === false ? "End time should be later." : ""
+            validateDateTime() === false
+              ? "End time should be at least 4 hours later."
+              : ""
           }
         />
       </div>

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import AlertBox from "../components/AlertBox.js";
+import { Spinner } from "react-bootstrap";
 import { DANGER } from "../util";
 import "../App.scss";
 import axios from "axios";
@@ -19,6 +20,7 @@ export default function Redirect({ history }) {
   const handleShow = () => setShow(true); // Logic for displaying alert
   const [errMsg, setErrMsg] = useState(); // Logic setting error msg
   const [variant, setVariant] = useState();
+  const [isRedirecting, setRedirectingStatus] = useState(true);
   const { user, isAuthenticated, getAccessTokenSilently, getIdTokenClaims } =
     useAuth0();
 
@@ -49,6 +51,7 @@ export default function Redirect({ history }) {
           .then((res) => {
             if (res.status === 200) {
               setRoleID(res.data.record.role_id);
+              setRedirectingStatus((isRedirecting) => false);
               if (res.data.record.role_id === ADMIN_ROLE) {
                 history.push("/admin/home");
               } else if (res.data.record.role_id === VOTER_ROLE) {
@@ -62,6 +65,7 @@ export default function Redirect({ history }) {
           .catch((err) => {
             // Set error message
             console.log(err.response.data.message);
+            setRedirectingStatus((isRedirecting) => false);
             setErrMsg((errMsg) => err.response.data.message);
             setVariant((variant) => DANGER);
             handleShow(); // Display alert
@@ -76,7 +80,7 @@ export default function Redirect({ history }) {
   }, [getAccessTokenSilently, user?.sub]);
 
   return isAuthenticated ? (
-    <div className="d-flex flex-column gap-2 pt-4 align-items-center ">
+    <div className="d-flex flex-column pt-4 align-items-center ">
       {show ? (
         <AlertBox
           err={[]}
@@ -84,6 +88,20 @@ export default function Redirect({ history }) {
           errMsg={errMsg}
           variant={variant}
         />
+      ) : (
+        <></>
+      )}
+      {isRedirecting ? (
+        <div className="d-flex justify-content-center">
+          <Spinner
+            animation="border"
+            role="status"
+            variant="primary"
+            className=".loader"
+          >
+            <span className="visually-hidden">Loading...</span>
+          </Spinner>
+        </div>
       ) : (
         <></>
       )}

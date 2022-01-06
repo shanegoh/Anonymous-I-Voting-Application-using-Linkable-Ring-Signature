@@ -88,9 +88,9 @@ def findElectionForVoter():
         result_A = cursor.fetchone()
         area_id = result_A[0]
         print(area_id)
-        print( (result_A[1] is None) == True)
-        assert (result_A[1] is None) == True, "There is no event for you at the moment."
-
+ 
+        assert result_A[1] is None, "There is no event for you at the moment."
+        print("reach here")
 
         query = """SELECT e.event_id, 
                    a.area_name, 
@@ -297,11 +297,10 @@ def findPastEvent():
                    WHERE e.del_flag = %s 
                    AND a.del_flag = %s 
                    AND e.expire_flag = %s"""
-        cursor.execute(query, (0,0,1))
+        assert cursor.execute(query, (0,0,1)) != 0 , "There is no completed event."
         data = cursor.fetchall()
         cursor.close()
         conn.close()
- 
         payload = []
         for record in data:
             print(record[2])
@@ -311,11 +310,9 @@ def findPastEvent():
                         'end_date_time': record[3]}
             payload.append(content)
             content = {}
-        message = "Successfully retrieve all records."  
-        status = 200 
-    except:
-        print("Error: Unable to fetch any record of events")
-        message = "Unable to fetch any record of events. Please refresh."      
+    except Exception:
+        message = str(sys.exc_info()[1]) 
+        print(message)     
         return Response(json.dumps({"message": message}), 400, mimetype='application/json') 
         
     return jsonify(payload)
@@ -353,8 +350,11 @@ def findEventById(id):
 
         candidate_payload = []
         for record in result_B:
+            with open(record[1], "rb") as image_file:
+                encoded_string = base64.b64encode(image_file.read())
+                pngFile = encoded_string.decode('UTF-8')
             candidate_content = { 'candidate_name':  record[0],
-                                'candidate_image':  record[1] }
+                                'candidate_image':  pngFile }
             candidate_payload.append(candidate_content) 
 
         # Get all information about the particular event + candidate
@@ -507,7 +507,7 @@ def putEvent(id=-1):
                                     areaId, 
                                     datetime.strptime(startDateTime, '%Y-%m-%dT%H:%M:%S.%fZ'), 
                                     datetime.strptime(endDateTime, '%Y-%m-%dT%H:%M:%S.%fZ'),
-                                    id,0,0)) == 1, "Event Failed to update"
+                                    id,0,0)) == 0, "Event Failed to update"
 
                 message = "Event Successfully Updated"
                 print(message)
@@ -595,8 +595,8 @@ def deleteEvent(id):
         result_A = cursor.execute(query, (1, id));
         query = """UPDATE candidate SET del_flag = %s WHERE event_id =%s"""
         result_B = cursor.execute(query, (1, id));
-        message = ("Successfully deleted." if result_A & result_B else "Error! Failed delete event. Please try again.")
-        status = (200 if result_A & result_B else 404)
+        message = "Event Successfully Deleted"
+        status = 200
         cursor.close()
         conn.commit()
         conn.close()
@@ -617,8 +617,7 @@ def findResultById(id):
     conn = mysql.connect() 
     try:
         cursor = conn.cursor()
-        query =  """SELECT e.area_id, 
-                    (SELECT area_name FROM area WHERE area_id = e.area_id) AS area_name, 
+        query =  """SELECT (SELECT area_name FROM area WHERE area_id = e.area_id) AS area_name, 
                     c.candidate_name, 
                     c.vote_count 
                     FROM candidate c
@@ -633,10 +632,9 @@ def findResultById(id):
 
         candidate_payload = []
         for record in result_A:
-            candidate_content = { "area_id": record[0], 
-                                    "area_name": record[1],
-                                    "candidate_name": record[2], 
-                                    "vote_count": record[3]}
+            candidate_content = {  "area_name": record[0],
+                                    "candidate_name": record[1], 
+                                    "vote_count": record[2]}
             candidate_payload.append(candidate_content)
 
         message = "Successfully retrieve record."    
@@ -733,7 +731,7 @@ def uploadFile():
         data = open('Generated_Credentials.xlsx', 'rb').read()
         os.remove("Generated_Credentials.xlsx") # remove file after read
         base64_encoded = base64.b64encode(data).decode('UTF-8') # encode for sending back to front end
-        message = "Success!"
+        message = "Users have been successfully created!"
         status = 200
     except:
         print("error")

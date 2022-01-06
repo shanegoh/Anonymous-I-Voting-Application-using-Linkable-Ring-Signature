@@ -10,7 +10,6 @@ export default function AlertBox({ err, setShow, errMsg, variant }) {
         className="w-75 d-flex flex-column"
         variant={variant}
         onClose={() => setShow(false)}
-        dismissible
       >
         <Alert.Heading>
           {variant === "danger" ? "Oh snap! You got an error!" : "Success!"}
@@ -20,21 +19,16 @@ export default function AlertBox({ err, setShow, errMsg, variant }) {
         ) : (
           <></>
         )}
-        {isDefined(errMsg) ? (
-          <p>*{errMsg}</p>
-        ) : (
-          <div>
-            {err.map((object, i) => {
-              return (
-                <div>
-                  <p>
-                    {i + 1}. &nbsp; {object}
-                  </p>
-                </div>
-              );
-            })}
-          </div>
-        )}
+        <p>{errMsg}</p>
+        {err.map((object, i) => {
+          return (
+            <div>
+              <p>
+                {i + 1}. &nbsp; {object}
+              </p>
+            </div>
+          );
+        })}
       </Alert>
     </>
   );

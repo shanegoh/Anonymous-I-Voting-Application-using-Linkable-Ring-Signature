@@ -136,7 +136,7 @@ export default function Upload() {
               </Accordion.Body>
             </Accordion.Item>
           </Accordion>
-          <Form.Control type="file" onChange={changeHandler} />
+          <Form.Control type="file" accept=".xlsx" onChange={changeHandler} />
           <Button
             type="button"
             className="btn-success text-light"

@@ -62,6 +62,11 @@ export const isDefined = (value) => {
   return typeof value !== "undefined";
 };
 
+// Add 30 minutes
+export const addMinutes = (date) => {
+  return new Date(date.getTime() + 30 * 60000);
+};
+
 export const dateFormat = (date) => {
   return new Intl.DateTimeFormat("en-GB", {
     dateStyle: "medium",
@@ -100,3 +105,6 @@ export const SAMPLE_EXCEL_DATA = [
     area_id: "YOUR_AREA_ID",
   },
 ];
+export const imageHeader = () => {
+  return "data:image/png;base64,";
+};

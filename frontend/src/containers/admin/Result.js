@@ -1,12 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  isAdmin,
-  DANGER,
-  fileType,
-  fileExtension,
-  ELECTED,
-  NOTELECTED,
-} from "../../util";
+import { isAdmin, DANGER, fileType, fileExtension } from "../../util";
 import { Redirect, useParams } from "react-router-dom";
 import NavBar from "../../components/NavBar.js";
 import { Pie } from "react-chartjs-2";
@@ -103,11 +96,7 @@ export default function Result() {
             //Calculate and display the percentage of votes for each candidate
             let percentage =
               ((toolTipItem[0].parsed / sum) * 100).toFixed(2) + "%";
-            return `Vote Percentage: ${percentage} \nStatus: ${
-              toolTipItem[0].parsed === Math.max(...voteCount)
-                ? ELECTED
-                : NOTELECTED
-            }`;
+            return `Vote Percentage: ${percentage} `;
           },
         },
       },
@@ -122,9 +111,6 @@ export default function Result() {
     voteCount.forEach((object, i) => {
       apiData[i]["vote_percentage"] = ((object / sum) * 100).toFixed(2) + "%";
       // Logic for finding the highest votes thus being elected
-      if (apiData[i]["vote_count"] === Math.max(...voteCount))
-        apiData[i]["status"] = ELECTED;
-      else apiData[i]["status"] = NOTELECTED;
     });
     const ws = XLSX.utils.json_to_sheet(apiData);
     const wb = { Sheets: { data: ws }, SheetNames: ["data"] };
@@ -136,6 +122,7 @@ export default function Result() {
   return isAdmin() ? (
     <div>
       <NavBar />
+
       <div className="d-flex flex-column gap-2 pt-4 align-items-center ">
         {show ? (
           <AlertBox

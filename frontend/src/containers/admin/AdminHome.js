@@ -2,13 +2,14 @@ import React, { useEffect, useState } from "react";
 import { isAdmin, dateFormat } from "../../util";
 import { Redirect } from "react-router-dom";
 import NavBar from "../../components/NavBar.js";
-import { Button, Alert } from "react-bootstrap";
+import { Button, Alert, Spinner } from "react-bootstrap";
 import { BsPlusLg } from "react-icons/bs";
 import axios from "axios";
 import "../../App.scss";
 
 export default function Admin({ history }) {
   const [recordList, setList] = useState([]);
+  const [isLoading, setLoadingStatus] = useState(true);
 
   const createEvent = () => {
     let path = "/admin/create";
@@ -34,20 +35,24 @@ export default function Admin({ history }) {
         if (res.status === 200) {
           console.log(res);
           setList((recordList) => res.data);
+          setLoadingStatus((isLoading) => false);
         }
       })
       .catch((err) => {
         console.log(err);
+        setLoadingStatus((isLoading) => false);
       });
   }, []);
 
   return isAdmin() ? (
     <div>
       <NavBar />
+
       <div className="d-flex flex-column gap-2 pt-4 align-items-center">
         <Alert className="btn-lg w-100 text-center text-light bg-black">
           Current/Upcoming Events
         </Alert>
+
         {recordList.map(function (record) {
           return (
             <Button
@@ -65,14 +70,21 @@ export default function Admin({ history }) {
             </Button>
           );
         })}
-
-        <Button
-          className="btn-circle color-nav border-0 btn-hover-green"
-          to={"/admin/create"}
-          onClick={createEvent}
-        >
-          <BsPlusLg className="fs-3" />
-        </Button>
+        {!isLoading ? (
+          <Button
+            className="btn-circle color-nav border-0 btn-hover-green"
+            to={"/admin/create"}
+            onClick={createEvent}
+          >
+            <BsPlusLg className="fs-3" />
+          </Button>
+        ) : (
+          <>
+            <Spinner animation="border" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </Spinner>
+          </>
+        )}
       </div>
     </div>
   ) : (

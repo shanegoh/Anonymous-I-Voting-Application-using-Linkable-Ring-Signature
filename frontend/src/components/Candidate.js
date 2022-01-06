@@ -9,7 +9,7 @@ import {
 } from "react-bootstrap";
 import { BsPlusLg } from "react-icons/bs";
 import { BiMinus } from "react-icons/bi";
-import { isDefined, imageType } from "../util";
+import { isDefined, imageType, imageHeader } from "../util";
 import { nanoid } from "nanoid";
 import axios from "axios";
 import "../App.scss";
@@ -48,7 +48,13 @@ export default function Candidate({
     candidateList.forEach((candidate) => {
       updateList((inputList) => [
         ...inputList,
-        [nanoid(), nanoid(), nanoid(), "", candidate.candidate_name], // might need to fix
+        [
+          nanoid(),
+          nanoid(),
+          nanoid(),
+          imageHeader + candidate.candidate_image,
+          candidate.candidate_name,
+        ], // might need to fix
       ]);
     });
   };
@@ -78,6 +84,7 @@ export default function Candidate({
         // object[1] is candidate name field
         if (object[1] === key) {
           getBase64(e.target.files[0], (result) => {
+            console.log(e.target.files[0].name);
             console.log(result);
             object[3] = result;
           });
@@ -86,11 +93,6 @@ export default function Candidate({
     } else {
       submitResponseToParent("Image type must be .png");
     }
-
-    inputList.forEach((object) => {
-      // object[1] is candidate name field
-      console.log(object);
-    });
   };
 
   const getBase64 = (file, cb) => {
@@ -129,7 +131,7 @@ export default function Candidate({
   return (
     <>
       <div className="w-75">
-        <Container className="d-flex gap-3 align-items-center flex-column">
+        <Container className="d-flex gap-3 align-items-center flex-column ">
           <Form.Label className="fs-5 color-nav text-light w-100 text-center table-radius ">
             Candidates
           </Form.Label>
@@ -145,13 +147,31 @@ export default function Candidate({
                 }
               >
                 <Form.Control
+                  style={isDefined(event_id) ? { display: "none" } : {}}
                   key={object[0]}
                   id={object[1]}
                   type="file"
+                  accept=".png"
                   onChange={(e) => updateImage(e)}
                 />
               </OverlayTrigger>
-
+              <OverlayTrigger
+                key={nanoid()}
+                placement={"left"}
+                overlay={
+                  <Tooltip id={nanoid()} style={{ margin: 0 }}>
+                    <strong>Upload again to replace image.</strong>
+                  </Tooltip>
+                }
+              >
+                <Form.Label
+                  style={!isDefined(event_id) ? { display: "none" } : {}}
+                  for={object[1]}
+                  className="bg-secondary btn-hover-red text-light text-center w-100 btn-radius "
+                >
+                  Upload New Image
+                </Form.Label>
+              </OverlayTrigger>
               <Form.Control
                 key={object[1]}
                 id={object[1]}
@@ -200,6 +220,7 @@ export default function Candidate({
           </Button>
         )}
       </div>
+      {/* re structure the delete code here to eventform */}
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
           <Modal.Title>Are you absolutely sure?</Modal.Title>
