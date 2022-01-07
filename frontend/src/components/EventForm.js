@@ -203,9 +203,18 @@ export default function EventForm({
         .catch((err) => {
           // Set error message
           console.log(err.response.data.message);
-          setErrMsg((errMsg) => err.response.data.message);
-          setVariant((variant) => DANGER);
-          handleShow(); // Display alert
+          if (new Date(event_startDateTime) < new Date()) {
+            setTimeout(() => {
+              setErrMsg((errMsg) => err.response.data.message);
+              setVariant((variant) => DANGER);
+              handleShow(); // Display alert
+              history.push("/admin/home");
+            }, 5000);
+          } else {
+            setErrMsg((errMsg) => err.response.data.message);
+            setVariant((variant) => DANGER);
+            handleShow(); // Display alert
+          }
         });
     }
   };

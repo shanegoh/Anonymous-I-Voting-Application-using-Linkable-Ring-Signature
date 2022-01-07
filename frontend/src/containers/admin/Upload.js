@@ -11,13 +11,13 @@ import {
 import { Redirect } from "react-router-dom";
 import NavBar from "../../components/NavBar.js";
 import "../../App.scss";
-import { Form } from "react-bootstrap";
-import { Button, Accordion, Spinner } from "react-bootstrap";
+import { Button, Accordion, Spinner, Form } from "react-bootstrap";
 import { AiOutlineFileExcel } from "react-icons/ai";
 import AlertBox from "../../components/AlertBox.js";
 import * as FileSaver from "file-saver";
 import * as XLSX from "xlsx";
 import axios from "axios";
+import { BsWindowSidebar } from "react-icons/bs";
 
 export default function Upload() {
   const [show, setShow] = useState(false); // Logic for displaying alert
@@ -28,6 +28,7 @@ export default function Upload() {
   const [selectedFile, setSelectedFile] = useState();
   const [btnStatus, setBtnStatus] = useState(true);
   const [isLoading, setIsLoadingStatus] = useState(false);
+  const [excelFile, setExcelFile] = useState([]);
 
   const changeHandler = (e) => {
     console.log(e.target.files[0]);
@@ -65,14 +66,24 @@ export default function Upload() {
       })
       .then((res) => {
         if (res.status === 200) {
+          console.log(res.data);
           setIsLoadingStatus(false);
           setBtnStatus(false);
           console.log(res.data.excel_file);
-          var blob = new Blob([s2ab(atob(res.data.excel_file))], {
-            type: fileType,
+          var first = true;
+          res.data.excel_file.forEach((file) => {
+            var blob = new Blob([s2ab(atob(file))], {
+              type: fileType,
+            });
+            var url = URL.createObjectURL(blob);
+            //window.open(url);
+            var a = document.createElement("a");
+            a.download = "Confidential_Credential.xlsx";
+            a.href = url;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
           });
-          var url = URL.createObjectURL(blob);
-          window.open(url);
           console.log(res);
           setErrMsg((errMsg) => res.data.message);
           setVariant((variant) => SUCCESS);
@@ -123,7 +134,7 @@ export default function Upload() {
                 <b>generate passwords, private keys and public keys</b> tagged
                 to each login identifier provided. Please upload each set of
                 voters based on their <b>area identification</b>. You will
-                receive an excel file in short while. Please wait patiently
+                receive excel file(s) in short while. Please wait patiently
                 after submitting. <br />
                 <br />
                 Below is a sample format you need to follow:

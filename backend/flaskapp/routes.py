@@ -14,27 +14,26 @@ import http.client
 import string
 import base64
 import numpy as np
-import traceback
 import ast
 import sys
 
 
-@app.route("/")
-@cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'id_token'])
-def zxc():
-    conn = mysql.connect()
-    try:    
-        cursor = conn.cursor()
-        query = """SHOW SESSION STATUS LIKE 'Ssl_cipher'"""
-        cursor.execute(query)
-        data = cursor.fetchone()
-        print(data)
-        cursor.close()
-        conn.close()
-    except:
-        print("huh")
+# @app.route("/")
+# @cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'id_token'])
+# def zxc():
+#     conn = mysql.connect()
+#     try:    
+#         cursor = conn.cursor()
+#         query = """SHOW SESSION STATUS LIKE 'Ssl_cipher'"""
+#         cursor.execute(query)
+#         data = cursor.fetchone()
+#         print(data)
+#         cursor.close()
+#         conn.close()
+#     except:
+#         print("huh")
 
-    return Response(json.dumps({"message": "ok"}), 200, mimetype='application/json') 
+#     return Response(json.dumps({"message": "ok"}), 200, mimetype='application/json') 
 
 #Controllers API
 #This needs authentication
@@ -495,6 +494,15 @@ def putEvent(id=-1):
 
             # Got record, we need to update
             if (result_E):
+                # Check if the event is on going
+                query = "SELECT start_date_time FROM event WHERE event_id = %s"
+                cursor.execute(query,id)
+                start = cursor.fetchone()[0] 
+                date_time_now_UTC = datetime.now(timezone.utc)
+                startDateTime_formatted_UTC = datetime.strftime(start, '%Y-%m-%d %H:%M:%S')
+                currentDateTime_formatted_UTC = datetime.strftime(date_time_now_UTC, '%Y-%m-%d %H:%M:%S')
+                assert (currentDateTime_formatted_UTC < startDateTime_formatted_UTC), "Unable to modify ongoing event."
+
                 print("Updating")
                 query =  """UPDATE event SET
                             election_type = %s,
@@ -504,12 +512,12 @@ def putEvent(id=-1):
                             WHERE event_id = %s
                             AND del_flag = %s
                             AND expire_flag = %s""";
-                assert cursor.execute(query, 
+                cursor.execute(query, 
                                 (electionType, 
                                     areaId, 
                                     datetime.strptime(startDateTime, '%Y-%m-%dT%H:%M:%S.%fZ'), 
                                     datetime.strptime(endDateTime, '%Y-%m-%dT%H:%M:%S.%fZ'),
-                                    id,0,0)) == 0, "Event Failed to update"
+                                    id,0,0)) == 1, "Event Failed to update"
 
                 message = "Event Successfully Updated"
                 print(message)
@@ -625,9 +633,12 @@ def findResultById(id):
                     FROM candidate c
                     JOIN event e
                     ON c.event_id = e.event_id
-                    WHERE c.event_id = %s""";
+                    WHERE c.event_id = %s
+                    AND e.expire_flag = %s
+                    AND c.del_flag = %s
+                    AND e.del_flag = %s""";
 
-        cursor.execute(query, id);
+        cursor.execute(query, (id,1,0,0));
         result_A = cursor.fetchall()
         cursor.close()
         conn.close()
@@ -671,75 +682,108 @@ def uploadFile():
         # Get the excel file
         xlsx_file = request.files['file']
         data_xls = pd.read_excel(xlsx_file)
-        number_of_participants = len(data_xls); # Check number of participants within the list.
+        assert len(data_xls) > 0, "You have uploaded an empty file.."   # Error if user upload empty file, logic not proceeding
+    
+        # Get all users in exisiting database
+        query = """SELECT email FROM users"""
+        cursor.execute(query)
+        user_record_list = [record[0] for record in cursor.fetchall()]       # Convert all records into a list
 
+        # list to store exisiting users
+        existing_user_list = []
+        skip_index = []
+        for i in data_xls.index:
+            if (data_xls['email'][i] in user_record_list):
+                existing_user_list.append({ "Account already created": data_xls['email'][i] })
+                skip_index.append(i)
+
+        number_of_participants = len(data_xls) - len(existing_user_list)    # Get the actual no. of account generating
+        print("OK here")
+        print(number_of_participants)
+        # A list to store base64 encoded xlsx files( up to max 2 files )
+        b64_list = []
         # Generate keys based on number of participants on the same area
         privateKey, publicKey = generate_keys(number_of_participants)
         private_key_list = export_private_keys_in_list(privateKey)
         public_key_list = export_private_keys_in_list(publicKey)
-        print(private_key_list)
-        print(public_key_list)
-        user_list = []
+        user_list = []  # User list for writting into xlsx files
+        j = 0;
+        # Loop all provided users and check if they exist
         for i in data_xls.index:
-            # Password generator
-            ## characters to generate password from
-            characters = list(string.ascii_letters + string.digits + "!@#$%^&*()")   
-            ## picking random characters from the list
-            pass_phrase = []
-            length = 20
-            for k in range(length):
-                pass_phrase.append(characters[int.from_bytes(os.urandom(1), byteorder="big") % len(characters)])   
-            password = "".join(pass_phrase)
-            # Generate key set
-
-            # Store the details for later xlsx file output
-            user = { "email": data_xls['email'][i], 
-                        "area_id": data_xls['area_id'][i], 
-                        "password": password,
-                        "private_key": private_key_list[i]}
-            user_list.append(user)
-
-            # add user to auth0
-            payload = '{"email": "%s", '\
-                        '"nickname": "%s", '\
-                        '"connection": "Username-Password-Authentication", '\
-                        '"password": "%s" }'%(data_xls['email'][i], "empty", password)
-            # Use management_access_token to create user with auth0
-            headers = {
-                'content-type': "application/json",
-                'authorization': management_access_token
-                }
-            connnection.request("POST", "/api/v2/users", payload, headers)
-            res = connnection.getresponse()
-            data = res.read()
+            if i not in skip_index:
+                # Filter them if user exist
+                # Password generator
+                # characters to generate password from
+                characters = list(string.ascii_letters + string.digits + "!@#$%^&*()")   
+                # picking random characters from the list
+                pass_phrase = []
+                length = 20
+                for k in range(length):
+                    pass_phrase.append(characters[int.from_bytes(os.urandom(1), byteorder="big") % len(characters)])   
+                password = "".join(pass_phrase)
+                print("Generated Password")
+                # Store the details for later xlsx file output
+                user = { "email": data_xls['email'][i], 
+                            "area_id": data_xls['area_id'][i], 
+                            "password": password,
+                            "private_key": private_key_list[j]}
+                user_list.append(user)
+                ++j
+                print("Sending payload to auth0")
+                # add user to auth0
+                payload = '{"email": "%s", '\
+                            '"nickname": "%s", '\
+                            '"connection": "Username-Password-Authentication", '\
+                            '"password": "%s" }'%(data_xls['email'][i], "empty", password)
+                # Use management_access_token to create user with auth0
+                headers = {
+                    'content-type': "application/json",
+                    'authorization': management_access_token
+                    }
+                connnection.request("POST", "/api/v2/users", payload, headers)
+                res = connnection.getresponse()
+                data = res.read()
+                print("Sent")
         ############################################ End of for loop 
-
-        print("Running Here before update")
-        print(user_list)
         # Once mass creation is done, get all the email correspond with 
         # the area_id and update each record respectively
+        print("Updating roles, area id and keys..")
         for i, user in enumerate(user_list):
-            print(public_key_list[i])
             query = """UPDATE users SET area_id = %s, role = %s, public_key = %s, private_key = %s WHERE email = %s """
-            result = cursor.execute(query, (user['area_id'], Role.Voter.value, public_key_list[i], private_key_list[i], user['email']));
-            print(result)
+            cursor.execute(query, (user['area_id'], Role.Voter.value, public_key_list[i], private_key_list[i], user['email']));
+        print("Updated")
         cursor.close()
         conn.commit()
         conn.close()
 
         # Set user list into a excel format and encode the data
-        df = pd.DataFrame(user_list)
-        df.to_excel('Generated_Credentials.xlsx')
-        data = open('Generated_Credentials.xlsx', 'rb').read()
-        os.remove("Generated_Credentials.xlsx") # remove file after read
-        base64_encoded = base64.b64encode(data).decode('UTF-8') # encode for sending back to front end
-        message = "Users have been successfully created!"
-        status = 200
-    except:
-        print("error")
-        return Response(json.dumps({"message": "Fail"}), 400, mimetype='application/json') 
+        if len(user_list) > 0:
+            print("Creating xlsx file containing user credentials...")
+            df = pd.DataFrame(user_list)
+            df.to_excel('Generated_Credentials.xlsx')
+            data = open('Generated_Credentials.xlsx', 'rb').read()
+            os.remove("Generated_Credentials.xlsx") # remove file after read
+            base64_encoded_credentials = base64.b64encode(data).decode('UTF-8') # encode for sending back to front end
+            b64_list.append(base64_encoded_credentials)
 
-    return Response(json.dumps({"message": message, "excel_file": base64_encoded}), status, mimetype='application/json')
+        # Set exisiting user list into a excel format and encode the data 
+        if len(existing_user_list) > 0:
+            print("Creating xlsx file containing existing users...")
+            df2 = pd.DataFrame(existing_user_list)
+            df2.to_excel('Existing_Users.xlsx')
+            data = open('Existing_Users.xlsx', 'rb').read()
+            os.remove("Existing_Users.xlsx") # remove file after read
+            base64_encoded_existing_user = base64.b64encode(data).decode('UTF-8') # encode for sending back to front end
+            b64_list.append(base64_encoded_existing_user)
+            
+        message = "Please read the file for more information."
+        status = 200
+    except Exception:
+        message = str(sys.exc_info()[1]) 
+        print(message)
+        return Response(json.dumps({"message": message}), 400, mimetype='application/json') 
+
+    return Response(json.dumps({"message": message, "excel_file": b64_list}), status, mimetype='application/json')
    
        
 

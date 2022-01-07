@@ -60,7 +60,7 @@ export default function Poll({ history }) {
 
     // Check if it is only digits
     if (!Number(privateKey)) {
-      errors.push("Private Key contains only digits");
+      errors.push("Private Key contains only digits.");
     }
     // If there is error, display error
     if (errors.length > 0) {

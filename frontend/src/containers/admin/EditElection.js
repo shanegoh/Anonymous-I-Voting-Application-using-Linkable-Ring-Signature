@@ -36,7 +36,8 @@ export default function EditElection({ history }) {
         }
       })
       .catch((err) => {
-        console.log(err);
+        console.log(err.response.data.message);
+        history.push("/admin/home");
       });
   }, []);
 
