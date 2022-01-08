@@ -1,23 +1,29 @@
 import React from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import Button from "react-bootstrap/Button";
-import { removeAccessToken, removeIDToken, removeRoleID } from "../util";
+import {
+  removeAccessToken,
+  removeIDToken,
+  removeRoleID,
+  removeAreaID,
+} from "../util";
 import "../App.scss";
 import { BsArrowBarRight } from "react-icons/bs";
 
-const LogoutButton = () => {
+export default function LogoutButton() {
   const { logout } = useAuth0();
 
   const attemptLogout = () => {
     removeIDToken();
     removeAccessToken();
     removeRoleID();
+    removeAreaID();
     logout({ returnTo: window.location.origin + "/main" });
   };
 
   return (
     <Button
-      className="text-light"
+      className="text-light color-red"
       size="xxl"
       variant="danger"
       onClick={() => attemptLogout()}
@@ -26,6 +32,4 @@ const LogoutButton = () => {
       Logout
     </Button>
   );
-};
-
-export default LogoutButton;
+}

@@ -1,9 +1,7 @@
-import react from "react";
 import LoginButton from "../components/LoginButton.js";
 import { Card } from "react-bootstrap";
-import logo from "../img/MiMi.png";
 
-const Main = () => {
+export default function Main() {
   return (
     <div className="App-header">
       <Card style={{ width: "30rem", height: "10rem" }}>
@@ -17,6 +15,4 @@ const Main = () => {
       </Card>
     </div>
   );
-};
-
-export default Main;
+}

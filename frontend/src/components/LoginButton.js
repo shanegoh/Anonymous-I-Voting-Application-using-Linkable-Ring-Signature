@@ -1,24 +1,11 @@
 import React from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import Button from "react-bootstrap/Button";
-import axios from "axios";
 import "../App.scss";
 import { BsArrowBarRight } from "react-icons/bs";
 
-const LoginButton = () => {
+export default function LoginButton() {
   const { loginWithRedirect } = useAuth0();
-
-  // const attemptLogin = () => {
-  //   axios
-  //     .get("http://localhost:5000/login")
-  //     .then((res) => {
-  //       if (res.status === 200) {
-  //         //navigate("/Dashboard");
-  //         console.log(res);
-  //       }
-  //     })
-  //     .catch((err) => {});
-  // };
 
   return (
     <div>
@@ -33,6 +20,4 @@ const LoginButton = () => {
       </Button>
     </div>
   );
-};
-
-export default LoginButton;
+}

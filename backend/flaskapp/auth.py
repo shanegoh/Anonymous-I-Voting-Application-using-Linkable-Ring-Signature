@@ -6,8 +6,8 @@ from flask import jsonify
 from jose import jwt
 from urllib.request import urlopen
 
-AUTH0_DOMAIN = 'dev-rkub2ofp.us.auth0.com'
-API_AUDIENCE = 'https://dev-rkub2ofp.us.auth0.com/api/v2/'
+AUTH0_DOMAIN = 'dev-i7062-qd.us.auth0.com'
+API_AUDIENCE = 'https://dev-i7062-qd.us.auth0.com/api/v2/'
 ALGORITHMS = ["RS256"]
 
 # Error handler
@@ -132,6 +132,7 @@ def requires_auth(f):
                         "description": "Unable to find appropriate key"}, 401)
     return decorated
 
+
 def requires_id_token(f):
     """Determines if the id Token is valid
     """
@@ -157,7 +158,7 @@ def requires_id_token(f):
                     token,
                     rsa_key,
                     algorithms=ALGORITHMS,
-                    audience='aEImOFcUlG8TP5goxSaPL80IeI1UwhRC',
+                    audience='iRBOjoV0GY8FJAVNG9EkAninlgNkw49G',
                     issuer="https://"+AUTH0_DOMAIN+"/"
                 )
                 session['email'] = payload.get('email')
