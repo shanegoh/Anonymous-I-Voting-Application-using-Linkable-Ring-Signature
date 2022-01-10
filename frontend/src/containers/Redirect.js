@@ -50,12 +50,13 @@ export default function Redirect({ history }) {
           })
           .then((res) => {
             if (res.status === 200) {
-              setRoleID(res.data.record.role_id);
+              console.log(res.data);
+              setRoleID(res.data.role);
               setRedirectingStatus((isRedirecting) => false);
-              if (res.data.record.role_id === ADMIN_ROLE) {
+              if (res.data.role === ADMIN_ROLE) {
                 history.push("/admin/home");
-              } else if (res.data.record.role_id === VOTER_ROLE) {
-                setAreaID(res.data.record.area_id);
+              } else if (res.data.role === VOTER_ROLE) {
+                setAreaID(res.data.area_id);
                 history.push("/voter/home");
               } else {
                 throw new Error("No roles found.");

@@ -4,7 +4,6 @@ from flaskapp.__init__ import *
 from flaskapp.auth import *
 from flask_cors import cross_origin
 from flask import Response
-from flaskapp.db import SQLAlchemy
 from flaskapp.roleEnum import Role
 from datetime import datetime , timezone
 from flaskapp.linkable_ring_signature import *
@@ -16,51 +15,33 @@ import base64
 import numpy as np
 import ast
 import sys
-
+from flaskapp.util import *
+from flaskapp.services import *
 
 @app.route("/")
 @cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'id_token'])
 def zxc():
-    return "huh"
+    #return jsonify(user_dao.get_all())
+    user = UserService().getUserInformation('production_admin@gmail.com')
+    return jsonify(user)
+
 
 #     return Response(json.dumps({"message": "ok"}), 200, mimetype='application/json') 
 
 #Controllers API
 #This needs authentication
-# @app.route("/findUserInformation")
-# @cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'id_token'])
-# @requires_auth
-# @requires_id_token
-# def findUserInformation():
-#     x, y = generate_keys(1)
-#     private_key = export_private_keys_in_list(x)
-#     public_key = export_private_keys_in_list(y)
-#     print("Private Key: %s"%private_key[0])
-#     print("Public Key: %s"%public_key[0])
-#     conn = mysql.connect()
-#     try:
-#         cursor = conn.cursor()
-#         query = """SELECT role, area_id from users WHERE email = %s"""
-#         cursor.execute(query, session['email'])
-#         data = cursor.fetchone()
-#         role_id = data[0]
-#         area_id = data[1]
-#         cursor.close()
-#         conn.close()
-#         message = "Successfully retrieve record."
-#         status = 200
-#     except:
-#         print("Could not get user information")
-#         return Response(json.dumps({"message": "Could not get user information. Please refresh and try again. "\
-#             "If the problem persist, please contact the administrator"}), 400, mimetype='application/json') 
-
-#     # Validate user role 
-#     if role_id == Role.Admin.value:             # 0 = Admin
-#         response = {"role_id": role_id}
-#     else:                                       # 1 = Voter
-#         response ={"role_id": role_id, "area_id": area_id}
-    
-#     return Response(json.dumps({"message": message, "record": response}), status, mimetype='application/json') 
+@app.route("/findUserInformation")
+@cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'id_token'])
+@requires_auth
+@requires_id_token
+def findUserInformation():
+    try:
+        user = UserService().getUserInformation(session['email'])
+        return jsonify(user)
+    except:
+        message = str(sys.exc_info()[1]) 
+        print(message)
+        return Response(json.dumps({"message": message}), 404, mimetype='application/json') 
 
 
 # @app.route("/findElectionForVoter", methods=['GET'])
@@ -234,79 +215,34 @@ def zxc():
 #     return Response(json.dumps({"message": message}), status, mimetype='application/json') 
 
 
-# @app.route("/findAllEvent", methods=['GET'])
-# @cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'id_token'])
-# @requires_auth
-# @requires_id_token
-# def findAllEvent():
-#     conn = mysql.connect() 
-#     try:
-#         cursor = conn.cursor()
-#         query = """SELECT e.event_id, 
-#                    a.area_name, 
-#                    e.start_date_time,
-#                    e.end_date_time
-#                    FROM event e JOIN
-#                    area a ON e.area_id = a.area_id
-#                    WHERE e.del_flag = %s 
-#                    AND a.del_flag = %s 
-#                    AND e.expire_flag = %s"""
-#         cursor.execute(query, (0,0,0))
-#         data = cursor.fetchall()
-#         cursor.close()
-#         conn.close()
-#         payload = []
-#         for record in data:
-#             content = { 'event_id': record[0],
-#                         'area_name': record[1],
-#                         'start_date_time': record[2],
-#                         'end_date_time': record[3]}
-#             payload.append(content)
-#             content = {}
-#     except:
-#         print("Error: Unable to fetch any record of events")
-#         message = "Error: Unable to fetch any record of events"      
-#         return Response(json.dumps({"message": message}), 400, mimetype='application/json') 
-        
-#     return jsonify(payload)
+@app.route("/findAllEvent", methods=['GET'])
+@cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'id_token'])
+@requires_auth
+@requires_id_token
+def findAllEvent():
+    try:
+        event = EventService().getAllEventAdmin()
+        print(event)
+        return jsonify(event)
+    except Exception:
+        message = str(sys.exc_info()[1]) 
+        print(message)
+        return Response(json.dumps({"message": message}), 404, mimetype='application/json') 
 
 
-# @app.route("/findPastEvent", methods=['GET'])
-# @cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'id_token'])
-# @requires_auth
-# @requires_id_token
-# def findPastEvent():
-#     conn = mysql.connect() 
-#     try:
-#         cursor = conn.cursor()
-#         query = """SELECT e.event_id, 
-#                    a.area_name, 
-#                    e.start_date_time,
-#                    e.end_date_time
-#                    FROM event e JOIN
-#                    area a ON e.area_id = a.area_id
-#                    WHERE e.del_flag = %s 
-#                    AND a.del_flag = %s 
-#                    AND e.expire_flag = %s"""
-#         assert cursor.execute(query, (0,0,1)) != 0 , "There is no completed event."
-#         data = cursor.fetchall()
-#         cursor.close()
-#         conn.close()
-#         payload = []
-#         for record in data:
-#             print(record[2])
-#             content = { 'event_id': record[0],
-#                         'area_name': record[1],
-#                         'start_date_time': record[2],
-#                         'end_date_time': record[3]}
-#             payload.append(content)
-#             content = {}
-#     except Exception:
-#         message = str(sys.exc_info()[1]) 
-#         print(message)     
-#         return Response(json.dumps({"message": message}), 400, mimetype='application/json') 
-        
-#     return jsonify(payload)
+@app.route("/findPastEvent", methods=['GET'])
+@cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'id_token'])
+@requires_auth
+@requires_id_token
+def findPastEvent():
+    try:
+        event = EventService().getAllPastEvent()
+        return jsonify(event)
+    except Exception:
+        message = str(sys.exc_info()[1]) 
+        print(message)
+        return Response(json.dumps({"message": message}), 404, mimetype='application/json') 
+            
 
 # @app.route("/findEventById/<id>")
 # @cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'id_token'])
@@ -364,53 +300,23 @@ def zxc():
 #     return jsonify(payload)
 
 
-# @app.route("/findAllElectionTypeAndArea")
-# @cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'id_token'])
-# @requires_auth
-# @requires_id_token
-# def findAllElectionType():
-#     conn = mysql.connect() 
-#     try:
-#         cursor = conn.cursor()
+@app.route("/findAllElectionTypeAndArea")
+@cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'id_token'])
+@requires_auth
+@requires_id_token
+def findAllElectionType():
+    try:
+        electionTypeList = ElectionTypeService().getAllElectionType();
+        areaList = AreaService().getAllAreaType();
+        payload = []
+        payload.append(electionTypeList)
+        payload.append(areaList)
+        return jsonify(payload)
+    except Exception:
+        message = str(sys.exc_info()[1]) 
+        print(message)
+        return Response(json.dumps({"message": message}), 404, mimetype='application/json')   
 
-#         query =  """SELECT * FROM election_type WHERE del_flag = %s""";
-#         cursor.execute(query, 0);
-#         result_A = cursor.fetchall()
-
-#         query =  """SELECT * FROM area WHERE del_flag = %s""";
-#         cursor.execute(query, 0);
-#         result_B = cursor.fetchall()
-
-#         cursor.close()
-#         conn.close()
- 
-#     except:
-#         print("Error: Unable to fetch any record of events") 
-
-#     # Get all types of election
-#     payload = []
-#     electionType_payload = []
-#     for record in result_A:
-#         election_type = { 'election_id': record[0],
-#                           'election_name': record[1]}
-#         electionType_payload.append(election_type)
-#         election_type = {}
-
-
-#     payload.append(electionType_payload)
-
-#     # Get all areas
-#     electionArea_payload = []
-#     for record in result_B:
-#         areas = { 'area_id': record[0],
-#                   'area_name': record[1],
-#                   'election_type': record[2]}
-#         electionArea_payload.append(areas)
-#         areas = {}
-
-#     payload.append(electionArea_payload)
-
-#     return jsonify(payload)
 
 
 # @app.route("/updateEvent/<id>", methods=['PUT'])
@@ -425,159 +331,162 @@ def zxc():
 #     startDateTime = request.json['start_date_time']
 #     endDateTime = request.json['end_date_time']
 #     candidates = request.json['candidates']
-
-#     conn = mysql.connect()
-#     try:
-#         cursor = conn.cursor()
-
-#         query =  """SELECT * FROM election_type WHERE election_id = %s AND del_flag = %s""";
-#         result_A = cursor.execute(query, (electionType,0));  
-#         print(result_A)
-#         query =  """SELECT * FROM area WHERE area_id = %s AND del_flag = %s""";
-#         result_B = cursor.execute(query, (areaId,0));  
-#         print(result_B)
-#         time_difference = datetime.strptime(endDateTime, '%Y-%m-%dT%H:%M:%S.%fZ') - datetime.strptime(startDateTime, '%Y-%m-%dT%H:%M:%S.%fZ')
-#         result = time_difference.total_seconds() * 1000     #Multiply by 1000 for milliseconds
-#         result_C = (True if result >= 14400000 else False)
-#         print(result_C)
-#         # to do: valid the start time make sure it does not fall in the past
-#         date_time_now_UTC = datetime.now(timezone.utc)
-#         parsedTime = datetime.strptime(startDateTime, '%Y-%m-%dT%H:%M:%S.%fZ')
-#         startDateTime_formatted_UTC = datetime.strftime(parsedTime, '%Y-%m-%d %H:%M:%S')
-#         currentDateTime_formatted_UTC = datetime.strftime(date_time_now_UTC, '%Y-%m-%d %H:%M:%S')
-#         result_D = (True if currentDateTime_formatted_UTC < startDateTime_formatted_UTC else False)
-#         print(result_D)
-
-#         message = ""
-#         # Rebuild the json data, if violated, error will be thrown
-#         # Also store only the image path for candidate image
-#         candidate_payload = []
-#         for object in candidates:
-#             image_b64 = object['candidate_image']
-#             base64result = image_b64.split(',')[1];
-#             as_bytes = bytes(base64result, 'utf-8')
-#             image_path = "img/" + object['candidate_name'] + ".png"
-#             with open(image_path, "wb") as fh:
-#               fh.write(base64.decodebytes(as_bytes))
-
-#             candidate = {"candidate_name" : object['candidate_name'], 
-#                           "candidate_image" : image_path}
-#             candidate_payload.append(candidate)
-#             candidate = {}
-        
-#         print(candidate_payload)
-
-
-#         # election_type, area, time diff must be correct in order to proceed
-#         if (result_A & result_B & result_C & result_D):
-#             # If id is present
-#             print("YES")
-#             if id != -1:
-#                 print("Yes got ID")
-#                 query =  """SELECT * FROM event 
-#                             WHERE event_id = %s
-#                             AND del_flag = %s
-#                             AND expire_flag = %s""";
-#                 result_E = cursor.execute(query,(id,0,0));
-#             else:
-#                 result_E = False;
-
-#             # Got record, we need to update
-#             if (result_E):
-#                 # Check if the event is on going
-#                 query = "SELECT start_date_time FROM event WHERE event_id = %s"
-#                 cursor.execute(query,id)
-#                 start = cursor.fetchone()[0] 
-#                 date_time_now_UTC = datetime.now(timezone.utc)
-#                 startDateTime_formatted_UTC = datetime.strftime(start, '%Y-%m-%d %H:%M:%S')
-#                 currentDateTime_formatted_UTC = datetime.strftime(date_time_now_UTC, '%Y-%m-%d %H:%M:%S')
-#                 assert (currentDateTime_formatted_UTC < startDateTime_formatted_UTC), "Unable to modify ongoing event."
-
-#                 print("Updating")
-#                 query =  """UPDATE event SET
-#                             election_type = %s,
-#                             area_id = %s,
-#                             start_date_time = %s,
-#                             end_date_time = %s
-#                             WHERE event_id = %s
-#                             AND del_flag = %s
-#                             AND expire_flag = %s""";
-#                 cursor.execute(query, 
-#                                 (electionType, 
-#                                     areaId, 
-#                                     datetime.strptime(startDateTime, '%Y-%m-%dT%H:%M:%S.%fZ'), 
-#                                     datetime.strptime(endDateTime, '%Y-%m-%dT%H:%M:%S.%fZ'),
-#                                     id,0,0)) == 1, "Event Failed to update"
-
-#                 message = "Event Successfully Updated"
-#                 print(message)
-#                 status = 200
-#             else:
-#                 print("Attempt Inserting")
-#                 query =  """SELECT * FROM event WHERE area_id = %s AND del_flag = %s AND expire_flag = %s"""
-#                 assert cursor.execute(query, (areaId, 0,0)) == 0, "This event has already been created. Multiple events with same area are not allowed."
-
-#                 # If result not found = no duplicate, insert data
-#                 query =  """INSERT INTO event 
-#                 (election_type, 
-#                 area_id, 
-#                 start_date_time, 
-#                 end_date_time, 
-#                 del_flag,
-#                 expire_flag) VALUES 
-#                             ( %s, %s, %s, %s, %s, %s)""";
-                        
-#                 assert cursor.execute(query, 
-#                                             (electionType,
-#                                                 areaId, 
-#                                                 datetime.strptime(startDateTime, '%Y-%m-%dT%H:%M:%S.%fZ'), 
-#                                                 datetime.strptime(endDateTime, '%Y-%m-%dT%H:%M:%S.%fZ'),
-#                                                 0,0)) == 1, "Event Not Created"
-#                 message = "Event Created"
-#                 print(message)
-#                 status = 200                   
-#             conn.commit()
-          
-#             # First "remove" the old candidates
-#             query = """UPDATE candidate SET del_flag = %s WHERE event_id = %s""";
-#             cursor.execute(query,(1,id))
-          
-#             # Find the just inserted event id
-#             query = """SELECT event_id FROM event WHERE 
-#                         election_type = %s AND
-#                         area_id = %s AND
-#                         start_date_time = %s AND
-#                         end_date_time = %s AND
-#                         del_flag = %s AND
-#                         expire_flag = %s"""
-#             assert cursor.execute(query,(electionType,
-#                                     areaId,
-#                                         datetime.strptime(startDateTime, '%Y-%m-%dT%H:%M:%S.%fZ'),
-#                                         datetime.strptime(endDateTime, '%Y-%m-%dT%H:%M:%S.%fZ'),0,0)) == 1, "Fail to retrieve inserted event."
-#             result_F = cursor.fetchone()
-#             id = result_F[0]
-         
-#             # Insert back the new candidates
-#             query = """INSERT INTO candidate 
-#             (event_id, candidate_name, candidate_image)  
-#             VALUES""";
-#             for record in candidate_payload:
-#                     query += """ (%s, "%s", "%s"),""" %(id,record['candidate_name'], record['candidate_image'])
-#             assert cursor.execute(query[:-1]) == 2, "Failed to update candidate."
-#             cursor.close()
-#             conn.commit()
-#             conn.close()  
-#         else:
-#             message = 'Event information is invalid. Please verify.'
-#             print(message)
-#             status = 406
- 
-#     except Exception:
-#         message = str(sys.exc_info()[1]) 
-#         print(message)
-#         return Response(json.dumps({"message": message}), 400, mimetype='application/json') 
+#     # try:
+#     #     logic = EventService().putEvent(id, electionType, areaId, startDateTime, endDateTime, candidates);
+#     # except Exception:
+#     #     message = str(sys.exc_info()[1]) 
+#     #     print(message)
+#     #     return Response(json.dumps({"message": message}), 400, mimetype='application/json') 
                  
-#     return Response(json.dumps({"message": message}), status, mimetype='application/json') 
+#     return "ok"
+    # conn = mysql.connect()
+    # try:
+    #     cursor = conn.cursor()
+
+    #     query =  """SELECT * FROM election_type WHERE election_id = %s AND del_flag = %s""";
+    #     result_A = cursor.execute(query, (electionType,0));  
+    #     print(result_A)
+    #     query =  """SELECT * FROM area WHERE area_id = %s AND del_flag = %s""";
+    #     result_B = cursor.execute(query, (areaId,0));  
+    #     print(result_B)
+
+    #     time_difference = datetime.strptime(endDateTime, '%Y-%m-%dT%H:%M:%S.%fZ') - datetime.strptime(startDateTime, '%Y-%m-%dT%H:%M:%S.%fZ')
+    #     result = time_difference.total_seconds() * 1000     #Multiply by 1000 for milliseconds
+    #     result_C = (True if result >= 14400000 else False)
+    #     print(result_C)
+    #     # to do: valid the start time make sure it does not fall in the past
+    #     date_time_now_UTC = datetime.now(timezone.utc)
+    #     parsedTime = datetime.strptime(startDateTime, '%Y-%m-%dT%H:%M:%S.%fZ')
+    #     startDateTime_formatted_UTC = datetime.strftime(parsedTime, '%Y-%m-%d %H:%M:%S')
+    #     currentDateTime_formatted_UTC = datetime.strftime(date_time_now_UTC, '%Y-%m-%d %H:%M:%S')
+    #     result_D = (True if currentDateTime_formatted_UTC < startDateTime_formatted_UTC else False)
+    #     print(result_D)
+        
+    #     message = ""
+    #     # Rebuild the json data, if violated, error will be thrown
+    #     # Also store only the image path for candidate image
+    #     candidate_payload = []
+    #     for object in candidates:
+    #         image_b64 = object['candidate_image']
+    #         base64result = image_b64.split(',')[1];
+    #         as_bytes = bytes(base64result, 'utf-8')
+    #         image_path = "img/" + object['candidate_name'] + ".png"
+    #         with open(image_path, "wb") as fh:
+    #           fh.write(base64.decodebytes(as_bytes))
+
+    #         candidate = {"candidate_name" : object['candidate_name'], 
+    #                       "candidate_image" : image_path}
+    #         candidate_payload.append(candidate)
+    #         candidate = {}
+        
+    #     print(candidate_payload)
+
+
+    #     # election_type, area, time diff must be correct in order to proceed
+    #     if (result_A & result_B & result_C & result_D):
+    #         # If id is present
+    #         print("YES")
+    #         if id != -1:
+    #             print("Yes got ID")
+    #             query =  """SELECT * FROM event 
+    #                         WHERE event_id = %s
+    #                         AND del_flag = %s
+    #                         AND expire_flag = %s""";
+    #             result_E = cursor.execute(query,(id,0,0));
+    #         else:
+    #             result_E = False;
+
+    #         # Got record, we need to update
+    #         if (result_E):
+    #             # Check if the event is on going
+    #             query = "SELECT start_date_time FROM event WHERE event_id = %s"
+    #             cursor.execute(query,id)
+    #             start = cursor.fetchone()[0] 
+    #             date_time_now_UTC = datetime.now(timezone.utc)
+    #             startDateTime_formatted_UTC = datetime.strftime(start, '%Y-%m-%d %H:%M:%S')
+    #             currentDateTime_formatted_UTC = datetime.strftime(date_time_now_UTC, '%Y-%m-%d %H:%M:%S')
+    #             assert (currentDateTime_formatted_UTC < startDateTime_formatted_UTC), "Unable to modify ongoing event."
+
+    #             print("Updating")
+    #             query =  """UPDATE event SET
+    #                         election_type = %s,
+    #                         area_id = %s,
+    #                         start_date_time = %s,
+    #                         end_date_time = %s
+    #                         WHERE event_id = %s
+    #                         AND del_flag = %s
+    #                         AND expire_flag = %s""";
+    #             cursor.execute(query, 
+    #                             (electionType, 
+    #                                 areaId, 
+    #                                 datetime.strptime(startDateTime, '%Y-%m-%dT%H:%M:%S.%fZ'), 
+    #                                 datetime.strptime(endDateTime, '%Y-%m-%dT%H:%M:%S.%fZ'),
+    #                                 id,0,0)) == 1, "Event Failed to update"
+
+    #             message = "Event Successfully Updated"
+    #             print(message)
+    #             status = 200
+    #         else:
+    #             print("Attempt Inserting")
+    #             query =  """SELECT * FROM event WHERE area_id = %s AND del_flag = %s AND expire_flag = %s"""
+    #             assert cursor.execute(query, (areaId, 0,0)) == 0, "This event has already been created. Multiple events with same area are not allowed."
+
+    #             # If result not found = no duplicate, insert data
+    #             query =  """INSERT INTO event 
+    #             (election_type, 
+    #             area_id, 
+    #             start_date_time, 
+    #             end_date_time, 
+    #             del_flag,
+    #             expire_flag) VALUES 
+    #                         ( %s, %s, %s, %s, %s, %s)""";
+                        
+    #             assert cursor.execute(query, 
+    #                                         (electionType,
+    #                                             areaId, 
+    #                                             datetime.strptime(startDateTime, '%Y-%m-%dT%H:%M:%S.%fZ'), 
+    #                                             datetime.strptime(endDateTime, '%Y-%m-%dT%H:%M:%S.%fZ'),
+    #                                             0,0)) == 1, "Event Not Created"
+    #             message = "Event Created"
+    #             print(message)
+    #             status = 200                   
+    #         conn.commit()
+          
+    #         # First "remove" the old candidates
+    #         query = """UPDATE candidate SET del_flag = %s WHERE event_id = %s""";
+    #         cursor.execute(query,(1,id))
+          
+    #         # Find the just inserted event id
+    #         query = """SELECT event_id FROM event WHERE 
+    #                     election_type = %s AND
+    #                     area_id = %s AND
+    #                     start_date_time = %s AND
+    #                     end_date_time = %s AND
+    #                     del_flag = %s AND
+    #                     expire_flag = %s"""
+    #         assert cursor.execute(query,(electionType,
+    #                                 areaId,
+    #                                     datetime.strptime(startDateTime, '%Y-%m-%dT%H:%M:%S.%fZ'),
+    #                                     datetime.strptime(endDateTime, '%Y-%m-%dT%H:%M:%S.%fZ'),0,0)) == 1, "Fail to retrieve inserted event."
+    #         result_F = cursor.fetchone()
+    #         id = result_F[0]
+         
+    #         # Insert back the new candidates
+    #         query = """INSERT INTO candidate 
+    #         (event_id, candidate_name, candidate_image)  
+    #         VALUES""";
+    #         for record in candidate_payload:
+    #                 query += """ (%s, "%s", "%s"),""" %(id,record['candidate_name'], record['candidate_image'])
+    #         assert cursor.execute(query[:-1]) == 2, "Failed to update candidate."
+    #         cursor.close()
+    #         conn.commit()
+    #         conn.close()  
+    #     else:
+    #         message = 'Event information is invalid. Please verify.'
+    #         print(message)
+    #         status = 406
+ 
+
 
 
 
