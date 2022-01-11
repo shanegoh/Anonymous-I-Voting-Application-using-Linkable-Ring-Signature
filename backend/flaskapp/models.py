@@ -5,9 +5,9 @@ from datetime import datetime
 
 @dataclass
 class Users(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, nullable=False) ##
     nickname = db.Column(db.String, nullable=True)
-    email = db.Column(db.String, unique=True, nullable=False)
+    email = db.Column(db.String, unique=True, nullable=False, primary_key=True)
     password = db.Column(db.String, nullable=False)
     role = db.Column(db.Integer, nullable=False, default=1)
     area_id = db.Column(db.String, nullable=True)

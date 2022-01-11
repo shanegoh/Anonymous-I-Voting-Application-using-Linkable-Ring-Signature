@@ -237,6 +237,7 @@ def findAllEvent():
 def findPastEvent():
     try:
         event = EventService().getAllPastEvent()
+        assert len(event) > 0, "There is no event for you at the moment."
         return jsonify(event)
     except Exception:
         message = str(sys.exc_info()[1]) 
@@ -244,60 +245,24 @@ def findPastEvent():
         return Response(json.dumps({"message": message}), 404, mimetype='application/json') 
             
 
-# @app.route("/findEventById/<id>")
-# @cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'id_token'])
-# @requires_auth
-# @requires_id_token
-# def findEventById(id):
-#     conn = mysql.connect() 
-#     try:
-#         cursor = conn.cursor()
-#         query = """SELECT election_type, 
-#                    area_id, 
-#                    start_date_time, 
-#                    end_date_time
-#                    FROM event 
-#                    WHERE CURRENT_TIMESTAMP < start_date_time
-#                    AND event_id = %s
-#                    AND del_flag = %s
-#                    AND expire_flag = %s"""
-#         assert (cursor.execute(query, (id,0,0)) != 0), "No event found. Please try again."
-#         result_A = cursor.fetchone()
+@app.route("/findEventDetailsById/<id>")
+@cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'id_token'])
+@requires_auth
+@requires_id_token
+def findEventDetailsById(id):
+    try:
+        event = EventService().getEventDetailsById(id)
+        candidate = CandidateService().getAllEventCandidates(id)    
+        # Get all information about the particular event + candidate
+        event['candidates'] = candidate
+        print(event)
 
-#         # Query for all candidate name and iamge
-#         query = """SELECT candidate_name, candidate_image
-#                    FROM candidate 
-#                    WHERE event_id = %s
-#                    AND del_flag = %s"""
-#         cursor.execute(query, (id,0))
-#         result_B = cursor.fetchall()
-#         print(result_B)
-#         cursor.close()
-#         conn.close()
+    except Exception:
+        message = str(sys.exc_info()[1]) 
+        print(message)
+        return Response(json.dumps({"message": message}), 404, mimetype='application/json') 
 
-#         candidate_payload = []
-#         for record in result_B:
-#             with open(record[1], "rb") as image_file:
-#                 encoded_string = base64.b64encode(image_file.read())
-#                 pngFile = encoded_string.decode('UTF-8')
-#             candidate_content = { 'candidate_name':  record[0],
-#                                 'candidate_image':  pngFile }
-#             candidate_payload.append(candidate_content) 
-
-#         # Get all information about the particular event + candidate
-#         payload = []
-#         event_content = { 'election_type':  result_A[0],
-#                         'area_id':  result_A[1],
-#                         'start_date_time':  result_A[2],
-#                         'end_date_time':  result_A[3], 
-#                         'candidates': candidate_payload}    
-#         payload.append(event_content)
-#     except Exception:
-#         message = str(sys.exc_info()[1]) 
-#         print(message)
-#         return Response(json.dumps({"message": message}), 404, mimetype='application/json') 
-        
-#     return jsonify(payload)
+    return jsonify(event)
 
 
 @app.route("/findAllElectionTypeAndArea")
@@ -319,203 +284,47 @@ def findAllElectionType():
 
 
 
-# @app.route("/updateEvent/<id>", methods=['PUT'])
-# @app.route("/createEvent", methods=['PUT'])
-# @cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'id_token'])
-# @requires_auth
-# @requires_id_token
-# def putEvent(id=-1):
+@app.route("/updateEvent/<id>", methods=['PUT'])
+@app.route("/createEvent", methods=['PUT'])
+@cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'id_token'])
+@requires_auth
+@requires_id_token
+def putEvent(id=-1):
 
-#     electionType = request.json['election_type']
-#     areaId = request.json['area_id']
-#     startDateTime = request.json['start_date_time']
-#     endDateTime = request.json['end_date_time']
-#     candidates = request.json['candidates']
-#     # try:
-#     #     logic = EventService().putEvent(id, electionType, areaId, startDateTime, endDateTime, candidates);
-#     # except Exception:
-#     #     message = str(sys.exc_info()[1]) 
-#     #     print(message)
-#     #     return Response(json.dumps({"message": message}), 400, mimetype='application/json') 
+    electionType = request.json['election_type']
+    areaId = request.json['area_id']
+    startDateTime = request.json['start_date_time']
+    endDateTime = request.json['end_date_time']
+    candidates = request.json['candidates']
+    try:
+        EventService().putEvent(id, electionType, areaId, startDateTime, endDateTime, candidates);
+        message = "Event updated."
+        status = 200
+    except Exception:
+        message = str(sys.exc_info()[1]) 
+        print(message)
+        return Response(json.dumps({"message": message}), 400, mimetype='application/json') 
                  
-#     return "ok"
-    # conn = mysql.connect()
-    # try:
-    #     cursor = conn.cursor()
-
-    #     query =  """SELECT * FROM election_type WHERE election_id = %s AND del_flag = %s""";
-    #     result_A = cursor.execute(query, (electionType,0));  
-    #     print(result_A)
-    #     query =  """SELECT * FROM area WHERE area_id = %s AND del_flag = %s""";
-    #     result_B = cursor.execute(query, (areaId,0));  
-    #     print(result_B)
-
-    #     time_difference = datetime.strptime(endDateTime, '%Y-%m-%dT%H:%M:%S.%fZ') - datetime.strptime(startDateTime, '%Y-%m-%dT%H:%M:%S.%fZ')
-    #     result = time_difference.total_seconds() * 1000     #Multiply by 1000 for milliseconds
-    #     result_C = (True if result >= 14400000 else False)
-    #     print(result_C)
-    #     # to do: valid the start time make sure it does not fall in the past
-    #     date_time_now_UTC = datetime.now(timezone.utc)
-    #     parsedTime = datetime.strptime(startDateTime, '%Y-%m-%dT%H:%M:%S.%fZ')
-    #     startDateTime_formatted_UTC = datetime.strftime(parsedTime, '%Y-%m-%d %H:%M:%S')
-    #     currentDateTime_formatted_UTC = datetime.strftime(date_time_now_UTC, '%Y-%m-%d %H:%M:%S')
-    #     result_D = (True if currentDateTime_formatted_UTC < startDateTime_formatted_UTC else False)
-    #     print(result_D)
-        
-    #     message = ""
-    #     # Rebuild the json data, if violated, error will be thrown
-    #     # Also store only the image path for candidate image
-    #     candidate_payload = []
-    #     for object in candidates:
-    #         image_b64 = object['candidate_image']
-    #         base64result = image_b64.split(',')[1];
-    #         as_bytes = bytes(base64result, 'utf-8')
-    #         image_path = "img/" + object['candidate_name'] + ".png"
-    #         with open(image_path, "wb") as fh:
-    #           fh.write(base64.decodebytes(as_bytes))
-
-    #         candidate = {"candidate_name" : object['candidate_name'], 
-    #                       "candidate_image" : image_path}
-    #         candidate_payload.append(candidate)
-    #         candidate = {}
-        
-    #     print(candidate_payload)
-
-
-    #     # election_type, area, time diff must be correct in order to proceed
-    #     if (result_A & result_B & result_C & result_D):
-    #         # If id is present
-    #         print("YES")
-    #         if id != -1:
-    #             print("Yes got ID")
-    #             query =  """SELECT * FROM event 
-    #                         WHERE event_id = %s
-    #                         AND del_flag = %s
-    #                         AND expire_flag = %s""";
-    #             result_E = cursor.execute(query,(id,0,0));
-    #         else:
-    #             result_E = False;
-
-    #         # Got record, we need to update
-    #         if (result_E):
-    #             # Check if the event is on going
-    #             query = "SELECT start_date_time FROM event WHERE event_id = %s"
-    #             cursor.execute(query,id)
-    #             start = cursor.fetchone()[0] 
-    #             date_time_now_UTC = datetime.now(timezone.utc)
-    #             startDateTime_formatted_UTC = datetime.strftime(start, '%Y-%m-%d %H:%M:%S')
-    #             currentDateTime_formatted_UTC = datetime.strftime(date_time_now_UTC, '%Y-%m-%d %H:%M:%S')
-    #             assert (currentDateTime_formatted_UTC < startDateTime_formatted_UTC), "Unable to modify ongoing event."
-
-    #             print("Updating")
-    #             query =  """UPDATE event SET
-    #                         election_type = %s,
-    #                         area_id = %s,
-    #                         start_date_time = %s,
-    #                         end_date_time = %s
-    #                         WHERE event_id = %s
-    #                         AND del_flag = %s
-    #                         AND expire_flag = %s""";
-    #             cursor.execute(query, 
-    #                             (electionType, 
-    #                                 areaId, 
-    #                                 datetime.strptime(startDateTime, '%Y-%m-%dT%H:%M:%S.%fZ'), 
-    #                                 datetime.strptime(endDateTime, '%Y-%m-%dT%H:%M:%S.%fZ'),
-    #                                 id,0,0)) == 1, "Event Failed to update"
-
-    #             message = "Event Successfully Updated"
-    #             print(message)
-    #             status = 200
-    #         else:
-    #             print("Attempt Inserting")
-    #             query =  """SELECT * FROM event WHERE area_id = %s AND del_flag = %s AND expire_flag = %s"""
-    #             assert cursor.execute(query, (areaId, 0,0)) == 0, "This event has already been created. Multiple events with same area are not allowed."
-
-    #             # If result not found = no duplicate, insert data
-    #             query =  """INSERT INTO event 
-    #             (election_type, 
-    #             area_id, 
-    #             start_date_time, 
-    #             end_date_time, 
-    #             del_flag,
-    #             expire_flag) VALUES 
-    #                         ( %s, %s, %s, %s, %s, %s)""";
-                        
-    #             assert cursor.execute(query, 
-    #                                         (electionType,
-    #                                             areaId, 
-    #                                             datetime.strptime(startDateTime, '%Y-%m-%dT%H:%M:%S.%fZ'), 
-    #                                             datetime.strptime(endDateTime, '%Y-%m-%dT%H:%M:%S.%fZ'),
-    #                                             0,0)) == 1, "Event Not Created"
-    #             message = "Event Created"
-    #             print(message)
-    #             status = 200                   
-    #         conn.commit()
-          
-    #         # First "remove" the old candidates
-    #         query = """UPDATE candidate SET del_flag = %s WHERE event_id = %s""";
-    #         cursor.execute(query,(1,id))
-          
-    #         # Find the just inserted event id
-    #         query = """SELECT event_id FROM event WHERE 
-    #                     election_type = %s AND
-    #                     area_id = %s AND
-    #                     start_date_time = %s AND
-    #                     end_date_time = %s AND
-    #                     del_flag = %s AND
-    #                     expire_flag = %s"""
-    #         assert cursor.execute(query,(electionType,
-    #                                 areaId,
-    #                                     datetime.strptime(startDateTime, '%Y-%m-%dT%H:%M:%S.%fZ'),
-    #                                     datetime.strptime(endDateTime, '%Y-%m-%dT%H:%M:%S.%fZ'),0,0)) == 1, "Fail to retrieve inserted event."
-    #         result_F = cursor.fetchone()
-    #         id = result_F[0]
-         
-    #         # Insert back the new candidates
-    #         query = """INSERT INTO candidate 
-    #         (event_id, candidate_name, candidate_image)  
-    #         VALUES""";
-    #         for record in candidate_payload:
-    #                 query += """ (%s, "%s", "%s"),""" %(id,record['candidate_name'], record['candidate_image'])
-    #         assert cursor.execute(query[:-1]) == 2, "Failed to update candidate."
-    #         cursor.close()
-    #         conn.commit()
-    #         conn.close()  
-    #     else:
-    #         message = 'Event information is invalid. Please verify.'
-    #         print(message)
-    #         status = 406
- 
+    return Response(json.dumps({"message": message}), status, mimetype='application/json') 
 
 
 
+@app.route("/deleteEventById/<id>", methods=['DELETE'])
+@cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'id_token'])
+@requires_auth
+@requires_id_token
+def deleteEvent(id):
+    try:
+        CandidateService().deleteCandidateByEventId(id)
+        EventService().deleteEventById(id)
+        message = "Successfully deleted."
+        status = 200
+    except Exception:
+        message = str(sys.exc_info()[1]) 
+        print(message)
+        return Response(json.dumps({"message": message}), 400, mimetype='application/json') 
 
-# @app.route("/deleteEventById/<id>", methods=['DELETE'])
-# @cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'id_token'])
-# @requires_auth
-# @requires_id_token
-# def deleteEvent(id):
-#     conn = mysql.connect() 
-#     try:
-#         cursor = conn.cursor()
-#         query =  """UPDATE event 
-#                     SET del_flag = %s 
-#                     WHERE event_id = %s""";
-#         result_A = cursor.execute(query, (1, id));
-#         query = """UPDATE candidate SET del_flag = %s WHERE event_id =%s"""
-#         result_B = cursor.execute(query, (1, id));
-#         message = "Event Successfully Deleted"
-#         status = 200
-#         cursor.close()
-#         conn.commit()
-#         conn.close()
-
-#     except:
-#         print("Error: Record Not Found") 
-#         message = 'Failed to delete record. Please try again'
-#         return Response(json.dumps({"message": message}), 400, mimetype='application/json') 
-
-#     return Response(json.dumps({"message": message}), status, mimetype='application/json') 
+    return Response(json.dumps({"message": message}), status, mimetype='application/json') 
 
 
 # @app.route("/findResultById/<id>", methods=['GET'])
@@ -559,133 +368,25 @@ def findAllElectionType():
 #     return Response(json.dumps({"message": message, "candidates": candidate_payload}), status, mimetype='application/json') 
   
 
-# # This needs authorization
-# @app.route("/upload", methods=["POST"])
-# @cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'id_token'])
-# @requires_auth
-# @requires_id_token
-# def uploadFile():
-#     conn = mysql.connect() 
-#     try: 
-#         cursor = conn.cursor()
-#         # Use Auth0 Client secret and public key to get management_access_token
-#         connnection = http.client.HTTPSConnection("dev-i7062-qd.us.auth0.com")
-#         payload = "{\"client_id\":\"ziMcfPoiH2CFyrhKAaiOecnLsMs69lXF\",\"client_secret\":\"gsuu8u1O_qIylsmHry-8litgeu94wqLhPCbvJ56FBJ_kUgZp0qQ9ETCb17UOdm8E\",\"audience\":\"https://dev-i7062-qd.us.auth0.com/api/v2/\",\"grant_type\":\"client_credentials\"}"
-#         headers = { 'content-type': "application/json" }
-#         connnection.request("POST", "/oauth/token", payload, headers)
-#         res = connnection.getresponse()
-#         data = res.read()
-#         jsonData = json.loads(data)
-#         management_access_token = "Bearer " + jsonData["access_token"]
+# This needs authorization
+@app.route("/upload", methods=["POST"])
+@cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'id_token'])
+@requires_auth
+@requires_id_token
+def uploadFile():
 
-#         # Get the excel file
-#         xlsx_file = request.files['file']
-#         data_xls = pd.read_excel(xlsx_file)
-#         assert len(data_xls) > 0, "You have uploaded an empty file.."   # Error if user upload empty file, logic not proceeding
-    
-#         # Get all users in exisiting database
-#         query = """SELECT email FROM users"""
-#         cursor.execute(query)
-#         user_record_list = [record[0] for record in cursor.fetchall()]       # Convert all records into a list
+    try:
+        b64_list = UserService().uploadUserInformation(request.files['file'])
+        message = "Success"
+        status = 200
+        return Response(json.dumps({"message": message, "excel_file": b64_list}), status, mimetype='application/json')
 
-#         # list to store exisiting users
-#         existing_user_list = []
-#         skip_index = []
-#         for i in data_xls.index:
-#             if (data_xls['email'][i] in user_record_list):
-#                 existing_user_list.append({ "Account already created": data_xls['email'][i] })
-#                 skip_index.append(i)
-
-#         number_of_participants = len(data_xls) - len(existing_user_list)    # Get the actual no. of account generating
-#         print("OK here")
-#         print(number_of_participants)
-#         # A list to store base64 encoded xlsx files( up to max 2 files )
-#         b64_list = []
-#         # Generate keys based on number of participants on the same area
-#         privateKey, publicKey = generate_keys(number_of_participants)
-#         private_key_list = export_private_keys_in_list(privateKey)
-#         public_key_list = export_private_keys_in_list(publicKey)
-#         user_list = []  # User list for writting into xlsx files
-#         j = 0;
-#         # Loop all provided users and check if they exist
-#         for i in data_xls.index:
-#             if i not in skip_index:
-#                 # Filter them if user exist
-#                 # Password generator
-#                 # characters to generate password from
-#                 characters = list(string.ascii_letters + string.digits + "!@#$%^&*()")   
-#                 # picking random characters from the list
-#                 pass_phrase = []
-#                 length = 20
-#                 for k in range(length):
-#                     pass_phrase.append(characters[int.from_bytes(os.urandom(1), byteorder="big") % len(characters)])   
-#                 password = "".join(pass_phrase)
-#                 print("Generated Password")
-#                 # Store the details for later xlsx file output
-#                 user = { "email": data_xls['email'][i], 
-#                             "area_id": data_xls['area_id'][i], 
-#                             "password": password,
-#                             "private_key": private_key_list[j]}
-#                 user_list.append(user)
-#                 ++j
-#                 print("Sending payload to auth0")
-#                 # add user to auth0
-#                 payload = '{"email": "%s", '\
-#                             '"nickname": "%s", '\
-#                             '"connection": "Username-Password-Authentication", '\
-#                             '"password": "%s" }'%(data_xls['email'][i], "empty", password)
-#                 # Use management_access_token to create user with auth0
-#                 headers = {
-#                     'content-type': "application/json",
-#                     'authorization': management_access_token
-#                     }
-#                 connnection.request("POST", "/api/v2/users", payload, headers)
-#                 res = connnection.getresponse()
-#                 data = res.read()
-#                 print("Sent")
-#         ############################################ End of for loop 
-#         # Once mass creation is done, get all the email correspond with 
-#         # the area_id and update each record respectively
-#         print("Updating roles, area id and keys..")
-#         for i, user in enumerate(user_list):
-#             query = """UPDATE users SET area_id = %s, role = %s, public_key = %s, private_key = %s WHERE email = %s """
-#             cursor.execute(query, (user['area_id'], Role.Voter.value, public_key_list[i], private_key_list[i], user['email']));
-#         print("Updated")
-#         cursor.close()
-#         conn.commit()
-#         conn.close()
-
-#         # Set user list into a excel format and encode the data
-#         if len(user_list) > 0:
-#             print("Creating xlsx file containing user credentials...")
-#             df = pd.DataFrame(user_list)
-#             df.to_excel('Generated_Credentials.xlsx')
-#             data = open('Generated_Credentials.xlsx', 'rb').read()
-#             os.remove("Generated_Credentials.xlsx") # remove file after read
-#             base64_encoded_credentials = base64.b64encode(data).decode('UTF-8') # encode for sending back to front end
-#             b64_list.append(base64_encoded_credentials)
-
-#         # Set exisiting user list into a excel format and encode the data 
-#         if len(existing_user_list) > 0:
-#             print("Creating xlsx file containing existing users...")
-#             df2 = pd.DataFrame(existing_user_list)
-#             df2.to_excel('Existing_Users.xlsx')
-#             data = open('Existing_Users.xlsx', 'rb').read()
-#             os.remove("Existing_Users.xlsx") # remove file after read
-#             base64_encoded_existing_user = base64.b64encode(data).decode('UTF-8') # encode for sending back to front end
-#             b64_list.append(base64_encoded_existing_user)
-            
-#         message = "Please read the file for more information."
-#         status = 200
-#     except Exception:
-#         message = str(sys.exc_info()[1]) 
-#         print(message)
-#         return Response(json.dumps({"message": message}), 400, mimetype='application/json') 
-
-#     return Response(json.dumps({"message": message, "excel_file": b64_list}), status, mimetype='application/json')
-   
+    except Exception:
+        message = str(sys.exc_info()[1]) 
+        print(message)
+        return Response(json.dumps({"message": message}), 400, mimetype='application/json') 
+     
        
-
 # @app.route("/findVoteStatus", methods=["GET"])
 # @cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'id_token'])
 # @requires_auth

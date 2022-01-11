@@ -19,7 +19,7 @@ export default function EditElection({ history }) {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:5000/findEventById/${id}`, {
+      .get(`http://localhost:5000/findEventDetailsById/${id}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("ACCESS_TOKEN")}`,
           id_token: `Bearer ${localStorage.getItem("ID_TOKEN")}`,
@@ -27,11 +27,12 @@ export default function EditElection({ history }) {
       })
       .then((res) => {
         if (res.status === 200) {
-          setElectionType((electionType) => res.data[0].election_type);
-          setAreaId((areaId) => res.data[0].area_id);
-          setStartDateTime((startDateTime) => res.data[0].start_date_time);
-          setEndDateTime((endDateTime) => res.data[0].end_date_time);
-          setCandidate((candidate) => res.data[0].candidates);
+          console.log(res.data);
+          setElectionType((electionType) => res.data.election_type);
+          setAreaId((areaId) => res.data.area_id);
+          setStartDateTime((startDateTime) => res.data.start_date_time);
+          setEndDateTime((endDateTime) => res.data.end_date_time);
+          setCandidate((candidate) => res.data.candidates);
           setLoadStatus((isLoaded) => true);
         }
       })
