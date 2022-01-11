@@ -8,6 +8,7 @@ import http.client
 import pandas as pd
 import string
 import sys
+import ast
 # import base64
 import json
 # Business logic
@@ -16,8 +17,15 @@ class UserService:
     def getUserInformation(self, email):
         return dict(user_dao.findUserInformationByEmail(email))
 
+    # query to count total participants
+    def getNumberOfParticipantByEventId(self, eventId):
+        return user_dao.findNumberOfParticipantByEventId(eventId)
+
     def getAllEmail(self):
         return user_dao.findAllEmail()
+
+    def getAreaNameByEmail(self, email):
+        return user_dao.findAreaNameByEmail(email, NOT_DELETED)
 
     def uploadUserInformation(self, xlsx_file):
         # Get the excel file
@@ -122,6 +130,9 @@ class UserService:
             b64_list.append(generateExcelFile(existing_user_list))
 
         return b64_list
+
+    def getAreaIdKeyImageByEmail(self, email):
+        return user_dao.findAreaIdKeyImageByEmail(email)
 
 class EventService:
     # Get all events in database that is not deleted nor expire
@@ -235,6 +246,12 @@ class EventService:
     def deleteEventById(self, id):
         return event_dao.deleteEventById(id, DELETED)
 
+    def getEventForVoter(self, areaId):
+        record =  dict(event_dao.findEventForVoter(areaId, NOT_DELETED, NOT_EXPIRED))
+        record.update(start_date_time= record['start_date_time'].strftime('%Y-%m-%dT%H:%M:%S.%fZ'),
+            end_date_time=record['end_date_time'].strftime('%Y-%m-%dT%H:%M:%S.%fZ'))
+        return record
+
 class AreaService:
     def getAllAreaType(self):
         areaTypeList = area_dao.findAllAreaType(NOT_DELETED)
@@ -264,8 +281,95 @@ class CandidateService:
     def deleteCandidateByEventId(self, id):
         return candidate_dao.deleteCandidateByEventId(id, DELETED)
 
+    def getCandidateByEventId(self, id, email):
+        candidateList = candidate_dao.findCandidateByEventId(id, email, NOT_DELETED, NOT_EXPIRED)
+        candidate_dict_list = []
+        for record in candidateList:
+            record = dict(record)
+            record.update(candidate_image = encodePng(record['candidate_image']))
+            candidate_dict_list.append(record)
+        return candidate_dict_list
+    
+    def incrementVoteCount(self, eventId, candidateName, deleteFlag):
+        return candidate_dao.incrementVoteCount(eventId, candidateName, deleteFlag)
+        
+    def voteCandidate(self, eventId, privateKey, email, candidateName):
+        number_of_participants = user_dao.findNumberOfParticipantByEventId(eventId)
+        print(number_of_participants)
+        private_public_list = user_dao.findAllPrivateAndPublicKeyByEvent(eventId, NOT_DELETED, NOT_EXPIRED)
+        print(private_public_list)
 
+        privateKeyOwner = user_dao.findEmailByPrivateKey(privateKey)
+        print(privateKeyOwner)
+        assert privateKeyOwner is not None, "Invalid private key."
+        assert (email == privateKeyOwner[0]) == True, "Private key does not belong to you!"
+
+        # Adding all private and public keys into each list
+        x = []  # list of all secret keys
+        y = []  # list of all public keys
+        for record in private_public_list:
+            x.append(int(record[0]))
+            assert record[1][0] == "(" and record[1][-1] == ")"
+            e1 = int(record[1][1:-1].split(",")[0])
+            e2 = int(record[1][1:-1].split(",")[1])
+            y.append(ecdsa.ellipticcurve.Point(curve_secp256k1, e1, e2)) # convert to Point object
+
+        print(x)
+        print(y)
+        # Getting the index_idx for signature
+        i = 0
+        for k in range(0,number_of_participants):
+            if int(privateKey) == x[k]:
+                i = k   
+                break
+
+        # Create and verify signature
+        signature = ring_signature(int(privateKey), i, candidateName, y)
+        assert verify_ring_signature(candidateName, y, *signature) == True, "Invalid Signature"    
+       
+        # fetch a list of key image tagged to this event
+        key_image_list = KeyImageService().getAllKeyImageByEventId(eventId)
+        print(key_image_list)
+
+        # Verify key image
+        for keyImage in key_image_list:
+           keyImage = ast.literal_eval(keyImage['key_image']) # convert string list to list
+           print(keyImage)
+           assert check_keyImage(signature, keyImage) != True, "You have already voted."
+        
+        #Insert new key image into database.
+        assert KeyImageService().insertKeyImageByEventId(eventId, get_image_from_signature(signature)) == True, "Failed to insert key image"
+        #Increment vote count
+        CandidateService().incrementVoteCount(eventId, candidateName, NOT_DELETED)
+        VoteHistoryService().insertVoteHistory(email)
+
+    def getResultByEventId(self, eventId):
+        candidateResult = candidate_dao.findResultByEventId(eventId, NOT_DELETED, EXPIRED)
+        candidateResult_dict_list = []
+        for record in candidateResult:
+            candidateResult_dict_list.append(dict(record))
+        return candidateResult_dict_list
+
+class KeyImageService:
+    def getAllKeyImageByEventId(self, eventId):
+        keyImageList = keyImage_dao.findAllKeyImageByEventId(eventId)
+        keyImage_dict_list = []
+        for record in keyImageList:
+            keyImage_dict_list.append(dict(record))
+        return keyImage_dict_list
+    
+    def insertKeyImageByEventId(self, eventId, keyImage):
+        return keyImage_dao.insertKeyImageByEventId(eventId, keyImage)       
        
 
-        
+class VoteHistoryService:
+    def insertVoteHistory(self, email):
+        return voteHistory_dao.insertVoteHistory(email)
 
+    def getVoteHistory(self, email):
+        status = "Submitted" if voteHistory_dao.findVoteStatus(email) != 0 else "Not Submitted"
+        areaName = UserService().getAreaNameByEmail(email)[0]
+        payload = {"area": areaName, "status": status }
+        return payload
+
+        

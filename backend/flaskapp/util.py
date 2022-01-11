@@ -37,3 +37,8 @@ def generateExcelFile(list):
     os.remove("Generated_Credentials.xlsx") # remove file after read
     base64_encoded = base64.b64encode(data).decode('UTF-8') # encode for sending back to front end
     return base64_encoded
+
+def encodePng(image):
+    with open(image, "rb") as image_file:
+        encoded_string = base64.b64encode(image_file.read())
+    return encoded_string.decode('UTF-8')

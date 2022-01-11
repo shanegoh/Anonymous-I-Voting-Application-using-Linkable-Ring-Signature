@@ -47,6 +47,17 @@ class Area(db.Model):
     election_type = db.Column(db.String, nullable=False)
     del_flag = db.Column(db.Integer, nullable=False, default=0)
 
+@dataclass
+class KeyImage(db.Model):
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    event_id = db.Column(db.Integer, nullable=False)
+    key_image = db.Column(db.String, nullable=False)
+
+@dataclass
+class VoteHistory(db.Model):
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    email = db.Column(db.String, nullable=False)
+   
 result = db.engine.execute("SHOW STATUS LIKE 'Ssl_cipher'")
 names = [row[1] for row in result]
 print (names)

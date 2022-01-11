@@ -40,9 +40,9 @@ export default function Result() {
       .then((res) => {
         if (res.status === 200) {
           console.log(res.data);
-          setCandidateList((candidateList) => res.data.candidates);
+          setCandidateList((candidateList) => res.data);
           setLoadStatus((isLoaded) => true);
-          res.data.candidates.forEach((object) => {
+          res.data.forEach((object) => {
             setLabel((label) => [
               ...label,
               object.candidate_name + " (" + object.vote_count + ")",
@@ -57,6 +57,7 @@ export default function Result() {
       })
       .catch((err) => {
         // Set error message
+        console.log(err);
         console.log(err.response.data.message);
         setErrMsg((errMsg) => err.response.data.message);
         setVariant((variant) => DANGER);
