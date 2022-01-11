@@ -17,7 +17,9 @@ class UserService:
     def getUserInformation(self, email):
         return dict(user_dao.findUserInformationByEmail(email))
 
-    # query to count total participants
+    def updateUser(self, user_list):
+        return user_dao.updateUser(user_list)
+
     def getNumberOfParticipantByEventId(self, eventId):
         return user_dao.findNumberOfParticipantByEventId(eventId)
 
@@ -26,6 +28,18 @@ class UserService:
 
     def getAreaNameByEmail(self, email):
         return user_dao.findAreaNameByEmail(email, NOT_DELETED)
+
+    def getAreaIdByEmail(self, email):
+        return user_dao.findAreaIdByEmail(email)
+
+    def getNumberOfParticipantByEventId(self, eventId):
+        return user_dao.findNumberOfParticipantByEventId(eventId)
+
+    def getAllPrivateAndPublicKeyByEvent(self, eventId, deleteFlag, expireFlag):
+        return user_dao.findAllPrivateAndPublicKeyByEvent(eventId, deleteFlag, expireFlag)
+
+    def getEmailByPrivateKey(self, privateKey):
+        return user_dao.findEmailByPrivateKey(privateKey)
 
     def uploadUserInformation(self, xlsx_file):
         # Get the excel file
@@ -46,11 +60,10 @@ class UserService:
         userCredential_list = []  # User list for writting into xlsx files containing credentials
         userDetail_list = []      # list for updating user detail such as role and keys
 
-        # Get all users in exisiting database
+        # Get all email in exisiting database
         userList = UserService().getAllEmail()
         userRecord_db = [record[0] for record in userList]       # Convert all records into a list
 
-        
         existing_user_list = []     # list to store exisiting users
         skip_index = []             # Index to be skipped
         for i in data_xls.index:
@@ -116,7 +129,7 @@ class UserService:
         # Once mass creation is done, get all the email correspond with 
         # the area_id and update each record respectively
         print("Updating roles, area id and keys..")
-        user_dao.updateUser(userDetail_list)
+        UserService().updateUser(userDetail_list)
         print("Updated")
 
         # Set user list into a excel format and encode the data
@@ -128,16 +141,14 @@ class UserService:
         if len(existing_user_list) > 0:
             print("Creating xlsx file containing existing users...")
             b64_list.append(generateExcelFile(existing_user_list))
-
         return b64_list
 
-    def getAreaIdKeyImageByEmail(self, email):
-        return user_dao.findAreaIdKeyImageByEmail(email)
+
 
 class EventService:
     # Get all events in database that is not deleted nor expire
     def getAllEventAdmin(self):
-        eventList = event_dao.findAllEventAdmin(NOT_DELETED,NOT_EXPIRED);
+        eventList = event_dao.findAllEvent(NOT_DELETED,NOT_EXPIRED);
         event_dict_list = []
         # Convert to dict list
         for record in eventList:
@@ -149,7 +160,7 @@ class EventService:
 
     # Get all events that are not deleted and is expired!
     def getAllPastEvent(self):
-        eventList = event_dao.findAllEventAdmin(NOT_DELETED,EXPIRED);
+        eventList = event_dao.findAllEvent(NOT_DELETED,EXPIRED);
         event_dict_list = []
         # Convert to dict list
         for record in eventList:
@@ -159,9 +170,25 @@ class EventService:
             end_date_time=record['end_date_time'].strftime('%Y-%m-%dT%H:%M:%S.%fZ'))
         return event_dict_list
 
+    def getEventDetailsById(self, id):
+        record = dict(event_dao.findEventDetailsById(id, NOT_DELETED, NOT_EXPIRED))
+        record.update(start_date_time= record['start_date_time'].strftime('%Y-%m-%dT%H:%M:%S.%fZ'),
+            end_date_time=record['end_date_time'].strftime('%Y-%m-%dT%H:%M:%S.%fZ'))
+        return record
+
+    def deleteEventById(self, id):
+        return event_dao.deleteEventById(id, DELETED)
+
+    def getEventForVoter(self, areaId):
+        record =  dict(event_dao.findEventForVoter(areaId, NOT_DELETED, NOT_EXPIRED))
+        record.update(start_date_time= record['start_date_time'].strftime('%Y-%m-%dT%H:%M:%S.%fZ'),
+            end_date_time=record['end_date_time'].strftime('%Y-%m-%dT%H:%M:%S.%fZ'))
+        return record
+
     def putEvent(self, id, electionType, areaId, startDateTime, endDateTime, candidates):
-        result_A = objectToJson(election_type_dao.findElectionTypeById(electionType, NOT_DELETED))
-        result_B = objectToJson(area_dao.findAreaById(areaId, NOT_DELETED))
+        message= ""
+        result_A = objectToJson(ElectionTypeService().getElectionTypeById(electionType, NOT_DELETED))
+        result_B = objectToJson(AreaService().getAreaById(areaId, NOT_DELETED))
         time_difference = datetime.strptime(endDateTime, '%Y-%m-%dT%H:%M:%S.%fZ') - datetime.strptime(startDateTime, '%Y-%m-%dT%H:%M:%S.%fZ')
         result = time_difference.total_seconds() * 1000     #Multiply by 1000 for milliseconds
         result_C = (True if result >= 14400000 else False)
@@ -174,7 +201,6 @@ class EventService:
         currentDateTime_formatted_UTC = datetime.strftime(date_time_now_UTC, '%Y-%m-%d %H:%M:%S')
         result_D = (True if currentDateTime_formatted_UTC < startDateTime_formatted_UTC else False)
         assert result_D == True, "Invalid start time."
-        # OK above
 
         # Rebuild the json data, if violated, error will be thrown
         # Also store only the image path for candidate image
@@ -212,8 +238,8 @@ class EventService:
             currentDateTime_formatted_UTC = datetime.strftime(date_time_now_UTC, '%Y-%m-%d %H:%M:%S')
             assert (currentDateTime_formatted_UTC < startDateTime_formatted_UTC), "Unable to modify ongoing event."
             print("Updating")
-
             assert event_dao.updateEvent(id, electionType, areaId, startDateTime, endDateTime, NOT_DELETED, NOT_EXPIRED) == True, "Event Failed to update"
+            message = "Event updated."
         else:
             print("Attempt Inserting")
             event = event_dao.findEventByAreaId(areaId, NOT_DELETED, NOT_EXPIRED) 
@@ -222,8 +248,8 @@ class EventService:
             # If result not found = no duplicate, insert data
             create_status = event_dao.putEvent(electionType, areaId, startDateTime, endDateTime, NOT_DELETED, NOT_EXPIRED)
             assert create_status == True, "Event Not Created"
+            message = "Event Created."
          
-                
         # First "remove" the old candidates
         number_of_deleted_rows = candidate_dao.updateCandidate(id, DELETED)
         print(number_of_deleted_rows)
@@ -235,22 +261,8 @@ class EventService:
 
         # Insert back the new candidates
         candidate_dao.insertCandidate(id, candidate_payload)
-        return True;
+        return message;
 
-    def getEventDetailsById(self, id):
-        record = dict(event_dao.findEventDetailsById(id, NOT_DELETED, NOT_EXPIRED))
-        record.update(start_date_time= record['start_date_time'].strftime('%Y-%m-%dT%H:%M:%S.%fZ'),
-            end_date_time=record['end_date_time'].strftime('%Y-%m-%dT%H:%M:%S.%fZ'))
-        return record
-
-    def deleteEventById(self, id):
-        return event_dao.deleteEventById(id, DELETED)
-
-    def getEventForVoter(self, areaId):
-        record =  dict(event_dao.findEventForVoter(areaId, NOT_DELETED, NOT_EXPIRED))
-        record.update(start_date_time= record['start_date_time'].strftime('%Y-%m-%dT%H:%M:%S.%fZ'),
-            end_date_time=record['end_date_time'].strftime('%Y-%m-%dT%H:%M:%S.%fZ'))
-        return record
 
 class AreaService:
     def getAllAreaType(self):
@@ -260,6 +272,9 @@ class AreaService:
             areaType_dict_list.append(dict(record))
         return areaType_dict_list
 
+    def getAreaById(self, areaId, deleteFlag):
+        return area_dao.findAreaById(areaId, deleteFlag);
+
 class ElectionTypeService:
     def getAllElectionType(self):
         electionTypeList = election_type_dao.findAllElectionType(NOT_DELETED)
@@ -267,7 +282,13 @@ class ElectionTypeService:
         for record in electionTypeList:
             election_type_dict_list.append(dict(record))
         return election_type_dict_list
+    
+    def getElectionTypeById(self, electionType, deleteFlag):
+        return election_type_dao.findElectionTypeById(electionType, deleteFlag)
 
+    def getElectionTypeById(self, electionType, deleteFlag):
+        return election_type_dao.findElectionTypeById(electionType, deleteFlag)
+        
 class CandidateService:
     def getAllEventCandidates(self, id):
         candidateList = candidate_dao.findAllCandidatesByEventId(id, NOT_DELETED)
@@ -289,17 +310,14 @@ class CandidateService:
             record.update(candidate_image = encodePng(record['candidate_image']))
             candidate_dict_list.append(record)
         return candidate_dict_list
-    
-    def incrementVoteCount(self, eventId, candidateName, deleteFlag):
-        return candidate_dao.incrementVoteCount(eventId, candidateName, deleteFlag)
         
     def voteCandidate(self, eventId, privateKey, email, candidateName):
-        number_of_participants = user_dao.findNumberOfParticipantByEventId(eventId)
+        number_of_participants = UserService().getNumberOfParticipantByEventId(eventId)
         print(number_of_participants)
-        private_public_list = user_dao.findAllPrivateAndPublicKeyByEvent(eventId, NOT_DELETED, NOT_EXPIRED)
+        private_public_list = UserService().getAllPrivateAndPublicKeyByEvent(eventId, NOT_DELETED, NOT_EXPIRED)
         print(private_public_list)
 
-        privateKeyOwner = user_dao.findEmailByPrivateKey(privateKey)
+        privateKeyOwner = UserService().getEmailByPrivateKey(privateKey)
         print(privateKeyOwner)
         assert privateKeyOwner is not None, "Invalid private key."
         assert (email == privateKeyOwner[0]) == True, "Private key does not belong to you!"
@@ -340,8 +358,9 @@ class CandidateService:
         #Insert new key image into database.
         assert KeyImageService().insertKeyImageByEventId(eventId, get_image_from_signature(signature)) == True, "Failed to insert key image"
         #Increment vote count
-        CandidateService().incrementVoteCount(eventId, candidateName, NOT_DELETED)
+        candidate_dao.incrementVoteCount(eventId, candidateName, NOT_DELETED)
         VoteHistoryService().insertVoteHistory(email)
+  
 
     def getResultByEventId(self, eventId):
         candidateResult = candidate_dao.findResultByEventId(eventId, NOT_DELETED, EXPIRED)
@@ -356,11 +375,10 @@ class KeyImageService:
         keyImage_dict_list = []
         for record in keyImageList:
             keyImage_dict_list.append(dict(record))
-        return keyImage_dict_list
-    
+        return keyImage_dict_list     
+
     def insertKeyImageByEventId(self, eventId, keyImage):
-        return keyImage_dao.insertKeyImageByEventId(eventId, keyImage)       
-       
+        return keyImage_dao.insertKeyImageByEventId(eventId, keyImage)
 
 class VoteHistoryService:
     def insertVoteHistory(self, email):
@@ -371,5 +389,8 @@ class VoteHistoryService:
         areaName = UserService().getAreaNameByEmail(email)[0]
         payload = {"area": areaName, "status": status }
         return payload
+    
+    def validateVoteEligibility(self, email):
+        return True if voteHistory_dao.findVoteStatus(email) == 0 else False
 
         

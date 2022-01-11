@@ -7,7 +7,13 @@ from datetime import datetime, timezone
 class UserDAO:
     def __init__(self, model):
         self.model = model    
-        
+
+    def findUserInformationByEmail(self, email):
+        return ( Users.query
+                .with_entities(Users.role, Users.area_id)  
+                .filter(Users.email == email)
+                .one())    
+
     def findAreaNameByEmail(self, email, deleteFlag):
         return Users.query.join(Area, Area.area_id == Users.area_id) \
             .with_entities(Area.area_name) \
@@ -31,32 +37,34 @@ class UserDAO:
             .all();
 
     def findEmailByPrivateKey(self, privateKey):
-        return Users.query.with_entities(Users.email).filter(Users.private_key == privateKey).first()
+        return Users.query.with_entities(Users.email) \
+            .filter(Users.private_key == privateKey) \
+            .first()
 
     def findPrivateKeyByEmail(self, email):
-        return Users.query.with_entities(Users.private_key).filter(Users.email == email).first()
+        return Users.query.with_entities(Users.private_key) \
+            .filter(Users.email == email) \
+            .first()
 
     def findAllEmail(self):
-        return Users.query.with_entities(Users.email).all()
+        return Users.query.with_entities(Users.email) \
+            .all()
 
     def updateUser(self, user_list):
-        print("updating")
         db.session.bulk_update_mappings(Users, user_list)
         db.session.commit()
     
-    def findAreaIdKeyImageByEmail(self, email):
-        return Users.query.with_entities(Users.area_id, Users.key_image) \
+    def findAreaIdByEmail(self, email):
+        return Users.query.with_entities(Users.area_id) \
             .filter(Users.email == email) \
             .one()
-
-user_dao = UserDAO(Users)
 
 
 class EventDAO:
     def __init__(self, model):
         self.model = model    
     
-    def findAllEventAdmin(self, deleteFlag, expireFlag):
+    def findAllEvent(self, deleteFlag, expireFlag):
         return Event.query.join(Area, Event.area_id == Area.area_id) \
             .with_entities(Event.event_id,Area.area_name,Event.start_date_time, Event.end_date_time) \
             .filter(Event.del_flag == deleteFlag) \
@@ -125,7 +133,8 @@ class EventDAO:
         return True;
               
     def findEvent(self, electionType, areaId, startDateTime, endDateTime, deleteFlag, expireFlag):
-        return Event.query.with_entities(Event.event_id).filter(Event.election_type == electionType) \
+        return Event.query.with_entities(Event.event_id) \
+            .filter(Event.election_type == electionType) \
             .filter(Event.area_id == areaId) \
             .filter(Event.start_date_time == datetime.strptime(startDateTime, '%Y-%m-%dT%H:%M:%S.%fZ')) \
             .filter(Event.end_date_time == datetime.strptime(endDateTime, '%Y-%m-%dT%H:%M:%S.%fZ')) \
@@ -138,45 +147,47 @@ class EventDAO:
             .update(dict(del_flag=deleteFlag)) 
         db.session.commit();
         return number_of_row  
-
-event_dao = EventDAO(Event)   
+ 
 
 class ElectionTypeDAO:
     def __init__(self, model):
         self.model = model    
     def findAllElectionType(self, deleteFlag):
-        return ElectionType.query.with_entities(ElectionType.election_id, ElectionType.election_name) \
+        return ElectionType.query \
+            .with_entities(ElectionType.election_id, ElectionType.election_name) \
             .filter(ElectionType.del_flag == deleteFlag) \
             .all()
 
     def findElectionTypeById(self, electionId, deleteFlag):
-        return ElectionType.query.filter(ElectionType.election_id == electionId) \
+        return ElectionType.query \
+            .filter(ElectionType.election_id == electionId) \
             .filter(ElectionType.del_flag == deleteFlag) \
             .one()
 
-election_type_dao = ElectionTypeDAO(ElectionType)
 
 class AreaDAO:
     def __init__(self, model):
         self.model = model
     def findAllAreaType(self, deleteFlag):
-        return Area.query.with_entities(Area.area_id, Area.area_name, Area.election_type) \
+        return Area.query \
+            .with_entities(Area.area_id, Area.area_name, Area.election_type) \
             .filter(Area.del_flag == deleteFlag) \
             .all()
 
     def findAreaById(self, areaId, deleteFlag):
-        return Area.query.filter(Area.area_id == areaId) \
+        return Area.query \
+            .filter(Area.area_id == areaId) \
             .filter(Area.del_flag == deleteFlag) \
             .one()
-            
-area_dao = AreaDAO(Area)
+
 
 class CandidateDAO:
     def __init__(self, model):
         self.model = model
 
     def updateCandidate(self, eventId, deleteFlag):
-        number_of_row = Candidate.query.filter(Candidate.event_id == eventId) \
+        number_of_row = Candidate.query \
+            .filter(Candidate.event_id == eventId) \
             .update(dict(del_flag=deleteFlag))
         db.session.commit();
         return number_of_row
@@ -195,7 +206,8 @@ class CandidateDAO:
             .all()
 
     def deleteCandidateByEventId(self, id, deleteFlag):
-        number_of_row = Candidate.query.filter(Candidate.event_id == id) \
+        number_of_row = Candidate.query \
+            .filter(Candidate.event_id == id) \
             .update(dict(del_flag=deleteFlag)) 
         db.session.commit();
         return number_of_row 
@@ -222,7 +234,8 @@ class CandidateDAO:
         return number_of_row
        
     def findResultByEventId(self, eventId, deleteFlag, expireFlag):
-        return Candidate.query.join(Event, Event.event_id == Candidate.event_id) \
+        return Candidate.query \
+            .join(Event, Event.event_id == Candidate.event_id) \
             .with_entities(Candidate.candidate_name, Candidate.vote_count, Area.query.with_entities(Area.area_name) \
             .filter(Area.area_id == Event.area_id).label("area_name")) \
             .filter(Candidate.event_id == eventId) \
@@ -231,15 +244,14 @@ class CandidateDAO:
             .filter(Event.del_flag == deleteFlag) \
             .all()
    
-candidate_dao = CandidateDAO(Candidate)
-        
 
 class KeyImageDao:
     def __init__(self, model):
         self.model = model
 
     def findAllKeyImageByEventId(self, eventId):
-        return KeyImage.query.with_entities(KeyImage.key_image) \
+        return KeyImage.query \
+            .with_entities(KeyImage.key_image) \
             .filter(KeyImage.event_id == eventId) \
             .all()
     def insertKeyImageByEventId(self, eventId, keyImage):
@@ -248,7 +260,6 @@ class KeyImageDao:
         db.session.commit();
         return True;
 
-keyImage_dao = KeyImageDao(KeyImage)
 
 class VoteHistoryDAO:
     def __init__(self, model):
@@ -263,4 +274,11 @@ class VoteHistoryDAO:
     def findVoteStatus(self, email):
         return VoteHistory.query.filter(VoteHistory.email == email).count()
 
+
+user_dao = UserDAO(Users)
+event_dao = EventDAO(Event)  
+election_type_dao = ElectionTypeDAO(ElectionType)
+area_dao = AreaDAO(Area)
+candidate_dao = CandidateDAO(Candidate)
+keyImage_dao = KeyImageDao(KeyImage)
 voteHistory_dao = VoteHistoryDAO(VoteHistory)

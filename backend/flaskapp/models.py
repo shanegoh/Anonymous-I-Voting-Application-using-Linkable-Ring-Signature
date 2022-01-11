@@ -58,6 +58,6 @@ class VoteHistory(db.Model):
     id = db.Column(db.Integer, primary_key=True, nullable=False)
     email = db.Column(db.String, nullable=False)
    
-result = db.engine.execute("SHOW STATUS LIKE 'Ssl_cipher'")
-names = [row[1] for row in result]
-print (names)
+# result = db.engine.execute("SHOW STATUS LIKE 'Ssl_cipher'")
+# names = [row[1] for row in result]
+# print (names)
