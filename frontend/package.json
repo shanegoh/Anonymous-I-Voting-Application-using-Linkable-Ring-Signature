@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "proxy": "http://127.0.0.1:5000",
-  "homepage": "/main",
+  "homepage": "/",
   "dependencies": {
     "@auth0/auth0-react": "^1.8.0",
     "@mobiscroll/react-lite": "^4.10.9",

@@ -34,7 +34,7 @@ export default function App() {
       >
         <Router history={history}>
           <Switch>
-            <Route path="/main" exact component={Main} />
+            <Route path="/" exact component={Main} />
             <ProtectedRoute path="/redirect" exact component={Redirect} />
             <ProtectedRoute path="/admin/home" exact component={AdminHome} />
             <ProtectedRoute
