@@ -45,7 +45,7 @@ export default function Redirect({ history }) {
           .get("https://api.mimis.social/findUserInformation", {
             headers: {
               Authorization: `Bearer ${accessToken}`,
-              id_token: `Bearer ${getIDToken()}`,
+              IdToken: `Bearer ${getIDToken()}`,
             },
           })
           .then((res) => {

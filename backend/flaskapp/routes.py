@@ -22,7 +22,7 @@ def test():
 
 # This is used when user logs in for redirecting (For All Types of Users)
 @app.route("/findUserInformation")
-@cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'id_token'])
+@cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'IdToken'])
 @requires_auth
 @requires_id_token
 def findUserInformation():
@@ -37,7 +37,7 @@ def findUserInformation():
 
 # This is used to display all events. (For Admin/Electoral Board Users)
 @app.route("/findAllEvent", methods=['GET'])
-@cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'id_token'])
+@cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'IdToken'])
 @requires_auth
 @requires_id_token
 def findAllEvent():
@@ -53,7 +53,7 @@ def findAllEvent():
 
 # This is used to download all area and election type (For Admin/Electoral Board Users)
 @app.route("/findAllElectionTypeAndArea")
-@cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'id_token'])
+@cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'IdToken'])
 @requires_auth
 @requires_id_token
 def findAllElectionType():
@@ -73,7 +73,7 @@ def findAllElectionType():
 # This is used to create or update events (For Admin/Electoral Board Users)
 @app.route("/updateEvent/<id>", methods=['PUT'])
 @app.route("/createEvent", methods=['PUT'])
-@cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'id_token'])
+@cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'IdToken'])
 @requires_auth
 @requires_id_token
 def putEvent(id=-1):
@@ -96,7 +96,7 @@ def putEvent(id=-1):
 
 # This is used to delete events (For Admin/Electoral Board Users)
 @app.route("/deleteEventById/<id>", methods=['DELETE'])
-@cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'id_token'])
+@cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'IdToken'])
 @requires_auth
 @requires_id_token
 def deleteEvent(id):
@@ -115,7 +115,7 @@ def deleteEvent(id):
 
 # This is used to find past events (For Admin/Electoral Board Users)
 @app.route("/findPastEvent", methods=['GET'])
-@cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'id_token'])
+@cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'IdToken'])
 @requires_auth
 @requires_id_token
 def findPastEvent():
@@ -131,7 +131,7 @@ def findPastEvent():
 
 # This is used to view results of the event (For Admin/Electoral Board Users)
 @app.route("/findResultById/<id>", methods=['GET'])
-@cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'id_token'])
+@cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'IdToken'])
 @requires_auth
 @requires_id_token
 def findResultById(id):
@@ -146,7 +146,7 @@ def findResultById(id):
 
 # This is used to upload excel files containing credentials (For Admin/Electoral Board Users)
 @app.route("/upload", methods=["POST"])
-@cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'id_token'])
+@cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'IdToken'])
 @requires_auth
 @requires_id_token
 def uploadFile():
@@ -164,7 +164,7 @@ def uploadFile():
 
 # This is used to view event(s) for voter (For Voters)
 @app.route("/findElectionForVoter", methods=['GET'])
-@cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'id_token'])
+@cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'IdToken'])
 @requires_auth
 @requires_id_token
 def findElectionForVoter():
@@ -184,7 +184,7 @@ def findElectionForVoter():
 
 # This is used to view candidates for the election event (For Voters)
 @app.route("/findCandidateByEventId/<id>", methods=['GET'])
-@cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'id_token'])
+@cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'IdToken'])
 @requires_auth
 @requires_id_token
 def findCandidateByEventId(id):
@@ -200,7 +200,7 @@ def findCandidateByEventId(id):
 
 # This is used to vote candidates for the election event (For Voters)
 @app.route("/voteCandidate", methods=['PUT'])
-@cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'id_token'])
+@cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'IdToken'])
 @requires_auth
 @requires_id_token
 def voteCandidate():
@@ -217,7 +217,7 @@ def voteCandidate():
 
 # This is used to view candidates for the election event (For Voters)
 @app.route("/findEventDetailsById/<id>")
-@cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'id_token'])
+@cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'IdToken'])
 @requires_auth
 @requires_id_token
 def findEventDetailsById(id):
@@ -237,7 +237,7 @@ def findEventDetailsById(id):
 
 # This is used to view vote status for voters (For Voters)       
 @app.route("/findVoteStatus", methods=["GET"])
-@cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'id_token'])
+@cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'IdToken'])
 @requires_auth
 @requires_id_token
 def findVoteStatus():

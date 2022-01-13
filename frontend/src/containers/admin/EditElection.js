@@ -22,7 +22,7 @@ export default function EditElection({ history }) {
       .get(`https://api.mimis.social/findEventDetailsById/${id}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("ACCESS_TOKEN")}`,
-          id_token: `Bearer ${localStorage.getItem("ID_TOKEN")}`,
+          IdToken: `Bearer ${localStorage.getItem("ID_TOKEN")}`,
         },
       })
       .then((res) => {
