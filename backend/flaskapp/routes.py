@@ -10,11 +10,17 @@ import sys
 from flaskapp.util import *
 from flaskapp.services import *
 
-#Controllers API
+#Controllers APIm
 @app.route("/testRoute")
 def testRoute():
     return "ok"
-    
+
+@app.route("/test")
+@cross_origin(origin='localhost')
+def test():
+   return "working"
+
+>>>>>>> Stashed changes
 # This is used when user logs in for redirecting (For All Types of Users)
 @app.route("/findUserInformation")
 @cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'id_token'])
