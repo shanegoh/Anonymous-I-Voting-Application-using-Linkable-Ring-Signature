@@ -2,6 +2,7 @@ from flaskapp.util import DELETED, NOT_DELETED, NOT_EXPIRED
 from flaskapp.models import Users, Event, ElectionType, Candidate, Area, KeyImage, VoteHistory
 from flaskapp.db import db
 from datetime import datetime, timezone
+from sqlalchemy.orm.exc import NoResultFound
 
 # Database access object
 class UserDAO:
@@ -19,7 +20,7 @@ class UserDAO:
             .with_entities(Area.area_name) \
             .filter(Area.del_flag == deleteFlag) \
             .filter(Users.email == email) \
-            .one()
+            .first()
         
     def findNumberOfParticipantByEventId(self, eventId):
         return Users.query \
@@ -272,7 +273,12 @@ class VoteHistoryDAO:
         return True;
 
     def findVoteStatus(self, email):
-        return VoteHistory.query.filter(VoteHistory.email == email).count()
+        try:
+            VoteHistory.query.filter(VoteHistory.email == email).one()
+            return 1
+        except NoResultFound:
+            return 0
+
 
 
 user_dao = UserDAO(Users)

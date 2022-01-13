@@ -18,7 +18,7 @@ export default function LogoutButton() {
     removeAccessToken();
     removeRoleID();
     removeAreaID();
-    logout({ returnTo: window.location.origin + "/main" });
+    logout({ returnTo: window.location.origin });
   };
 
   return (
