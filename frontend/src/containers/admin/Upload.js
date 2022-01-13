@@ -58,11 +58,7 @@ export default function Upload() {
     const data = new FormData();
     data.append("file", selectedFile);
     axios
-<<<<<<< Updated upstream
-      .post("/upload", data, {
-=======
       .post(`/upload`, data, {
->>>>>>> Stashed changes
         headers: {
           Authorization: `Bearer ${localStorage.getItem("ACCESS_TOKEN")}`,
           id_token: `Bearer ${localStorage.getItem("ID_TOKEN")}`,
