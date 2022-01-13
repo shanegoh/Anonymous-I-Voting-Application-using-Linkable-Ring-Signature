@@ -60,9 +60,9 @@ def get_token_auth_header():
 def get_id_token_auth_header():
     """Obtains the Access Token from the Authorization Header
     """
-    auth = request.headers.get("id_token", None)
+    auth = request.headers.get("IdToken", None)
     if not auth:
-        raise AuthError({"code": "id_token_header_mssing",
+        raise AuthError({"code": "id_token_header_missing",
                         "description":
                             "id_token header is expected"}, 401)
 
