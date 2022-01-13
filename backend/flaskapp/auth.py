@@ -9,7 +9,7 @@ from urllib.request import urlopen
 
 AUTH0_DOMAIN = 'dev-a6828r5z.us.auth0.com'
 API_AUDIENCE = 'https://dev-a6828r5z.us.auth0.com/api/v2/'
-AUTH0_AUDIENCE = 'S6jOFF5O6Tom8mVGaMuaJxbIuvhqKa4r'
+AUTH0_AUDIENCE = "S6jOFF5O6Tom8mVGaMuaJxbIuvhqKa4r"
 ALGORITHMS = ["RS256"]
 
 # Error handler
@@ -160,7 +160,7 @@ def requires_id_token(f):
                     token,
                     rsa_key,
                     algorithms=ALGORITHMS,
-                    audience=AUTH0_AUDIENCE,
+                    audience="S6jOFF5O6Tom8mVGaMuaJxbIuvhqKa4r",
                     issuer="https://"+AUTH0_DOMAIN+"/"
                 )
                 session['email'] = payload.get('email')
