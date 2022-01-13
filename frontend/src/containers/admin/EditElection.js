@@ -19,7 +19,7 @@ export default function EditElection({ history }) {
 
   useEffect(() => {
     axios
-      .get(`/findEventDetailsById/${id}`, {
+      .get(`https://api.mimis.social/findEventDetailsById/${id}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("ACCESS_TOKEN")}`,
           id_token: `Bearer ${localStorage.getItem("ID_TOKEN")}`,

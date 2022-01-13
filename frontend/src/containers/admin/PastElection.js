@@ -18,7 +18,7 @@ export default function PastEvent({ history }) {
 
   useEffect(() => {
     axios
-      .get("/findPastEvent", {
+      .get("https://api.mimis.social/findPastEvent", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("ACCESS_TOKEN")}`,
           id_token: `Bearer ${localStorage.getItem("ID_TOKEN")}`,

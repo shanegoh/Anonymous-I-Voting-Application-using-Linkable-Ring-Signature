@@ -81,7 +81,7 @@ export default function EventForm({
 
   useEffect(() => {
     axios
-      .get("/findAllElectionTypeAndArea", {
+      .get("https://api.mimis.social/findAllElectionTypeAndArea", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("ACCESS_TOKEN")}`,
           id_token: `Bearer ${localStorage.getItem("ID_TOKEN")}`,
