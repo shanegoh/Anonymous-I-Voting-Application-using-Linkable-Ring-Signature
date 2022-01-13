@@ -9,7 +9,7 @@ from urllib.request import urlopen
 
 AUTH0_DOMAIN = 'dev-a6828r5z.us.auth0.com'
 API_AUDIENCE = 'https://dev-a6828r5z.us.auth0.com/api/v2/'
-AUTH0_AUDIENCE = os.getenv("REACT_APP_AUTH0_CLIENTID")
+AUTH0_AUDIENCE = 'S6jOFF5O6Tom8mVGaMuaJxbIuvhqKa4r'
 ALGORITHMS = ["RS256"]
 
 # Error handler
