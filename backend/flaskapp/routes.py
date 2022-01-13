@@ -21,7 +21,7 @@ def test():
    return "working"
 
 # This is used when user logs in for redirecting (For All Types of Users)
-@app.route("https://api.mimis.social/findUserInformation")
+@app.route("/findUserInformation")
 @cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'id_token'])
 @requires_auth
 @requires_id_token
