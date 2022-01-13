@@ -4,10 +4,12 @@ from functools import wraps
 from flaskapp import app
 from flask import jsonify
 from jose import jwt
+import os
 from urllib.request import urlopen
 
-AUTH0_DOMAIN = 'dev-i7062-qd.us.auth0.com'
-API_AUDIENCE = 'https://dev-i7062-qd.us.auth0.com/api/v2/'
+AUTH0_DOMAIN = 'dev-a6828r5z.us.auth0.com'
+API_AUDIENCE = 'https://dev-a6828r5z.us.auth0.com/api/v2/'
+AUTH0_AUDIENCE = os.getenv("REACT_APP_AUTH0_CLIENTID")
 ALGORITHMS = ["RS256"]
 
 # Error handler
@@ -158,7 +160,7 @@ def requires_id_token(f):
                     token,
                     rsa_key,
                     algorithms=ALGORITHMS,
-                    audience='iRBOjoV0GY8FJAVNG9EkAninlgNkw49G',
+                    audience=AUTH0_AUDIENCE,
                     issuer="https://"+AUTH0_DOMAIN+"/"
                 )
                 session['email'] = payload.get('email')
