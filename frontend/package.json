@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "proxy": "https://api.mimis.social",
-  "homepage": "/",
+  "homepage": "https://www.mimis.social",
   "dependencies": {
     "@auth0/auth0-react": "^1.8.0",
     "@mobiscroll/react-lite": "^4.10.9",
