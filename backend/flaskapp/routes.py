@@ -16,8 +16,8 @@ def testRoute():
     return "ok"
 
 @app.route("/test")
-@cross_origin(origin='localhost', headers=['Content-Type','Authorization'])
-@requires_auth
+@cross_origin(origin='localhost', headers=['Content-Type','IdToken'])
+@requires_id_token
 def test():
    return "working"
 
