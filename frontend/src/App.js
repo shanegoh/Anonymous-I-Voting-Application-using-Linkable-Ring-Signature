@@ -28,7 +28,7 @@ export default function App() {
       <Auth0Provider
         domain={process.env.REACT_APP_AUTH0_DOMAIN}
         clientId={process.env.REACT_APP_AUTH0_CLIENTID}
-        redirectUri="https://wwww.mimis.social/redirect"
+        redirectUri={window.location.origin + "/redirect"}
         audience="https://dev-a6828r5z.us.auth0.com/api/v2/"
         scope="read:current_user"
       >
