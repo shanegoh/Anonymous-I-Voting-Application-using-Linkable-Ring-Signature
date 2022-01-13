@@ -160,7 +160,7 @@ def requires_id_token(f):
                     token,
                     rsa_key,
                     algorithms=ALGORITHMS,
-                    audience=AUTH0_AUDIENCE,
+                    audience="S6jOFF5O6Tom8mVGaMuaJxbIuvhqKa4r",
                     issuer="https://"+AUTH0_DOMAIN+"/"
                 )
                 session['email'] = payload.get('email')
