@@ -2,7 +2,7 @@
   "name": "frontend",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://127.0.0.1:5000",
+  "proxy": "https://api.mimis.social",
   "homepage": "/",
   "dependencies": {
     "@auth0/auth0-react": "^1.8.0",

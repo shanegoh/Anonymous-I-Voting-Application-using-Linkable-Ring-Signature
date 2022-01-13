@@ -18,7 +18,7 @@ export default function MyVoteStatus() {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:5000/findVoteStatus`, {
+      .get("/findVoteStatus", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("ACCESS_TOKEN")}`,
           id_token: `Bearer ${localStorage.getItem("ID_TOKEN")}`,

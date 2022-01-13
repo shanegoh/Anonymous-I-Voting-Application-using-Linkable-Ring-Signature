@@ -75,7 +75,7 @@ export default function Poll({ history }) {
       };
       console.log(payload);
       axios
-        .put(`http://localhost:5000/voteCandidate`, payload, {
+        .put("/voteCandidate", payload, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("ACCESS_TOKEN")}`,
             id_token: `Bearer ${localStorage.getItem("ID_TOKEN")}`,
@@ -101,7 +101,7 @@ export default function Poll({ history }) {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:5000/findCandidateByEventId/${id}`, {
+      .get(`/findCandidateByEventId/${id}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("ACCESS_TOKEN")}`,
           id_token: `Bearer ${localStorage.getItem("ID_TOKEN")}`,

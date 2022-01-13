@@ -58,7 +58,7 @@ export default function Upload() {
     const data = new FormData();
     data.append("file", selectedFile);
     axios
-      .post(`http://localhost:5000/upload`, data, {
+      .post("/upload", data, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("ACCESS_TOKEN")}`,
           id_token: `Bearer ${localStorage.getItem("ID_TOKEN")}`,
