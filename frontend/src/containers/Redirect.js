@@ -42,7 +42,7 @@ export default function Redirect({ history }) {
         setAccessToken(accessToken);
 
         axios
-          .get("/findUserInformation", {
+          .get("https://api.mimis.social/findUserInformation", {
             headers: {
               Authorization: `Bearer ${accessToken}`,
               id_token: `Bearer ${getIDToken()}`,
