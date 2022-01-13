@@ -84,7 +84,7 @@ export default function EventForm({
       .get("https://api.mimis.social/findAllElectionTypeAndArea", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("ACCESS_TOKEN")}`,
-          IdToken: `Bearer ${localStorage.getItem("ID_TOKEN")}`,
+          Idtoken: `Bearer ${localStorage.getItem("ID_TOKEN")}`,
         },
       })
       .then((res) => {
@@ -189,7 +189,7 @@ export default function EventForm({
         .put(path, event_payload, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("ACCESS_TOKEN")}`,
-            id_token: `Bearer ${localStorage.getItem("ID_TOKEN")}`,
+            Idtoken: `Bearer ${localStorage.getItem("ID_TOKEN")}`,
           },
         })
         .then((res) => {

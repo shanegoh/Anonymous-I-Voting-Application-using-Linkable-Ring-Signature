@@ -21,7 +21,7 @@ export default function MyVoteStatus() {
       .get("https://api.mimis.social/findVoteStatus", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("ACCESS_TOKEN")}`,
-          IdToken: `Bearer ${localStorage.getItem("ID_TOKEN")}`,
+          Idtoken: `Bearer ${localStorage.getItem("ID_TOKEN")}`,
         },
       })
       .then((res) => {

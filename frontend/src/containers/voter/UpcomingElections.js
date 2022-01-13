@@ -18,7 +18,7 @@ export default function UpcomingElections({ history }) {
       .get("https://api.mimis.social/findElectionForVoter", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("ACCESS_TOKEN")}`,
-          IdToken: `Bearer ${localStorage.getItem("ID_TOKEN")}`,
+          Idtoken: `Bearer ${localStorage.getItem("ID_TOKEN")}`,
         },
       })
       .then((res) => {
