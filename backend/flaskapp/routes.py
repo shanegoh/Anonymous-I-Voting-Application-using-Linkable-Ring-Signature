@@ -13,6 +13,7 @@ from flaskapp.services import *
 #Controllers APIm
 @app.route("/testRoute")
 @cross_origin(origin='localhost', headers=['Content-Type','Authorization'])
+@requires_auth
 def testRoute():
     return "ok"
 
