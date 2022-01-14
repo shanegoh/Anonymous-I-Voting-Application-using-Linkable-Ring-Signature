@@ -15,7 +15,7 @@ export default function UpcomingElections({ history }) {
 
   useEffect(() => {
     axios
-      .get("https://api.mimis.social/findElectionForVoter", {
+      .get(process.env.REACT_APP_PATH + "/findElectionForVoter", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("ACCESS_TOKEN")}`,
         },

@@ -58,7 +58,7 @@ export default function Upload() {
     const data = new FormData();
     data.append("file", selectedFile);
     axios
-      .post("https://api.mimis.social/upload", data, {
+      .post(process.env.REACT_APP_PATH + "/upload", data, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("ACCESS_TOKEN")}`,
         },

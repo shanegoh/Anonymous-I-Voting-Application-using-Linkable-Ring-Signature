@@ -41,7 +41,7 @@ export default function Redirect({ history }) {
         setAccessToken(accessToken);
 
         axios
-          .get("https://api.mimis.social/findUserInformation", {
+          .get(process.env.REACT_APP_PATH + "/findUserInformation", {
             headers: {
               Authorization: `Bearer ${accessToken}`,
             },

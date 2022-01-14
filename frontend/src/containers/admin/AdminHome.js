@@ -25,7 +25,7 @@ export default function Admin({ history }) {
 
   useEffect(() => {
     axios
-      .get("https://api.mimis.social/findAllEvent", {
+      .get(process.env.REACT_APP_PATH + "/findAllEvent", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("ACCESS_TOKEN")}`,
         },

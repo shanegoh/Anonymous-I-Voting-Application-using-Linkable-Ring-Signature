@@ -110,7 +110,7 @@ export default function Candidate({
     handleClose(); // Close the confirmation dialog
     // const event_id_payload = { event_id: event_id };
     axios
-      .delete(`https://api.mimis.social/deleteEventById/${event_id}`, {
+      .delete(process.env.REACT_APP_PATH + `/deleteEventById/${event_id}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("ACCESS_TOKEN")}`,
         },

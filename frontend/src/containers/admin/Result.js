@@ -31,7 +31,7 @@ export default function Result() {
 
   useEffect(() => {
     axios
-      .get(`https://api.mimis.social/findResultById/${id}`, {
+      .get(process.env.REACT_APP_PATH + `/findResultById/${id}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("ACCESS_TOKEN")}`,
         },

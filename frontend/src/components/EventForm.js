@@ -81,7 +81,7 @@ export default function EventForm({
 
   useEffect(() => {
     axios
-      .get("https://api.mimis.social/findAllElectionTypeAndArea", {
+      .get(process.env.REACT_APP_PATH + "/findAllElectionTypeAndArea", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("ACCESS_TOKEN")}`,
         },
@@ -180,8 +180,8 @@ export default function EventForm({
       console.log(event_payload);
 
       // Update Event if event_id is defined, else create
-      var url_update = `https://api.mimis.social/updateEvent/${event_id}`;
-      var url_create = `https://api.mimis.social/createEvent`;
+      var url_update = process.env.REACT_APP_PATH + `/updateEvent/${event_id}`;
+      var url_create = process.env.REACT_APP_PATH + "/createEvent";
       // If event_id is defined = update event
       var path = isDefined(event_id) ? url_update : url_create;
       axios

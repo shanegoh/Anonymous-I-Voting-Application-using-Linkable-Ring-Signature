@@ -18,7 +18,7 @@ export default function MyVoteStatus() {
 
   useEffect(() => {
     axios
-      .get("https://api.mimis.social/findVoteStatus", {
+      .get(process.env.REACT_APP_PATH + "/findVoteStatus", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("ACCESS_TOKEN")}`,
         },

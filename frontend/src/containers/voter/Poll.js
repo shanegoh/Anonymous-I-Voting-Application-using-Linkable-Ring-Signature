@@ -75,7 +75,7 @@ export default function Poll({ history }) {
       };
       console.log(payload);
       axios
-        .put("https://api.mimis.social/voteCandidate", payload, {
+        .put(process.env.REACT_APP_PATH + "/voteCandidate", payload, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("ACCESS_TOKEN")}`,
           },
@@ -100,7 +100,7 @@ export default function Poll({ history }) {
 
   useEffect(() => {
     axios
-      .get(`https://api.mimis.social/findCandidateByEventId/${id}`, {
+      .get(process.env.REACT_APP_PATH + `/findCandidateByEventId/${id}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("ACCESS_TOKEN")}`,
         },
