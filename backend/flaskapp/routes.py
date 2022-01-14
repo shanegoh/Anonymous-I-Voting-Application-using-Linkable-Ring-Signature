@@ -40,7 +40,6 @@ def findUserInformation():
 @app.route("/findAllEvent", methods=['GET'])
 @cross_origin(origin='localhost',headers=['Content-Type','Authorization'])
 @requires_auth
-@requires_id_token
 def findAllEvent():
     try:
         event = EventService().getAllEventAdmin()
@@ -56,7 +55,6 @@ def findAllEvent():
 @app.route("/findAllElectionTypeAndArea")
 @cross_origin(origin='localhost',headers=['Content-Type','Authorization'])
 @requires_auth
-@requires_id_token
 def findAllElectionType():
     try:
         electionTypeList = ElectionTypeService().getAllElectionType();
@@ -76,7 +74,6 @@ def findAllElectionType():
 @app.route("/createEvent", methods=['PUT'])
 @cross_origin(origin='localhost',headers=['Content-Type','Authorization'])
 @requires_auth
-@requires_id_token
 def putEvent(id=-1):
     electionType = request.json['election_type']
     areaId = request.json['area_id']
@@ -99,7 +96,6 @@ def putEvent(id=-1):
 @app.route("/deleteEventById/<id>", methods=['DELETE'])
 @cross_origin(origin='localhost',headers=['Content-Type','Authorization'])
 @requires_auth
-@requires_id_token
 def deleteEvent(id):
     try:
         CandidateService().deleteCandidateByEventId(id)
@@ -118,7 +114,6 @@ def deleteEvent(id):
 @app.route("/findPastEvent", methods=['GET'])
 @cross_origin(origin='localhost',headers=['Content-Type','Authorization'])
 @requires_auth
-@requires_id_token
 def findPastEvent():
     try:
         event = EventService().getAllPastEvent()
@@ -134,7 +129,6 @@ def findPastEvent():
 @app.route("/findResultById/<id>", methods=['GET'])
 @cross_origin(origin='localhost',headers=['Content-Type','Authorization'])
 @requires_auth
-@requires_id_token
 def findResultById(id):
     try:
         result = CandidateService().getResultByEventId(id)
@@ -149,7 +143,6 @@ def findResultById(id):
 @app.route("/upload", methods=["POST"])
 @cross_origin(origin='localhost',headers=['Content-Type','Authorization'])
 @requires_auth
-@requires_id_token
 def uploadFile():
     try:
         b64_list = UserService().uploadUserInformation(request.files['file'])
@@ -167,7 +160,6 @@ def uploadFile():
 @app.route("/findElectionForVoter", methods=['GET'])
 @cross_origin(origin='localhost',headers=['Content-Type','Authorization'])
 @requires_auth
-@requires_id_token
 def findElectionForVoter():
     try:
         user = UserService().getAreaIdByEmail(session['email'])
@@ -187,7 +179,6 @@ def findElectionForVoter():
 @app.route("/findCandidateByEventId/<id>", methods=['GET'])
 @cross_origin(origin='localhost',headers=['Content-Type','Authorization'])
 @requires_auth
-@requires_id_token
 def findCandidateByEventId(id):
     try:
         candidateList = CandidateService().getCandidateByEventId(id, session['email'])
@@ -203,7 +194,6 @@ def findCandidateByEventId(id):
 @app.route("/voteCandidate", methods=['PUT'])
 @cross_origin(origin='localhost',headers=['Content-Type','Authorization'])
 @requires_auth
-@requires_id_token
 def voteCandidate():
     try:
         CandidateService().voteCandidate(request.json['event_id'], request.json['private_key'], session['email'], request.json['candidate_name'])
@@ -220,7 +210,6 @@ def voteCandidate():
 @app.route("/findEventDetailsById/<id>")
 @cross_origin(origin='localhost',headers=['Content-Type','Authorization'])
 @requires_auth
-@requires_id_token
 def findEventDetailsById(id):
     try:
         event = EventService().getEventDetailsById(id)
@@ -240,7 +229,6 @@ def findEventDetailsById(id):
 @app.route("/findVoteStatus", methods=["GET"])
 @cross_origin(origin='localhost',headers=['Content-Type','Authorization'])
 @requires_auth
-@requires_id_token
 def findVoteStatus():
     try:
         result = VoteHistoryService().getVoteHistory(session['email'])
