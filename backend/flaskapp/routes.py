@@ -15,7 +15,7 @@ from flaskapp.services import *
 @cross_origin(origin='localhost', headers=['Content-Type','Authorization'])
 @requires_auth
 def testRoute():
-    return session['email']
+    return "ok"
 
 @app.route("/test")
 @cross_origin(origin='localhost', headers=['Content-Type','Idtoken', 'Access-Control-Allow-Origin'])
