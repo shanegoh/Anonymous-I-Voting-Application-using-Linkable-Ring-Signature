@@ -7,10 +7,10 @@ from jose import jwt
 import os
 from urllib.request import urlopen
 
-AUTH0_DOMAIN = 'dev-a6828r5z.us.auth0.com'
-API_AUDIENCE = 'https://dev-a6828r5z.us.auth0.com/api/v2/'
-AUTH0_AUDIENCE = os.getenv("REACT_APP_AUTH0_CLIENTID")
-EMAIL = "https://dev-a6828r5z.us.auth0.com.email"
+AUTH0_DOMAIN = os.getenv('AUTH0_DOMAIN')
+AUTH0_API_AUDIENCE = os.getenv('AUTH0_API_AUDIENCE')
+AUTH0_CLIENTID_AUDIENCE = os.getenv("AUTH0_CLIENTID")
+AUTH0_USER_EMAIL = os.getenv('AUTH0_USER_EMAIL')
 ALGORITHMS = ["RS256"]
 
 # Error handler
@@ -112,10 +112,10 @@ def requires_auth(f):
                     token,
                     rsa_key,
                     algorithms=ALGORITHMS,
-                    audience=API_AUDIENCE,
+                    audience=AUTH0_API_AUDIENCE,
                     issuer="https://"+AUTH0_DOMAIN+"/"
                 )
-                session['email'] = payload.get('https://dev-a6828r5z.us.auth0.com.email')
+                session['email'] = payload.get(AUTH0_CLIENTID_AUDIENCE)
             except jwt.ExpiredSignatureError:
                 raise AuthError({"code": "token_expired",
                                 "description": "token is expired"}, 401)

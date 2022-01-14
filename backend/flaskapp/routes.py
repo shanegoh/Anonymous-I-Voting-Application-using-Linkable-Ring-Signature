@@ -15,7 +15,7 @@ from flaskapp.services import *
 @cross_origin(origin='localhost', headers=['Content-Type','Authorization'])
 @requires_auth
 def testRoute():
-    return os.getenv('MYSQL_DATABASE_HOST')
+    return session['email']
 
 @app.route("/test")
 @cross_origin(origin='localhost', headers=['Content-Type'])
