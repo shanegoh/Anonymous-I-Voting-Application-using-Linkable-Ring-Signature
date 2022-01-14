@@ -236,7 +236,7 @@ export default function EventForm({
       ) : (
         <></>
       )}
-      <div className="d-flex gap-5 w-75">
+      <div className="d-flex gap-5 form-element-resize">
         <Form.Select
           value={electionType}
           id="election_type"
@@ -272,7 +272,7 @@ export default function EventForm({
           })}
         </Form.Select>
       </div>
-      <div className="d-flex gap-5 w-75">
+      <div className="d-flex gap-5 form-element-resize">
         <DateTimePicker
           required
           value={startDateTime}

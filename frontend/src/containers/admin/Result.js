@@ -136,12 +136,11 @@ export default function Result() {
         )}
         {isLoaded ? (
           <div className="d-flex flex-column gap-3">
-            <MDBContainer className="pt-5" style={{ width: "25rem" }}>
+            <MDBContainer className="pt-5">
               <Pie data={data} options={option} />
             </MDBContainer>
             <Button
               variant="success fs-4"
-              // onClick={() => getStatistics()}
               onClick={() =>
                 exportToCSV(candidateList, candidateList[0].area_name)
               }

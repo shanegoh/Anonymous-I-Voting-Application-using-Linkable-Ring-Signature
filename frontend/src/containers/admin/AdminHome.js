@@ -57,7 +57,7 @@ export default function Admin({ history }) {
             <Button
               key={record.event_id}
               id={record.event_id}
-              className="btn-lg color-nav border-0 btn-hover-red admin-home-btn"
+              className="btn-lg color-nav border-0 btn-hover-red admin-home-btn fs-6"
               active
               onClick={(e) => editEvent(e)}
               disabled={new Date() > new Date(record.start_date_time)}

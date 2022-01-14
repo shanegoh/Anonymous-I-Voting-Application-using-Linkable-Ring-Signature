@@ -123,7 +123,7 @@ export default function Upload() {
         ) : (
           <></>
         )}
-        <Form className="d-flex flex-column gap-3 w-75">
+        <Form className="d-flex flex-column gap-3 accordion-width">
           <Accordion defaultActiveKey="0">
             <Accordion.Item eventKey="0">
               <Accordion.Header>How to Upload</Accordion.Header>
