@@ -63,8 +63,8 @@ def findAllElectionType():
 
 
 # This is used to create or update events (For Admin/Electoral Board Users)
-@app.route("/updateEvent/<id>")
-@app.route("/createEvent")
+@app.route("/updateEvent/<id>", methods=['POST'])
+@app.route("/createEvent", methods=['POST'])
 @cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'id_token'])
 @requires_auth
 @requires_id_token
