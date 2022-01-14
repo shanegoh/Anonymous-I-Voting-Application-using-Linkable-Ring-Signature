@@ -30,7 +30,7 @@ export default function Redirect({ history }) {
         getIdTokenClaims()
           .then((claims) => {
             setIDToken(claims.__raw);
-            console.log(claims.__raw);
+            console.log(claims);
           })
           .catch((err) => {
             console.debug("ID Token: No Claims Found", err);
@@ -41,12 +41,12 @@ export default function Redirect({ history }) {
           scope: "read:current_user",
         });
         setAccessToken(accessToken);
-
+        console.log(getIDToken());
         axios
-          .get("http://localhost:5000/findUserInformation", {
+          .get("http//localhost:5000/findUserInformation", {
             headers: {
               Authorization: `Bearer ${accessToken}`,
-              id_Token: `Bearer ${getIDToken()}`,
+              id_token: `Bearer ${getIDToken()}`,
             },
           })
           .then((res) => {
@@ -66,7 +66,7 @@ export default function Redirect({ history }) {
           })
           .catch((err) => {
             // Set error message
-            console.log(err.response.data.message);
+            console.log(err);
             setRedirectingStatus((isRedirecting) => false);
             setErrMsg((errMsg) => err.response.data.message);
             setVariant((variant) => DANGER);
