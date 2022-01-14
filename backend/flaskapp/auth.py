@@ -176,7 +176,7 @@ def requires_id_token(f):
             except Exception:
                 raise AuthError({"code": "invalid_header",
                                 "description":
-                                    "Unable to parse authentication"
+                                    "Unable to id"
                                     " token."}, 401)
 
             _request_ctx_stack.top.current_user = payload
