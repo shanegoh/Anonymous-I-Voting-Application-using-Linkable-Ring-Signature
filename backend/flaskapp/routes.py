@@ -20,7 +20,7 @@ def testRoute():
 @app.route("/test")
 @cross_origin(origin='localhost', headers=['Content-Type'])
 def test():
-   return os.environ.get('SECRET_KEY')
+   return os.getenv('SECRET_KEY')
 
 # This is used when user logs in for redirecting (For All Types of Users)
 @app.route("/findUserInformation")
