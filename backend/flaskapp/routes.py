@@ -18,10 +18,9 @@ def testRoute():
     return session['email']
 
 @app.route("/test")
-@cross_origin(origin='localhost', headers=['Content-Type','Idtoken', 'Access-Control-Allow-Origin'])
-@requires_id_token
+@cross_origin(origin='localhost', headers=['Content-Type'])
 def test():
-   return "working"
+   return os.environ.get('SECRET_KEY')
 
 # This is used when user logs in for redirecting (For All Types of Users)
 @app.route("/findUserInformation")
