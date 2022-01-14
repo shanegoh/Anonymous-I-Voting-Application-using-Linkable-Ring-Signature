@@ -115,7 +115,7 @@ def requires_auth(f):
                     audience=AUTH0_API_AUDIENCE,
                     issuer="https://"+AUTH0_DOMAIN+"/"
                 )
-                session['email'] = payload.get(AUTH0_CLIENTID_AUDIENCE)
+                session['email'] = payload.get(AUTH0_USER_EMAIL)
             except jwt.ExpiredSignatureError:
                 raise AuthError({"code": "token_expired",
                                 "description": "token is expired"}, 401)
