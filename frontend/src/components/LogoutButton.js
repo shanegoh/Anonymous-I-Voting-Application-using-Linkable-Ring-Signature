@@ -18,7 +18,7 @@ export default function LogoutButton() {
     removeAccessToken();
     removeRoleID();
     removeAreaID();
-    logout({ returnTo: process.env.REACT_APP_AUTH0_LOGOUT_URI });
+    logout({ returnTo: window.location.origin });
   };
 
   return (
