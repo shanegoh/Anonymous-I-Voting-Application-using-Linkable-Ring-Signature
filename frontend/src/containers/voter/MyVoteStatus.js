@@ -21,7 +21,6 @@ export default function MyVoteStatus() {
       .get(`http://localhost:5000/findVoteStatus`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("ACCESS_TOKEN")}`,
-          id_token: `Bearer ${localStorage.getItem("ID_TOKEN")}`,
         },
       })
       .then((res) => {

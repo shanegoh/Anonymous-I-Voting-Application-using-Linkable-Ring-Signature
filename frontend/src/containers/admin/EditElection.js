@@ -22,7 +22,6 @@ export default function EditElection({ history }) {
       .get(`http://localhost:5000/findEventDetailsById/${id}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("ACCESS_TOKEN")}`,
-          id_token: `Bearer ${localStorage.getItem("ID_TOKEN")}`,
         },
       })
       .then((res) => {

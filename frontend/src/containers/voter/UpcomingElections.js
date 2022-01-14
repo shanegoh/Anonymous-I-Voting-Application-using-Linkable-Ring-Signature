@@ -18,7 +18,6 @@ export default function UpcomingElections({ history }) {
       .get(`http://localhost:5000/findElectionForVoter`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("ACCESS_TOKEN")}`,
-          id_token: `Bearer ${localStorage.getItem("ID_TOKEN")}`,
         },
       })
       .then((res) => {

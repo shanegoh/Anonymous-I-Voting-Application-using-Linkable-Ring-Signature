@@ -21,20 +21,19 @@ export default function Redirect({ history }) {
   const [errMsg, setErrMsg] = useState(); // Logic setting error msg
   const [variant, setVariant] = useState();
   const [isRedirecting, setRedirectingStatus] = useState(true);
-  const { user, isAuthenticated, getAccessTokenSilently, getIdTokenClaims } =
-    useAuth0();
+  const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
 
   useEffect(() => {
     const getUserMetadata = async () => {
       try {
-        getIdTokenClaims()
-          .then((claims) => {
-            setIDToken(claims.__raw);
-            console.log(claims);
-          })
-          .catch((err) => {
-            console.debug("ID Token: No Claims Found", err);
-          });
+        // getIdTokenClaims()
+        //   .then((claims) => {
+        //     setIDToken(claims.__raw);
+        //     console.log(claims);
+        //   })
+        //   .catch((err) => {
+        //     console.debug("ID Token: No Claims Found", err);
+        //   });
 
         const accessToken = await getAccessTokenSilently({
           audience: process.env.REACT_APP_AUTH0_API,
@@ -46,7 +45,6 @@ export default function Redirect({ history }) {
           .get("http://localhost:5000/findUserInformation", {
             headers: {
               Authorization: `Bearer ${accessToken}`,
-              id_token: `Bearer ${getIDToken()}`,
             },
           })
           .then((res) => {

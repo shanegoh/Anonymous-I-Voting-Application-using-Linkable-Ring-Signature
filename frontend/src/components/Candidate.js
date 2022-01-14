@@ -113,7 +113,6 @@ export default function Candidate({
       .delete(`/deleteEventById/${event_id}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("ACCESS_TOKEN")}`,
-          id_token: `Bearer ${localStorage.getItem("ID_TOKEN")}`,
         },
       })
       .then((res) => {

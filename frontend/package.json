@@ -2,8 +2,8 @@
   "name": "frontend",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://127.0.0.1:5000",
-  "homepage": "/",
+  "proxy": "http://localhost:5000",
+  "homepage": "http://localhost:3000",
   "dependencies": {
     "@auth0/auth0-react": "^1.8.0",
     "@mobiscroll/react-lite": "^4.10.9",

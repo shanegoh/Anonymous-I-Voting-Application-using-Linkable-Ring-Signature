@@ -61,7 +61,6 @@ export default function Upload() {
       .post(`http://localhost:5000/upload`, data, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("ACCESS_TOKEN")}`,
-          id_token: `Bearer ${localStorage.getItem("ID_TOKEN")}`,
         },
       })
       .then((res) => {

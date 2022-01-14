@@ -81,10 +81,9 @@ export default function EventForm({
 
   useEffect(() => {
     axios
-      .get("/findAllElectionTypeAndArea", {
+      .get("http://localhost:5000/findAllElectionTypeAndArea", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("ACCESS_TOKEN")}`,
-          id_token: `Bearer ${localStorage.getItem("ID_TOKEN")}`,
         },
       })
       .then((res) => {
@@ -189,7 +188,6 @@ export default function EventForm({
         .put(path, event_payload, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("ACCESS_TOKEN")}`,
-            id_token: `Bearer ${localStorage.getItem("ID_TOKEN")}`,
           },
         })
         .then((res) => {
