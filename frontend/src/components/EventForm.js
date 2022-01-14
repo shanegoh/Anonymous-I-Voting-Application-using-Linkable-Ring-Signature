@@ -186,7 +186,7 @@ export default function EventForm({
       // If event_id is defined = update event
       var path = isDefined(event_id) ? url_update : url_create;
       axios
-        .pos(path, event_payload, {
+        .put(path, event_payload, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("ACCESS_TOKEN")}`,
             id_token: `Bearer ${localStorage.getItem("ID_TOKEN")}`,
