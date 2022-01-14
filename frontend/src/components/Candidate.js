@@ -113,7 +113,6 @@ export default function Candidate({
       .delete(`https://api.mimis.social/deleteEventById/${event_id}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("ACCESS_TOKEN")}`,
-          Idtoken: `Bearer ${localStorage.getItem("ID_TOKEN")}`,
         },
       })
       .then((res) => {

@@ -78,7 +78,6 @@ export default function Poll({ history }) {
         .put("https://api.mimis.social/voteCandidate", payload, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("ACCESS_TOKEN")}`,
-            Idtoken: `Bearer ${localStorage.getItem("ID_TOKEN")}`,
           },
         })
         .then((res) => {
@@ -104,7 +103,6 @@ export default function Poll({ history }) {
       .get(`https://api.mimis.social/findCandidateByEventId/${id}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("ACCESS_TOKEN")}`,
-          Idtoken: `Bearer ${localStorage.getItem("ID_TOKEN")}`,
         },
       })
       .then((res) => {

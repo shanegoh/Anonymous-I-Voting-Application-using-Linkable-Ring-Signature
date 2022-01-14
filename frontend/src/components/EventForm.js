@@ -189,7 +189,6 @@ export default function EventForm({
         .put(path, event_payload, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("ACCESS_TOKEN")}`,
-            Idtoken: `Bearer ${localStorage.getItem("ID_TOKEN")}`,
           },
         })
         .then((res) => {
