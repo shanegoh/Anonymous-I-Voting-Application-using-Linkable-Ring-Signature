@@ -43,7 +43,7 @@ export default function Redirect({ history }) {
         setAccessToken(accessToken);
         console.log(getIDToken());
         axios
-          .get("http//localhost:5000/findUserInformation", {
+          .get("http://localhost:5000/findUserInformation", {
             headers: {
               Authorization: `Bearer ${accessToken}`,
               id_token: `Bearer ${getIDToken()}`,
