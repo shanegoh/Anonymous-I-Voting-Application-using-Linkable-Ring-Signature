@@ -25,9 +25,8 @@ def test():
 
 # This is used when user logs in for redirecting (For All Types of Users)
 @app.route("/findUserInformation")
-@cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'Idtoken'])
+@cross_origin(origin='localhost',headers=['Content-Type','Authorization'])
 @requires_auth
-@requires_id_token
 def findUserInformation():
     try:
         user = UserService().getUserInformation(session['email'])
