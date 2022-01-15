@@ -18,6 +18,7 @@ class UserService:
         return dict(user_dao.findUserInformationByEmail(email))
 
     def updateUser(self, user_list):
+        print("updating user")
         return user_dao.updateUser(user_list)
 
     def getNumberOfParticipantByEventId(self, eventId):
@@ -45,16 +46,18 @@ class UserService:
         # Get the excel file
         data_xls = pd.read_excel(xlsx_file)
         assert len(data_xls) > 0, "You have uploaded an empty file.."   # Error if user upload empty file, logic not proceeding
-
+        print("first")
         # Use Auth0 Client secret and public key to get management_access_token
-        connnection = http.client.HTTPSConnection("dev-i7062-qd.us.auth0.com")
-        payload = "{\"client_id\":\"ziMcfPoiH2CFyrhKAaiOecnLsMs69lXF\",\"client_secret\":\"gsuu8u1O_qIylsmHry-8litgeu94wqLhPCbvJ56FBJ_kUgZp0qQ9ETCb17UOdm8E\",\"audience\":\"https://dev-i7062-qd.us.auth0.com/api/v2/\",\"grant_type\":\"client_credentials\"}"
+        connnection = http.client.HTTPSConnection("dev-a6828r5z.us.auth0.com")
+        payload = "{\"client_id\":\"vMOfBnYOJszlqdGdDek62rMyhsUY9srE\",\"client_secret\":\"27JENkP6Q22nXmTlbUcR44ABceE1DLV3n23QTBUVWL9U6fwIMFgTp0KTmBpacTDk\",\"audience\":\"https://dev-a6828r5z.us.auth0.com/api/v2/\",\"grant_type\":\"client_credentials\"}"
         headers = { 'content-type': "application/json" }
         connnection.request("POST", "/oauth/token", payload, headers)
         res = connnection.getresponse()
         data = res.read()
+        print(data)
         jsonData = json.loads(data)
         management_access_token = "Bearer " + jsonData["access_token"]
+        print("Continue")
 
         b64_list = []             # A list to store base64 encoded xlsx files( up to max 2 files )
         userCredential_list = []  # User list for writting into xlsx files containing credentials
@@ -123,6 +126,7 @@ class UserService:
                 connnection.request("POST", "/api/v2/users", payload, headers)
                 res = connnection.getresponse()
                 data = res.read()
+                print(data)
                 print("Sent")
         ############################################ End of for loop 
 
