@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import LogoutButton from "../components/LogoutButton.js";
 import { Navbar, Container, Nav } from "react-bootstrap";
 import { Link } from "react-router-dom";
@@ -17,7 +17,15 @@ export default function NavBar() {
     <div>
       <Navbar className="color-nav" variant="dark" expand="lg">
         <Container fluid>
-          <Navbar.Brand className="fw-bold">Mimi</Navbar.Brand>
+          <Navbar.Brand
+            className="fw-bold"
+            as={Link}
+            to={isAdmin() ? "/admin/home" : "/voter/home"}
+            className="text-center fw-bold"
+          >
+            Mimi
+          </Navbar.Brand>
+
           <Navbar.Toggle aria-controls="navbarScroll" />
           <Navbar.Collapse id="navbarScroll">
             <Nav

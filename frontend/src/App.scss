@@ -113,6 +113,14 @@
     opacity: 0.9;
     color: white;
   }
+  .result-table-width {
+    width: 95% !important;
+    font-size: small !important;
+  }
+  .info-size {
+    width: 90%;
+    font-size: small;
+  }
 }
 
 @media only screen and (min-width: 640px) {
@@ -140,6 +148,9 @@
     background-color: #0e1b75;
     opacity: 0.9;
     color: white;
+  }
+  .result-table-width {
+    width: 50% !important;
   }
 }
 

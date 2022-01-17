@@ -79,7 +79,7 @@ export default function UpcomingElections({ history }) {
           )}
           {isDefined(msg) ? (
             <Alert
-              className="d-flex flex-column align-items-center text-dark"
+              className="d-flex flex-column align-items-center text-dark info-size"
               variant="info"
             >
               <b>{msg}</b>

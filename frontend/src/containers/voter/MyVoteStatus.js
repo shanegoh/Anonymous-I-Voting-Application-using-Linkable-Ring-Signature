@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { isAdmin, DANGER, hasToken } from "../../util";
+import { isAdmin, DANGER } from "../../util";
 import { Redirect } from "react-router-dom";
 import NavBar from "../../components/NavBar.js";
 import { Table, Spinner } from "react-bootstrap";
@@ -40,10 +40,10 @@ export default function MyVoteStatus() {
         handleShow();
       });
   }, []);
-  return !isAdmin() && hasToken() ? (
+  return !isAdmin() ? (
     <div>
       <NavBar />
-      <div className="d-flex flex-column gap-2 pt-4 align-items-center">
+      <div className="d-flex flex-column gap-2 pt-4 align-items-center ">
         {show ? (
           <AlertBox
             err={[]}
@@ -56,10 +56,8 @@ export default function MyVoteStatus() {
         )}
         {isLoaded ? (
           <Table
-            className="w-50 text-center color-nav text-light table-radius"
+            className="color-nav text-light table-radius result-table-width"
             striped
-            bordered
-            hover
           >
             <thead>
               <tr>
@@ -69,7 +67,7 @@ export default function MyVoteStatus() {
             </thead>
             <tbody className="bg-light">
               <tr>
-                <td>{area}</td>
+                <td style={{ width: "60%" }}>{area}</td>
                 <td>{status}</td>
               </tr>
             </tbody>
