@@ -167,7 +167,6 @@ def findElectionForVoter():
         assert VoteHistoryService().validateVoteEligibility(session['email']), "There is no event for you at the moment."
         event = EventService().getEventForVoter(areaId)
         assert event is not None, "There is no event for you at the moment."
-        print(event)
         return jsonify(event)
     except Exception:
         message = str(sys.exc_info()[1]) 

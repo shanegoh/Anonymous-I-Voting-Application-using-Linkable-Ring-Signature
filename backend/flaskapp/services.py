@@ -184,10 +184,14 @@ class EventService:
         return event_dao.deleteEventById(id, DELETED)
 
     def getEventForVoter(self, areaId):
-        record =  dict(event_dao.findEventForVoter(areaId, NOT_DELETED, NOT_EXPIRED))
-        record.update(start_date_time= record['start_date_time'].strftime('%Y-%m-%dT%H:%M:%S.%fZ'),
+        record =  event_dao.findEventForVoter(areaId, NOT_DELETED, NOT_EXPIRED)
+        if record is None:
+            return record;
+        else:
+            record = dict(record)
+            record.update(start_date_time= record['start_date_time'].strftime('%Y-%m-%dT%H:%M:%S.%fZ'),
             end_date_time=record['end_date_time'].strftime('%Y-%m-%dT%H:%M:%S.%fZ'))
-        return record
+            return record
 
     def putEvent(self, id, electionType, areaId, startDateTime, endDateTime, candidates):
         message= ""
