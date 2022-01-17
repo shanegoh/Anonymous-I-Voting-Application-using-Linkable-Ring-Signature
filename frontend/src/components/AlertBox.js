@@ -7,7 +7,7 @@ export default function AlertBox({ err, setShow, errMsg, variant }) {
   return (
     <>
       <Alert
-        className="w-75 d-flex flex-column"
+        className="error-box-width d-flex flex-column"
         variant={variant}
         onClose={() => setShow(false)}
       >

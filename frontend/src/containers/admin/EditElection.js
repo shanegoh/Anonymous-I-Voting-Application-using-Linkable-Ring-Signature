@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { isAdmin, axiosConfig } from "../../util";
+import { isAdmin, hasToken } from "../../util";
 import { Redirect, useParams } from "react-router-dom";
 import NavBar from "../../components/NavBar.js";
 import EventForm from "../../components/EventForm.js";
@@ -19,10 +19,9 @@ export default function EditElection({ history }) {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:5000/findEventDetailsById/${id}`, {
+      .get(process.env.REACT_APP_PATH + `/findEventDetailsById/${id}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("ACCESS_TOKEN")}`,
-          id_token: `Bearer ${localStorage.getItem("ID_TOKEN")}`,
         },
       })
       .then((res) => {
@@ -42,7 +41,7 @@ export default function EditElection({ history }) {
       });
   }, []);
 
-  return isAdmin() ? (
+  return isAdmin() && hasToken() ? (
     <div>
       <NavBar />
       {isLoaded ? (

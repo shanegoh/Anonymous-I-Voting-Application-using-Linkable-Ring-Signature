@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { isAdmin, dateFormat } from "../../util";
+import { isAdmin, dateFormat, hasToken } from "../../util";
 import { Redirect } from "react-router-dom";
 import NavBar from "../../components/NavBar.js";
 import { Button, Alert, Spinner } from "react-bootstrap";
@@ -25,10 +25,9 @@ export default function Admin({ history }) {
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/findAllEvent", {
+      .get(process.env.REACT_APP_PATH + "/findAllEvent", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("ACCESS_TOKEN")}`,
-          id_token: `Bearer ${localStorage.getItem("ID_TOKEN")}`,
         },
       })
       .then((res) => {
@@ -44,7 +43,7 @@ export default function Admin({ history }) {
       });
   }, []);
 
-  return isAdmin() ? (
+  return isAdmin() && hasToken() ? (
     <div>
       <NavBar />
 
@@ -58,7 +57,7 @@ export default function Admin({ history }) {
             <Button
               key={record.event_id}
               id={record.event_id}
-              className="btn-lg color-nav border-0 btn-hover-red admin-home-btn"
+              className="btn-lg color-nav border-0 btn-hover-red admin-home-btn fs-6"
               active
               onClick={(e) => editEvent(e)}
               disabled={new Date() > new Date(record.start_date_time)}

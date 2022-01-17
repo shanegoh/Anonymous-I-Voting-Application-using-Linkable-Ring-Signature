@@ -81,10 +81,9 @@ export default function EventForm({
 
   useEffect(() => {
     axios
-      .get("/findAllElectionTypeAndArea", {
+      .get(process.env.REACT_APP_PATH + "/findAllElectionTypeAndArea", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("ACCESS_TOKEN")}`,
-          id_token: `Bearer ${localStorage.getItem("ID_TOKEN")}`,
         },
       })
       .then((res) => {
@@ -181,15 +180,14 @@ export default function EventForm({
       console.log(event_payload);
 
       // Update Event if event_id is defined, else create
-      var url_update = `http://localhost:5000/updateEvent/${event_id}`;
-      var url_create = `http://localhost:5000/createEvent`;
+      var url_update = process.env.REACT_APP_PATH + `/updateEvent/${event_id}`;
+      var url_create = process.env.REACT_APP_PATH + "/createEvent";
       // If event_id is defined = update event
       var path = isDefined(event_id) ? url_update : url_create;
       axios
         .put(path, event_payload, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("ACCESS_TOKEN")}`,
-            id_token: `Bearer ${localStorage.getItem("ID_TOKEN")}`,
           },
         })
         .then((res) => {
@@ -238,7 +236,7 @@ export default function EventForm({
       ) : (
         <></>
       )}
-      <div className="d-flex gap-5 w-75">
+      <div className="d-flex gap-5 form-element-resize">
         <Form.Select
           value={electionType}
           id="election_type"
@@ -274,7 +272,7 @@ export default function EventForm({
           })}
         </Form.Select>
       </div>
-      <div className="d-flex gap-5 w-75">
+      <div className="d-flex gap-5 form-element-resize">
         <DateTimePicker
           required
           value={startDateTime}

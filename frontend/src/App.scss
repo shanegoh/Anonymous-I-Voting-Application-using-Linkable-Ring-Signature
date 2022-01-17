@@ -85,11 +85,42 @@
   .ajust-fs {
     font-size: 0.8rem;
   }
+
+  .form-element-resize {
+    flex-direction: column;
+    width: 90%;
+  }
+  .candidate-width {
+    width: 90%;
+  }
+  .candidate-name-field {
+    font-size: 100px;
+  }
+  .error-box-width {
+    width: 90%;
+    font-size: small;
+  }
+  .accordion-width {
+    width: 90%;
+    font-size: smaller;
+  }
 }
 
 @media only screen and (min-width: 640px) {
   .admin-home-btn {
     width: 30%;
+  }
+  .form-element-resize {
+    width: 75%;
+  }
+  .candidate-width {
+    width: 75%;
+  }
+  .error-box-width {
+    width: 75%;
+  }
+  .accordion-width {
+    width: 75%;
   }
 }
 
@@ -108,7 +139,7 @@ input[type="checkbox"]:checked {
 }
 
 .table-radius {
-  border-radius: 1rem;
+  border-radius: 0.5rem;
   overflow: hidden;
 }
 

@@ -11,7 +11,7 @@ import {
 import { Redirect, useParams } from "react-router-dom";
 import AlertBox from "../../components/AlertBox.js";
 import { ImBoxAdd } from "react-icons/im";
-import { isAdmin, DANGER, isDefined } from "../../util";
+import { isAdmin, DANGER, isDefined, hasToken } from "../../util";
 import { FiCheck, FiX } from "react-icons/fi";
 import { FcHighPriority } from "react-icons/fc";
 import axios from "axios";
@@ -75,10 +75,9 @@ export default function Poll({ history }) {
       };
       console.log(payload);
       axios
-        .put(`http://localhost:5000/voteCandidate`, payload, {
+        .put(process.env.REACT_APP_PATH + "/voteCandidate", payload, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("ACCESS_TOKEN")}`,
-            id_token: `Bearer ${localStorage.getItem("ID_TOKEN")}`,
           },
         })
         .then((res) => {
@@ -101,10 +100,9 @@ export default function Poll({ history }) {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:5000/findCandidateByEventId/${id}`, {
+      .get(process.env.REACT_APP_PATH + `/findCandidateByEventId/${id}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("ACCESS_TOKEN")}`,
-          id_token: `Bearer ${localStorage.getItem("ID_TOKEN")}`,
         },
       })
       .then((res) => {
@@ -126,7 +124,7 @@ export default function Poll({ history }) {
     setPrivateKey((privateKey) => e.target.value);
   };
 
-  return !isAdmin() ? (
+  return !isAdmin() && hasToken() ? (
     <div>
       <NavBar />
       {showModal ? (

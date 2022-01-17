@@ -110,10 +110,9 @@ export default function Candidate({
     handleClose(); // Close the confirmation dialog
     // const event_id_payload = { event_id: event_id };
     axios
-      .delete(`/deleteEventById/${event_id}`, {
+      .delete(process.env.REACT_APP_PATH + `/deleteEventById/${event_id}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("ACCESS_TOKEN")}`,
-          id_token: `Bearer ${localStorage.getItem("ID_TOKEN")}`,
         },
       })
       .then((res) => {
@@ -130,9 +129,9 @@ export default function Candidate({
 
   return (
     <>
-      <div className="w-75">
-        <Container className="d-flex gap-3 align-items-center flex-column ">
-          <Form.Label className="fs-5 color-nav text-light w-100 text-center table-radius ">
+      <div className="candidate-width">
+        <Container className="d-flex gap-3 align-items-center flex-column">
+          <Form.Label className="w-100 fs-5 color-nav text-light text-center table-radius ">
             Candidates
           </Form.Label>
           {inputList.map((object) => (
@@ -175,9 +174,9 @@ export default function Candidate({
               <Form.Control
                 key={object[1]}
                 id={object[1]}
-                style={{ width: "75%" }}
+                style={{ width: "65%" }}
                 type="text"
-                placeholder="Candidate Name"
+                placeholder="Name"
                 defaultValue={
                   typeof event_candidate === "undefined" ? "" : object[4]
                 }

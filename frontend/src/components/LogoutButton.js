@@ -1,12 +1,7 @@
 import React from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import Button from "react-bootstrap/Button";
-import {
-  removeAccessToken,
-  removeIDToken,
-  removeRoleID,
-  removeAreaID,
-} from "../util";
+import { removeAccessToken, removeRoleID, removeAreaID } from "../util";
 import "../App.scss";
 import { BsArrowBarRight } from "react-icons/bs";
 
@@ -14,7 +9,6 @@ export default function LogoutButton() {
   const { logout } = useAuth0();
 
   const attemptLogout = () => {
-    removeIDToken();
     removeAccessToken();
     removeRoleID();
     removeAreaID();

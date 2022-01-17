@@ -7,9 +7,10 @@ from jose import jwt
 import os
 from urllib.request import urlopen
 
-AUTH0_DOMAIN = 'dev-a6828r5z.us.auth0.com'
-API_AUDIENCE = 'https://dev-a6828r5z.us.auth0.com/api/v2/'
-AUTH0_AUDIENCE = os.getenv("REACT_APP_AUTH0_CLIENTID")
+AUTH0_DOMAIN = os.getenv('AUTH0_DOMAIN')
+AUTH0_API_AUDIENCE = os.getenv('AUTH0_API_AUDIENCE')
+AUTH0_CLIENTID_AUDIENCE = os.getenv("AUTH0_CLIENTID")
+AUTH0_USER_EMAIL = os.getenv('AUTH0_USER_EMAIL')
 ALGORITHMS = ["RS256"]
 
 # Error handler
@@ -60,9 +61,9 @@ def get_token_auth_header():
 def get_id_token_auth_header():
     """Obtains the Access Token from the Authorization Header
     """
-    auth = request.headers.get("id_token", None)
+    auth = request.headers.get("Idtoken", None)
     if not auth:
-        raise AuthError({"code": "id_token_header_mssing",
+        raise AuthError({"code": "id_token_header_missing",
                         "description":
                             "id_token header is expected"}, 401)
 
@@ -111,9 +112,10 @@ def requires_auth(f):
                     token,
                     rsa_key,
                     algorithms=ALGORITHMS,
-                    audience=API_AUDIENCE,
+                    audience=AUTH0_API_AUDIENCE,
                     issuer="https://"+AUTH0_DOMAIN+"/"
                 )
+                session['email'] = payload.get(AUTH0_USER_EMAIL)
             except jwt.ExpiredSignatureError:
                 raise AuthError({"code": "token_expired",
                                 "description": "token is expired"}, 401)
@@ -160,10 +162,9 @@ def requires_id_token(f):
                     token,
                     rsa_key,
                     algorithms=ALGORITHMS,
-                    audience=AUTH0_AUDIENCE,
+                    audience="S6jOFF5O6Tom8mVGaMuaJxbIuvhqKa4r",
                     issuer="https://"+AUTH0_DOMAIN+"/"
                 )
-                session['email'] = payload.get('email')
             except jwt.ExpiredSignatureError:
                 raise AuthError({"code": "token_expired",
                                 "description": "token is expired"}, 401)
@@ -175,7 +176,7 @@ def requires_id_token(f):
             except Exception:
                 raise AuthError({"code": "invalid_header",
                                 "description":
-                                    "Unable to parse authentication"
+                                    "Unable to id"
                                     " token."}, 401)
 
             _request_ctx_stack.top.current_user = payload

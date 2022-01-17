@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { isAdmin, dateFormat, DANGER } from "../../util";
+import { isAdmin, dateFormat, DANGER, hasToken } from "../../util";
 import { Redirect } from "react-router-dom";
 import NavBar from "../../components/NavBar.js";
 import { Button, Alert, Spinner } from "react-bootstrap";
-import AlertBox from "../../components/AlertBox.js";
 import axios from "axios";
 import "../../App.scss";
 
@@ -18,10 +17,9 @@ export default function PastEvent({ history }) {
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/findPastEvent", {
+      .get(process.env.REACT_APP_PATH + "/findPastEvent", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("ACCESS_TOKEN")}`,
-          id_token: `Bearer ${localStorage.getItem("ID_TOKEN")}`,
         },
       })
       .then((res) => {
@@ -47,7 +45,7 @@ export default function PastEvent({ history }) {
     history.push(path);
   };
 
-  return isAdmin() ? (
+  return isAdmin() && hasToken() ? (
     <div>
       <NavBar />
       <div className="d-flex flex-column gap-2 pt-4 align-items-center">

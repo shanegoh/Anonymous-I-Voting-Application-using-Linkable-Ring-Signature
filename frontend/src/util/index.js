@@ -1,26 +1,14 @@
-// import jwt_decode from "jwt-decode";
+import jwt_decode from "jwt-decode";
 export const setAccessToken = (token) => {
   localStorage.setItem("ACCESS_TOKEN", token);
-};
-
-export const setIDToken = (token) => {
-  localStorage.setItem("ID_TOKEN", token);
 };
 
 export const removeAccessToken = () => {
   localStorage.removeItem("ACCESS_TOKEN");
 };
 
-export const removeIDToken = () => {
-  localStorage.removeItem("ID_TOKEN");
-};
-
 export const getAccessToken = () => {
   return localStorage.getItem("ACCESS_TOKEN");
-};
-
-export const getIDToken = () => {
-  return localStorage.getItem("ID_TOKEN");
 };
 
 export const setRoleID = (role_id) => {
@@ -45,6 +33,26 @@ export const getAreaID = () => {
 
 export const removeAreaID = () => {
   localStorage.removeItem("AREA_ID");
+};
+
+export const hasToken = () => {
+  var token = localStorage.getItem("ACCESS_TOKEN");
+
+  if (token) {
+    console.log("okay got token");
+    const decodedToken = jwt_decode(token);
+    console.log(decodedToken);
+    if (decodedToken.exp * 1000 < new Date().getTime()) {
+      console.log("Expired");
+      return false;
+    } else {
+      console.log("Not Expired");
+      return true;
+    }
+  } else {
+    console.log("No token");
+    return false;
+  }
 };
 
 export const ADMIN_ROLE = 0;
@@ -92,13 +100,10 @@ export const DANGER = "danger";
 export const SUCCESS = "success";
 export const INFO = "info";
 export const INVALID_FILE_TYPE = "Invalid File Type";
-// "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
 export const fileType =
   "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 export const imageType = "image/png";
 export const fileExtension = ".xlsx";
-export const ELECTED = "Elected";
-export const NOTELECTED = "Not Elected";
 export const SAMPLE_EXCEL_DATA = [
   {
     email: "example@sg.gov",

@@ -2,13 +2,11 @@ import React, { useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import AlertBox from "../components/AlertBox.js";
 import { Spinner } from "react-bootstrap";
-import { DANGER } from "../util";
+import { DANGER, hasToken } from "../util";
 import "../App.scss";
 import axios from "axios";
 import {
   setAccessToken,
-  setIDToken,
-  getIDToken,
   setRoleID,
   ADMIN_ROLE,
   VOTER_ROLE,
@@ -21,20 +19,11 @@ export default function Redirect({ history }) {
   const [errMsg, setErrMsg] = useState(); // Logic setting error msg
   const [variant, setVariant] = useState();
   const [isRedirecting, setRedirectingStatus] = useState(true);
-  const { user, isAuthenticated, getAccessTokenSilently, getIdTokenClaims } =
-    useAuth0();
+  const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
 
   useEffect(() => {
     const getUserMetadata = async () => {
       try {
-        getIdTokenClaims()
-          .then((claims) => {
-            setIDToken(claims.__raw);
-          })
-          .catch((err) => {
-            console.debug("ID Token: No Claims Found", err);
-          });
-
         const accessToken = await getAccessTokenSilently({
           audience: process.env.REACT_APP_AUTH0_API,
           scope: "read:current_user",
@@ -42,10 +31,9 @@ export default function Redirect({ history }) {
         setAccessToken(accessToken);
 
         axios
-          .get("/findUserInformation", {
+          .get(process.env.REACT_APP_PATH + "/findUserInformation", {
             headers: {
               Authorization: `Bearer ${accessToken}`,
-              id_token: `Bearer ${getIDToken()}`,
             },
           })
           .then((res) => {
@@ -108,6 +96,6 @@ export default function Redirect({ history }) {
       )}
     </div>
   ) : (
-    <Redirect to="/main" />
+    <Redirect to="/" />
   );
 }

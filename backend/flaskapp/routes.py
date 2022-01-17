@@ -10,13 +10,22 @@ import sys
 from flaskapp.util import *
 from flaskapp.services import *
 
-#Controllers API
+#Controllers APIm
+@app.route("/testRoute")
+@cross_origin(origin='localhost', headers=['Content-Type','Authorization'])
+@requires_auth
+def testRoute():
+    return session['email']
+
+@app.route("/test")
+@cross_origin(origin='localhost', headers=['Content-Type'])
+def test():
+   return "ok"
 
 # This is used when user logs in for redirecting (For All Types of Users)
 @app.route("/findUserInformation")
-@cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'id_token'])
+@cross_origin(origin='localhost',headers=['Content-Type','Authorization'])
 @requires_auth
-@requires_id_token
 def findUserInformation():
     try:
         user = UserService().getUserInformation(session['email'])
@@ -29,9 +38,8 @@ def findUserInformation():
 
 # This is used to display all events. (For Admin/Electoral Board Users)
 @app.route("/findAllEvent", methods=['GET'])
-@cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'id_token'])
+@cross_origin(origin='localhost',headers=['Content-Type','Authorization'])
 @requires_auth
-@requires_id_token
 def findAllEvent():
     try:
         event = EventService().getAllEventAdmin()
@@ -45,9 +53,8 @@ def findAllEvent():
 
 # This is used to download all area and election type (For Admin/Electoral Board Users)
 @app.route("/findAllElectionTypeAndArea")
-@cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'id_token'])
+@cross_origin(origin='localhost',headers=['Content-Type','Authorization'])
 @requires_auth
-@requires_id_token
 def findAllElectionType():
     try:
         electionTypeList = ElectionTypeService().getAllElectionType();
@@ -65,9 +72,8 @@ def findAllElectionType():
 # This is used to create or update events (For Admin/Electoral Board Users)
 @app.route("/updateEvent/<id>", methods=['PUT'])
 @app.route("/createEvent", methods=['PUT'])
-@cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'id_token'])
+@cross_origin(origin='localhost',headers=['Content-Type','Authorization'])
 @requires_auth
-@requires_id_token
 def putEvent(id=-1):
     electionType = request.json['election_type']
     areaId = request.json['area_id']
@@ -88,9 +94,8 @@ def putEvent(id=-1):
 
 # This is used to delete events (For Admin/Electoral Board Users)
 @app.route("/deleteEventById/<id>", methods=['DELETE'])
-@cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'id_token'])
+@cross_origin(origin='localhost',headers=['Content-Type','Authorization'])
 @requires_auth
-@requires_id_token
 def deleteEvent(id):
     try:
         CandidateService().deleteCandidateByEventId(id)
@@ -107,9 +112,8 @@ def deleteEvent(id):
 
 # This is used to find past events (For Admin/Electoral Board Users)
 @app.route("/findPastEvent", methods=['GET'])
-@cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'id_token'])
+@cross_origin(origin='localhost',headers=['Content-Type','Authorization'])
 @requires_auth
-@requires_id_token
 def findPastEvent():
     try:
         event = EventService().getAllPastEvent()
@@ -123,9 +127,8 @@ def findPastEvent():
 
 # This is used to view results of the event (For Admin/Electoral Board Users)
 @app.route("/findResultById/<id>", methods=['GET'])
-@cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'id_token'])
+@cross_origin(origin='localhost',headers=['Content-Type','Authorization'])
 @requires_auth
-@requires_id_token
 def findResultById(id):
     try:
         result = CandidateService().getResultByEventId(id)
@@ -138,9 +141,8 @@ def findResultById(id):
 
 # This is used to upload excel files containing credentials (For Admin/Electoral Board Users)
 @app.route("/upload", methods=["POST"])
-@cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'id_token'])
+@cross_origin(origin='localhost',headers=['Content-Type','Authorization'])
 @requires_auth
-@requires_id_token
 def uploadFile():
     try:
         b64_list = UserService().uploadUserInformation(request.files['file'])
@@ -156,9 +158,8 @@ def uploadFile():
 
 # This is used to view event(s) for voter (For Voters)
 @app.route("/findElectionForVoter", methods=['GET'])
-@cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'id_token'])
+@cross_origin(origin='localhost',headers=['Content-Type','Authorization'])
 @requires_auth
-@requires_id_token
 def findElectionForVoter():
     try:
         user = UserService().getAreaIdByEmail(session['email'])
@@ -176,9 +177,8 @@ def findElectionForVoter():
 
 # This is used to view candidates for the election event (For Voters)
 @app.route("/findCandidateByEventId/<id>", methods=['GET'])
-@cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'id_token'])
+@cross_origin(origin='localhost',headers=['Content-Type','Authorization'])
 @requires_auth
-@requires_id_token
 def findCandidateByEventId(id):
     try:
         candidateList = CandidateService().getCandidateByEventId(id, session['email'])
@@ -192,9 +192,8 @@ def findCandidateByEventId(id):
 
 # This is used to vote candidates for the election event (For Voters)
 @app.route("/voteCandidate", methods=['PUT'])
-@cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'id_token'])
+@cross_origin(origin='localhost',headers=['Content-Type','Authorization'])
 @requires_auth
-@requires_id_token
 def voteCandidate():
     try:
         CandidateService().voteCandidate(request.json['event_id'], request.json['private_key'], session['email'], request.json['candidate_name'])
@@ -209,9 +208,8 @@ def voteCandidate():
 
 # This is used to view candidates for the election event (For Voters)
 @app.route("/findEventDetailsById/<id>")
-@cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'id_token'])
+@cross_origin(origin='localhost',headers=['Content-Type','Authorization'])
 @requires_auth
-@requires_id_token
 def findEventDetailsById(id):
     try:
         event = EventService().getEventDetailsById(id)
@@ -229,9 +227,8 @@ def findEventDetailsById(id):
 
 # This is used to view vote status for voters (For Voters)       
 @app.route("/findVoteStatus", methods=["GET"])
-@cross_origin(origin='localhost',headers=['Content-Type','Authorization', 'id_token'])
+@cross_origin(origin='localhost',headers=['Content-Type','Authorization'])
 @requires_auth
-@requires_id_token
 def findVoteStatus():
     try:
         result = VoteHistoryService().getVoteHistory(session['email'])

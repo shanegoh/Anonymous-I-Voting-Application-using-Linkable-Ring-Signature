@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { isAdmin, DANGER, fileType, fileExtension } from "../../util";
+import { isAdmin, DANGER, fileType, fileExtension, hasToken } from "../../util";
 import { Redirect, useParams } from "react-router-dom";
 import NavBar from "../../components/NavBar.js";
 import { Pie } from "react-chartjs-2";
@@ -31,10 +31,9 @@ export default function Result() {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:5000/findResultById/${id}`, {
+      .get(process.env.REACT_APP_PATH + `/findResultById/${id}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("ACCESS_TOKEN")}`,
-          id_token: `Bearer ${localStorage.getItem("ID_TOKEN")}`,
         },
       })
       .then((res) => {
@@ -120,7 +119,7 @@ export default function Result() {
     FileSaver.saveAs(data, fileName + fileExtension);
   };
 
-  return isAdmin() ? (
+  return isAdmin() && hasToken() ? (
     <div>
       <NavBar />
 
@@ -137,12 +136,11 @@ export default function Result() {
         )}
         {isLoaded ? (
           <div className="d-flex flex-column gap-3">
-            <MDBContainer className="pt-5" style={{ width: "25rem" }}>
+            <MDBContainer className="pt-5">
               <Pie data={data} options={option} />
             </MDBContainer>
             <Button
               variant="success fs-4"
-              // onClick={() => getStatistics()}
               onClick={() =>
                 exportToCSV(candidateList, candidateList[0].area_name)
               }

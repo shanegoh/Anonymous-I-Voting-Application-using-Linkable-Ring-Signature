@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import NavBar from "../../components/NavBar.js";
-import { isAdmin, dateFormatForVoter, isDefined, INFO } from "../../util";
+import { isAdmin, dateFormatForVoter, isDefined, hasToken } from "../../util";
 import { Redirect } from "react-router-dom";
 import { Button, Alert, Spinner } from "react-bootstrap";
 import axios from "axios";
@@ -15,10 +15,9 @@ export default function UpcomingElections({ history }) {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:5000/findElectionForVoter`, {
+      .get(process.env.REACT_APP_PATH + "/findElectionForVoter", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("ACCESS_TOKEN")}`,
-          id_token: `Bearer ${localStorage.getItem("ID_TOKEN")}`,
         },
       })
       .then((res) => {
@@ -49,7 +48,7 @@ export default function UpcomingElections({ history }) {
     let path = `/voter/poll/${event_id}`;
     history.push(path);
   };
-  return !isAdmin() ? (
+  return !isAdmin() && hasToken() ? (
     <div>
       <NavBar />
       <div>

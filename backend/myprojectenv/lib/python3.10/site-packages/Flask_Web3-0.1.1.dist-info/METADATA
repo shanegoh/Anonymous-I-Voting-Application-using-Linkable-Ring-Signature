@@ -1,0 +1,155 @@
+Metadata-Version: 2.1
+Name: Flask-Web3
+Version: 0.1.1
+Summary: Flask extension allowing to smoothly integrate with web3.py.
+Home-page: https://github.com/nmvalera/flask-web3
+Author: Nicolas Maurice
+Author-email: nicolas.maurice.valera@gmail.com
+Maintainer: ConsenSys France
+License: Copyright (c) 2017 by ConsenSys France and contributors.
+Requires-Dist: web3 (>=4.4.0)
+Requires-Dist: flask (>=1.0.0)
+Provides-Extra: dev
+Requires-Dist: flake8; extra == 'dev'
+Requires-Dist: autoflake; extra == 'dev'
+Requires-Dist: autopep8; extra == 'dev'
+Requires-Dist: coverage; extra == 'dev'
+Requires-Dist: eth-tester[py-evm] (==0.1.0-beta.26); extra == 'dev'
+Requires-Dist: pytest (>=3); extra == 'dev'
+Requires-Dist: tox; extra == 'dev'
+Requires-Dist: sphinx; extra == 'dev'
+Requires-Dist: sphinx-rtd-theme; extra == 'dev'
+Provides-Extra: doc
+Requires-Dist: sphinx; extra == 'doc'
+Requires-Dist: sphinx-rtd-theme; extra == 'doc'
+
+Some rights reserved.
+
+Redistribution and use in source and binary forms of the software as well
+as documentation, with or without modification, are permitted provided
+that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright
+  notice, this list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above
+  copyright notice, this list of conditions and the following
+  disclaimer in the documentation and/or other materials provided
+  with the distribution.
+
+* Neither the name of Flask-Web3 nor the names of the contributors may not be used to endorse or
+  promote products derived from this software without specific
+  prior written permission.
+
+THIS SOFTWARE AND DOCUMENTATION IS PROVIDED BY THE COPYRIGHT HOLDERS AND
+CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
+OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE AND DOCUMENTATION, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
+DAMAGE.
+Description: .. image:: https://travis-ci.org/nmvalera/flask-web3.svg?branch=master
+            :target: https://travis-ci.org/nmvalera/flask-web3
+            :alt: Build Status
+        
+        .. image:: https://codecov.io/gh/nmvalera/flask-web3/branch/master/graph/badge.svg
+            :target: https://codecov.io/gh/nmvalera/flask-web3
+            :alt: Coverage
+        
+        .. image:: https://readthedocs.org/projects/flask-web3/badge/?version=stable
+            :target: https://flask-web3.readthedocs.io/en/stable/?badge=stable
+            :alt: Documentation Status
+        
+        Flask-Web3
+        ==========
+        
+        Flask-Web3 is a flask extension allowing to smoothly integrate a flask application with `web3.py`_.
+        This package is intended for developers will to build a Flask application that interacts with an Ethereum client.
+        
+        .. _`web3.py`: https://github.com/ethereum/web3.py
+        
+        Requirements
+        ~~~~~~~~~~~~
+        
+        - Python>=3.5
+        
+        A simple example
+        ~~~~~~~~~~~~~~~~
+        
+        .. code-block:: python
+        
+            >>> from flask import Flask, jsonify
+            >>> from flask_web3 import current_web3, FlaskWeb3
+        
+            # Declare Flask application
+            >>> app = Flask(__name__)
+        
+            # Set Flask-Web3 configuration
+            >>> app.config.update({'ETHEREUM_PROVIDER': 'http', 'ETHEREUM_ENDPOINT_URI': 'http://localhost:8545'})
+        
+            # Declare Flask-Web3 extension
+            >>> web3 = FlaskWeb3(app=app)
+        
+            # Declare route
+            >>> @app.route('/blockNumber')
+            ... def block_number():
+            ...     return jsonify({'data': current_web3.eth.blockNumber})
+        
+        You can notice that Flask-Web3 gives you an application context bound variable ``current_web3`` that is accessible
+        from any active flask application context.
+        
+        An advanced example
+        ~~~~~~~~~~~~~~~~~~~
+        
+        You may like to declare your Flask-Web3 extension from a customize Web3 class with enhanced logic.
+        
+        .. code-block:: python
+        
+            >>> from flask import Flask, jsonify
+            >>> from flask_web3 import current_web3, FlaskWeb3
+            >>> from web3 import Web3
+        
+            # Declare Flask application
+            >>> app = Flask(__name__)
+            >>> app.config.update({'ETHEREUM_PROVIDER': 'http', 'ETHEREUM_ENDPOINT_URI': 'http://localhost:8545'})
+        
+            # Declare a custom Web3 class
+            >>> class CustomWeb3(Web3):
+            ...     def customBlockNumber():
+            ...         return self.eth.blockNumber
+        
+            # Associate a custom FlaskWeb3 extension
+            >>> class CustomFlaskWeb3(FlaskWeb3):
+            ...     web3_class = CustomWeb3
+        
+            # Declare customized web3 extension
+            >>> web3 = CustomFlaskWeb3(app=app)
+            >>> isinstance(web3, CustomWeb3)
+            True
+        
+            # Declare route
+            >>> @app.route('/customBlockNumber')
+            ... def last_odd_block_number():
+            ...     return jsonify({'data': current_web3.customBlockNumber()})
+        
+        Documentation
+        ~~~~~~~~~~~~~
+        
+        Full documentation is available at https://flask-web3.readthedocs.io/en/stable/.
+Platform: any
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Environment :: Web Environment
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.5
+Classifier: Programming Language :: Python :: 3.6
+Provides-Extra: doc
+Provides-Extra: dev

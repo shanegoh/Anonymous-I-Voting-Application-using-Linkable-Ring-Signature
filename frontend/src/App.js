@@ -28,9 +28,8 @@ export default function App() {
       <Auth0Provider
         domain={process.env.REACT_APP_AUTH0_DOMAIN}
         clientId={process.env.REACT_APP_AUTH0_CLIENTID}
-        redirectUri={window.location.origin + "/redirect"}
-        audience="https://dev-a6828r5z.us.auth0.com/api/v2/"
-        //https://dev-i7062-qd.us.auth0.com/api/v2/
+        redirectUri={process.env.REACT_APP_AUTH0_REDIRECT_URI}
+        audience={process.env.REACT_APP_AUTH0_API}
         scope="read:current_user"
       >
         <Router history={history}>
