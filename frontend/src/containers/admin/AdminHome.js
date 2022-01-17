@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { isAdmin, dateFormat } from "../../util";
+import { isAdmin, dateFormat, hasToken } from "../../util";
 import { Redirect } from "react-router-dom";
 import NavBar from "../../components/NavBar.js";
 import { Button, Alert, Spinner } from "react-bootstrap";
@@ -43,7 +43,7 @@ export default function Admin({ history }) {
       });
   }, []);
 
-  return isAdmin() ? (
+  return isAdmin() && hasToken() ? (
     <div>
       <NavBar />
 

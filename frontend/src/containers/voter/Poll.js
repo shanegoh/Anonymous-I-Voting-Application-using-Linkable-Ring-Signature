@@ -11,7 +11,7 @@ import {
 import { Redirect, useParams } from "react-router-dom";
 import AlertBox from "../../components/AlertBox.js";
 import { ImBoxAdd } from "react-icons/im";
-import { isAdmin, DANGER, isDefined } from "../../util";
+import { isAdmin, DANGER, isDefined, hasToken } from "../../util";
 import { FiCheck, FiX } from "react-icons/fi";
 import { FcHighPriority } from "react-icons/fc";
 import axios from "axios";
@@ -124,7 +124,7 @@ export default function Poll({ history }) {
     setPrivateKey((privateKey) => e.target.value);
   };
 
-  return !isAdmin() ? (
+  return !isAdmin() && hasToken() ? (
     <div>
       <NavBar />
       {showModal ? (

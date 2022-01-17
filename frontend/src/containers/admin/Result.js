@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { isAdmin, DANGER, fileType, fileExtension } from "../../util";
+import { isAdmin, DANGER, fileType, fileExtension, hasToken } from "../../util";
 import { Redirect, useParams } from "react-router-dom";
 import NavBar from "../../components/NavBar.js";
 import { Pie } from "react-chartjs-2";
@@ -119,7 +119,7 @@ export default function Result() {
     FileSaver.saveAs(data, fileName + fileExtension);
   };
 
-  return isAdmin() ? (
+  return isAdmin() && hasToken() ? (
     <div>
       <NavBar />
 

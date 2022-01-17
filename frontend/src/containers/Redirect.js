@@ -2,13 +2,11 @@ import React, { useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import AlertBox from "../components/AlertBox.js";
 import { Spinner } from "react-bootstrap";
-import { DANGER } from "../util";
+import { DANGER, hasToken } from "../util";
 import "../App.scss";
 import axios from "axios";
 import {
   setAccessToken,
-  setIDToken,
-  getIDToken,
   setRoleID,
   ADMIN_ROLE,
   VOTER_ROLE,
@@ -26,14 +24,6 @@ export default function Redirect({ history }) {
   useEffect(() => {
     const getUserMetadata = async () => {
       try {
-        // getIdTokenClaims()
-        //   .then((claims) => {
-        //     setIDToken(claims.__raw);
-        //   })
-        //   .catch((err) => {
-        //     console.debug("ID Token: No Claims Found", err);
-        //   });
-
         const accessToken = await getAccessTokenSilently({
           audience: process.env.REACT_APP_AUTH0_API,
           scope: "read:current_user",
@@ -106,6 +96,6 @@ export default function Redirect({ history }) {
       )}
     </div>
   ) : (
-    <Redirect to="/main" />
+    <Redirect to="/" />
   );
 }

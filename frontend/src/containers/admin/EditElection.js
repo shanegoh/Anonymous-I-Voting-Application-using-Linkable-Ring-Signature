@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { isAdmin, axiosConfig } from "../../util";
+import { isAdmin, hasToken } from "../../util";
 import { Redirect, useParams } from "react-router-dom";
 import NavBar from "../../components/NavBar.js";
 import EventForm from "../../components/EventForm.js";
@@ -41,7 +41,7 @@ export default function EditElection({ history }) {
       });
   }, []);
 
-  return isAdmin() ? (
+  return isAdmin() && hasToken() ? (
     <div>
       <NavBar />
       {isLoaded ? (

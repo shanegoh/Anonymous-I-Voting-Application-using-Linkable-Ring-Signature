@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import NavBar from "../../components/NavBar.js";
-import { isAdmin, dateFormatForVoter, isDefined, INFO } from "../../util";
+import { isAdmin, dateFormatForVoter, isDefined, hasToken } from "../../util";
 import { Redirect } from "react-router-dom";
 import { Button, Alert, Spinner } from "react-bootstrap";
 import axios from "axios";
@@ -48,7 +48,7 @@ export default function UpcomingElections({ history }) {
     let path = `/voter/poll/${event_id}`;
     history.push(path);
   };
-  return !isAdmin() ? (
+  return !isAdmin() && hasToken() ? (
     <div>
       <NavBar />
       <div>

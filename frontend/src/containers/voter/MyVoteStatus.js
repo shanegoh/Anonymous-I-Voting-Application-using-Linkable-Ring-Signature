@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { isAdmin, DANGER } from "../../util";
+import { isAdmin, DANGER, hasToken } from "../../util";
 import { Redirect } from "react-router-dom";
 import NavBar from "../../components/NavBar.js";
 import { Table, Spinner } from "react-bootstrap";
@@ -40,7 +40,7 @@ export default function MyVoteStatus() {
         handleShow();
       });
   }, []);
-  return !isAdmin() ? (
+  return !isAdmin() && hasToken() ? (
     <div>
       <NavBar />
       <div className="d-flex flex-column gap-2 pt-4 align-items-center">

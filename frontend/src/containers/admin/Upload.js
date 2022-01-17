@@ -7,6 +7,7 @@ import {
   INVALID_FILE_TYPE,
   fileExtension,
   SAMPLE_EXCEL_DATA,
+  hasToken,
 } from "../../util";
 import { Redirect } from "react-router-dom";
 import NavBar from "../../components/NavBar.js";
@@ -17,7 +18,6 @@ import AlertBox from "../../components/AlertBox.js";
 import * as FileSaver from "file-saver";
 import * as XLSX from "xlsx";
 import axios from "axios";
-import { BsWindowSidebar } from "react-icons/bs";
 
 export default function Upload() {
   const [show, setShow] = useState(false); // Logic for displaying alert
@@ -109,7 +109,7 @@ export default function Upload() {
     FileSaver.saveAs(data, "Sample" + fileExtension);
   };
 
-  return isAdmin() ? (
+  return isAdmin() && hasToken() ? (
     <div>
       <NavBar />
       <div className="d-flex gap-5 pt-4 align-items-center flex-column">

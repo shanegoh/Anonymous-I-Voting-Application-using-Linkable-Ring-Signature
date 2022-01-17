@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { isAdmin, dateFormat, DANGER } from "../../util";
+import { isAdmin, dateFormat, DANGER, hasToken } from "../../util";
 import { Redirect } from "react-router-dom";
 import NavBar from "../../components/NavBar.js";
 import { Button, Alert, Spinner } from "react-bootstrap";
-import AlertBox from "../../components/AlertBox.js";
 import axios from "axios";
 import "../../App.scss";
 
@@ -46,7 +45,7 @@ export default function PastEvent({ history }) {
     history.push(path);
   };
 
-  return isAdmin() ? (
+  return isAdmin() && hasToken() ? (
     <div>
       <NavBar />
       <div className="d-flex flex-column gap-2 pt-4 align-items-center">
