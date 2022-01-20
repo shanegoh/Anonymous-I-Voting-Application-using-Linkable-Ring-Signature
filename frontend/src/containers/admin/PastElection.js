@@ -48,7 +48,7 @@ export default function PastEvent({ history }) {
   return isAdmin() && hasToken() ? (
     <div>
       <NavBar />
-      <div className="d-flex flex-column gap-2 pt-4 align-items-center">
+      <div className="d-flex flex-column gap-2 pd align-items-center pb-5">
         <Alert className="btn-lg w-100 text-center text-light bg-black">
           Event Completed
         </Alert>

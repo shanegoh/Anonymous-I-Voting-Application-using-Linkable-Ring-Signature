@@ -52,7 +52,10 @@ export default function UpcomingElections({ history }) {
     <div>
       <NavBar />
       <div>
-        <div className="d-flex flex-column gap-2 pt-2 align-items-center">
+        <div
+          className="d-flex flex-column gap-2 align-items-center"
+          style={{ paddingTop: "5rem" }}
+        >
           <Alert className="btn-lg w-100 text-center text-light bg-black">
             Upcoming Election
           </Alert>

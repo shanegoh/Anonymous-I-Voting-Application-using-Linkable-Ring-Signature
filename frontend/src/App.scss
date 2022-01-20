@@ -173,6 +173,16 @@ input[type="checkbox"]:checked {
   overflow: hidden;
 }
 
+.sticky-nav {
+  position: fixed !important;
+  top: 0 !important;
+  width: 100%;
+  z-index: 1;
+}
+.pd {
+  padding-top: 5rem;
+}
+
 @import "~bootstrap/scss/bootstrap";
 
 .btn-circle {

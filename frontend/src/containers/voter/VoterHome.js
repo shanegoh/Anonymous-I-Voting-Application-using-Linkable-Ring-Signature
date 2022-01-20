@@ -22,7 +22,7 @@ export default function Voter() {
   return !isAdmin() && hasToken() ? (
     <div>
       <NavBar />
-      <Carousel variant="dark">
+      <Carousel variant="dark" style={{ zIndex: "0", paddingTop: "5rem" }}>
         <Carousel.Item>
           <img
             className="d-block w-100"

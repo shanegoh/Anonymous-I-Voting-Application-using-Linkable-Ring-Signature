@@ -46,8 +46,7 @@ export default function Admin({ history }) {
   return isAdmin() && hasToken() ? (
     <div>
       <NavBar />
-
-      <div className="d-flex flex-column gap-2 pt-4 align-items-center">
+      <div className="d-flex flex-column gap-2 align-items-center pb-5 pd">
         <Alert className="btn-lg w-100 text-center text-light bg-black">
           Current/Upcoming Events
         </Alert>

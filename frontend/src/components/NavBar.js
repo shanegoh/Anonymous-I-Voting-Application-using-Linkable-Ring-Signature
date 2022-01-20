@@ -15,7 +15,7 @@ import { isAdmin } from "../util";
 export default function NavBar() {
   return (
     <div>
-      <Navbar className="color-nav" variant="dark" expand="lg">
+      <Navbar className="color-nav sticky-nav" variant="dark" expand="lg">
         <Container fluid>
           <Navbar.Brand
             className="fw-bold"

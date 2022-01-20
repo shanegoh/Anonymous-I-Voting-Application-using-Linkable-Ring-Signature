@@ -43,7 +43,10 @@ export default function MyVoteStatus() {
   return !isAdmin() ? (
     <div>
       <NavBar />
-      <div className="d-flex flex-column gap-2 pt-4 align-items-center ">
+      <div
+        className="d-flex flex-column gap-2 align-items-center "
+        style={{ zIndex: "0", paddingTop: "6rem" }}
+      >
         {show ? (
           <AlertBox
             err={[]}

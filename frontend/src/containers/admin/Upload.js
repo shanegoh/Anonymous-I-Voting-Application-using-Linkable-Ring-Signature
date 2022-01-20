@@ -112,7 +112,10 @@ export default function Upload() {
   return isAdmin() && hasToken() ? (
     <div>
       <NavBar />
-      <div className="d-flex gap-5 pt-4 align-items-center flex-column">
+      <div
+        className="d-flex gap-5 align-items-center flex-column"
+        style={{ paddingTop: "6rem" }}
+      >
         {show ? (
           <AlertBox
             err={[]}
