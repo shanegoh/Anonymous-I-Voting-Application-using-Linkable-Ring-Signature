@@ -225,7 +225,10 @@ export default function EventForm({
   };
 
   return (
-    <div className="d-flex gap-5 pt-4 align-items-center flex-column">
+    <div
+      className="d-flex gap-5 align-items-center flex-column mb-5"
+      style={{ paddingTop: "6rem" }}
+    >
       {show ? (
         <AlertBox
           err={err}

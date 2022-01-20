@@ -135,7 +135,7 @@ export default function Poll({ history }) {
   };
 
   return !isAdmin() && hasToken() ? (
-    <div>
+    <div className="pd pb-5">
       <NavBar />
       {showModal ? (
         <>
@@ -170,7 +170,7 @@ export default function Poll({ history }) {
           ) : (
             <></>
           )}
-          <Accordion defaultActiveKey="0" className="w-50">
+          <Accordion defaultActiveKey="0" className="poll-width">
             <Accordion.Item eventKey="0">
               <Accordion.Header>
                 <div className="text-success fs-3">
@@ -245,7 +245,7 @@ export default function Poll({ history }) {
               </Accordion.Body>
             </Accordion.Item>
           </Accordion>
-          <Table className="w-25 text-center table-bordered table-radius">
+          <Table className="poll-width text-center table-radius">
             <thead className="color-nav text-light">
               <tr>
                 <th colSpan="2">{Object.values(candidateList)[0].area_name}</th>
@@ -255,14 +255,14 @@ export default function Poll({ history }) {
               {Object.values(candidateList).map((candidate) => {
                 return (
                   <tr>
-                    <td className="w-50">
+                    <td>
                       <img
                         src={`data:image/png;base64,${candidate.candidate_image}`}
                         style={{ width: "5rem", height: "5rem" }}
                       />
                       <p>{candidate.candidate_name}</p>
                     </td>
-                    <td className="w-50 ">
+                    <td>
                       <Form.Check
                         id={candidate.candidate_name}
                         style={{ color: "red" }}
@@ -279,7 +279,7 @@ export default function Poll({ history }) {
             </tbody>
           </Table>
           <Form.Control
-            className="w-25"
+            className="poll-width"
             type="text"
             placeholder="Private Key"
             onChange={(e) => updateKey(e)}
@@ -290,7 +290,7 @@ export default function Poll({ history }) {
           />
 
           <Button
-            className="text-light"
+            className="text-light poll-width"
             size="lg"
             variant="success"
             onClick={() => handleShowModal()}
