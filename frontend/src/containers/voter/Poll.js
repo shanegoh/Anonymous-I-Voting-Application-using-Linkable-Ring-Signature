@@ -14,6 +14,7 @@ import { ImBoxAdd } from "react-icons/im";
 import { isAdmin, DANGER, isDefined, hasToken } from "../../util";
 import { FiCheck, FiX } from "react-icons/fi";
 import { FcHighPriority } from "react-icons/fc";
+import ReCAPTCHA from "react-google-recaptcha";
 import axios from "axios";
 import "../../App.scss";
 
@@ -31,7 +32,8 @@ export default function Poll({ history }) {
   const [showModal, setShowModal] = useState(false);
   const handleCloseModal = () => setShowModal(false);
   const handleShowModal = () => setShowModal(true);
-  const [btnStatus, setBtnStatus] = useState(false);
+  const [btnStatus, setBtnStatus] = useState(true);
+  const [submitStatus, setsubmitStatus] = useState(false);
 
   const onSelectedChange = (e) => {
     console.log(e.target.id);
@@ -39,6 +41,7 @@ export default function Poll({ history }) {
   };
 
   const submitVote = () => {
+    setsubmitStatus((submitStatus) => true);
     //clear error msg
     console.log(privateKey);
     setErr((err) => []);
@@ -66,6 +69,7 @@ export default function Poll({ history }) {
     if (errors.length > 0) {
       setErr((err) => errors);
       setBtnStatus((btnStatus) => false);
+      setsubmitStatus((submitStatus) => false);
       handleShow();
     } else {
       const payload = {
@@ -93,6 +97,7 @@ export default function Poll({ history }) {
           console.log(err.response.data.message);
           setErrMsg((errMsg) => err.response.data.message);
           setBtnStatus((btnStatus) => false);
+          setsubmitStatus((submitStatus) => false);
           handleShow();
         });
     }
@@ -122,6 +127,11 @@ export default function Poll({ history }) {
 
   const updateKey = (e) => {
     setPrivateKey((privateKey) => e.target.value);
+  };
+
+  const verifiedCaptcha = () => {
+    console.log("ok");
+    setBtnStatus((btnStatus) => false);
   };
 
   return !isAdmin() && hasToken() ? (
@@ -274,6 +284,11 @@ export default function Poll({ history }) {
             placeholder="Private Key"
             onChange={(e) => updateKey(e)}
           />
+          <ReCAPTCHA
+            sitekey="6LfmOCYeAAAAAMUmQnR5ROcvnYv0Jcoh0FxgkDbU"
+            onChange={() => verifiedCaptcha()}
+          />
+
           <Button
             className="text-light"
             size="lg"
@@ -281,7 +296,7 @@ export default function Poll({ history }) {
             onClick={() => handleShowModal()}
             disabled={btnStatus ? true : false}
           >
-            {btnStatus ? (
+            {submitStatus ? (
               <>
                 <Spinner
                   as="span"
