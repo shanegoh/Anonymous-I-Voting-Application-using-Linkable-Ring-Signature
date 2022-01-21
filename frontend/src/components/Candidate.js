@@ -171,6 +171,7 @@ export default function Candidate({
                   Upload New Image
                 </Form.Label>
               </OverlayTrigger>
+
               <Form.Control
                 key={object[1]}
                 id={object[1]}

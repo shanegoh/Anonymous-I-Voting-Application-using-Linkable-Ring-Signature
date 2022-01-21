@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { DateTimePicker } from "react-rainbow-components";
 import { Form } from "react-bootstrap";
 import Candidate from "./Candidate.js";
+import Feedback from "react-bootstrap/Feedback";
 import {
   isDefined,
   DEFAULTSELECTOR,
@@ -55,6 +56,8 @@ export default function EventForm({
   const [err, setErr] = useState([]); // Logic for storing all error messages
   const [errMsg, setErrMsg] = useState();
   const [variant, setVariant] = useState();
+  const [invalidSelectA, setInvalidSelectA] = useState(false);
+  const [invalidSelectB, setInvalidSelectB] = useState(false);
 
   // Validate if the time difference is at least 4 hours
   const validateDateTime = () => {
@@ -112,6 +115,7 @@ export default function EventForm({
 
   // On click submit, validate input and post to server
   const submitEvent = (list) => {
+    window.scrollTo(0, 0);
     var errors = [];
     setErrMsg((errMsg) => "");
     // Convert candidates to json data in array
@@ -124,22 +128,24 @@ export default function EventForm({
 
     // Validate if start date time is in future
     if (new Date(startDateTime) < new Date()) {
-      errors.push("Start date time must be in the future.");
+      errors.push("*Start date time must be in the future");
     }
 
     // Validate election type field
     if (electionType === DEFAULTSELECTOR) {
-      errors.push("Select parliamentary/presidential election.");
+      errors.push("*Required election type");
+      setInvalidSelectA((invalidSelectA) => true);
     }
 
     // Validate area field
     if (areaId === DEFAULTSELECTOR) {
-      errors.push("You need to select an area");
+      errors.push("*Required an Area");
+      setInvalidSelectB((invalidSelectB) => true);
     }
 
     // Validate number of candidate
     if (jsonArray.length < 2) {
-      errors.push("Insufficient Candidates.(At least 2)");
+      errors.push("*Insufficient Candidate");
     }
 
     // Validate information of condidate
@@ -149,15 +155,13 @@ export default function EventForm({
         jsonArray[x].candidate_image.length === 0
       ) {
         console.log(jsonArray[x].candidate_image.length);
-        errors.push(
-          "Candidate value cannot be empty. Please make sure you have selected an image and entered candidate name."
-        );
+        errors.push("*Required Candidate image and name");
         break;
       }
     }
     // Validate the duration of the time
     if (!validateDateTime()) {
-      errors.push("Duration of the event must be at least 4 hours.");
+      errors.push("*Duration of the event must be at least 4 hours");
     }
     console.log(err);
     // Show the Alert Box if there is error, else close and post data
@@ -240,40 +244,59 @@ export default function EventForm({
         <></>
       )}
       <div className="d-flex gap-5 form-element-resize">
-        <Form.Select
-          value={electionType}
-          id="election_type"
-          disabled={isDefined(event_id)}
-          onChange={(e) => updateElectionType(e)}
-        >
-          <option value="DEFAULT" disabled>
-            Select Parliamentary / Presidential
-          </option>
-          {electionTypeList.map(function (record) {
-            return (
-              <option key={record.election_id} value={record.election_id}>
-                {record.election_name}
-              </option>
-            );
-          })}
-        </Form.Select>
-        <Form.Select
-          value={areaId}
-          id="area"
-          disabled={isDefined(event_id)}
-          onChange={(e) => updateAreaId(e)}
-        >
-          <option value="DEFAULT" disabled>
-            Select Area
-          </option>
-          {filteredAreaList.map(function (record) {
-            return (
-              <option key={record.area_id} value={record.area_id}>
-                {record.area_name}
-              </option>
-            );
-          })}
-        </Form.Select>
+        <div className="d-flex flex-column form-element-resize">
+          <Form.Select
+            value={electionType}
+            id="election_type"
+            disabled={isDefined(event_id)}
+            onChange={(e) => updateElectionType(e)}
+            required
+            isInvalid={invalidSelectA}
+          >
+            <option value="DEFAULT" disabled>
+              Select Parliamentary / Presidential
+            </option>
+            {electionTypeList.map(function (record) {
+              return (
+                <option key={record.election_id} value={record.election_id}>
+                  {record.election_name}
+                </option>
+              );
+            })}
+          </Form.Select>
+          <div
+            class="invalid-feedback text-center"
+            style={{ display: invalidSelectA == false ? "none" : "block" }}
+          >
+            *Please select
+          </div>
+        </div>
+        <div className="d-flex flex-column form-element-resize">
+          <Form.Select
+            value={areaId}
+            id="area"
+            disabled={isDefined(event_id)}
+            onChange={(e) => updateAreaId(e)}
+            isInvalid={invalidSelectB}
+          >
+            <option value="DEFAULT" disabled>
+              Select Area
+            </option>
+            {filteredAreaList.map(function (record) {
+              return (
+                <option key={record.area_id} value={record.area_id}>
+                  {record.area_name}
+                </option>
+              );
+            })}
+          </Form.Select>
+          <div
+            class="invalid-feedback text-center"
+            style={{ display: invalidSelectB == false ? "none" : "block" }}
+          >
+            *Please select
+          </div>
+        </div>
       </div>
       <div className="d-flex gap-5 form-element-resize">
         <DateTimePicker
@@ -286,7 +309,7 @@ export default function EventForm({
           onChange={(value) => setStartDateTime((startDateTime) => value)}
           error={
             validateDateTime() === false
-              ? "Start time should be at least 4 hours earlier."
+              ? "*Start time should be at least 4 hours earlier."
               : ""
           }
         />
@@ -300,7 +323,7 @@ export default function EventForm({
           onChange={(value) => setEndDateTime((setEndDateTime) => value)}
           error={
             validateDateTime() === false
-              ? "End time should be at least 4 hours later."
+              ? "*End time should be at least 4 hours later."
               : ""
           }
         />

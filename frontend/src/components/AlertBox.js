@@ -11,11 +11,11 @@ export default function AlertBox({ err, setShow, errMsg, variant }) {
         variant={variant}
         onClose={() => setShow(false)}
       >
-        <Alert.Heading>
+        <Alert.Heading className="fs-5">
           {variant === "danger" ? "Oh snap! You got an error!" : "Success!"}
         </Alert.Heading>
         {err.length !== 0 && variant === "danger" ? (
-          <h5>Please update the following incorrect fields:</h5>
+          <h6>Please update the following incorrect fields:</h6>
         ) : (
           <></>
         )}
