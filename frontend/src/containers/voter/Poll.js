@@ -317,9 +317,9 @@ export default function Poll({ history }) {
           </InputGroup>
           <ReCAPTCHA
             sitekey="6LfmOCYeAAAAAMUmQnR5ROcvnYv0Jcoh0FxgkDbU"
+            className="g-recaptcha"
             onChange={() => verifiedCaptcha()}
           />
-
           <Button
             className="text-light poll-width"
             size="lg"
