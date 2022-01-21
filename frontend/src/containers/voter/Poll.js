@@ -7,6 +7,7 @@ import {
   Modal,
   Accordion,
   Spinner,
+  InputGroup,
 } from "react-bootstrap";
 import { Redirect, useParams } from "react-router-dom";
 import AlertBox from "../../components/AlertBox.js";
@@ -15,6 +16,7 @@ import { isAdmin, DANGER, isDefined, hasToken } from "../../util";
 import { FiCheck, FiX } from "react-icons/fi";
 import { FcHighPriority } from "react-icons/fc";
 import ReCAPTCHA from "react-google-recaptcha";
+import Feedback from "react-bootstrap/Feedback";
 import axios from "axios";
 import "../../App.scss";
 
@@ -34,6 +36,7 @@ export default function Poll({ history }) {
   const handleShowModal = () => setShowModal(true);
   const [btnStatus, setBtnStatus] = useState(true);
   const [submitStatus, setsubmitStatus] = useState(false);
+  const [isKeyInValid, setIsKeyInValid] = useState(false);
 
   const onSelectedChange = (e) => {
     console.log(e.target.id);
@@ -41,6 +44,7 @@ export default function Poll({ history }) {
   };
 
   const submitVote = () => {
+    window.scrollTo(0, 0);
     setsubmitStatus((submitStatus) => true);
     //clear error msg
     console.log(privateKey);
@@ -53,18 +57,19 @@ export default function Poll({ history }) {
 
     // Check if candidate selected
     if (!isDefined(selected)) {
-      errors.push("Please select a candidate.");
+      errors.push("Required candidate.");
     }
 
     // Check if private key is not empty
     if (!isDefined(privateKey) || privateKey === "") {
-      errors.push("Private Key cannot be empty.");
+      errors.push("Required private key");
+      setIsKeyInValid((isKeyValid) => true);
+    } else if (!Number(privateKey)) {
+      // Check if it is only digits
+      errors.push("Invalid private key");
+      setIsKeyInValid((isKeyValid) => true);
     }
 
-    // Check if it is only digits
-    if (!Number(privateKey)) {
-      errors.push("Private Key contains only digits.");
-    }
     // If there is error, display error
     if (errors.length > 0) {
       setErr((err) => errors);
@@ -132,6 +137,18 @@ export default function Poll({ history }) {
   const verifiedCaptcha = () => {
     console.log("ok");
     setBtnStatus((btnStatus) => false);
+  };
+
+  const readText = () => {
+    navigator.clipboard
+      .readText()
+      .then((text) => {
+        setPrivateKey((privateKey) => text);
+        console.log("Pasted content: ", text);
+      })
+      .catch((err) => {
+        console.error("Failed to read clipboard contents: ", err);
+      });
   };
 
   return !isAdmin() && hasToken() ? (
@@ -278,12 +295,26 @@ export default function Poll({ history }) {
               })}
             </tbody>
           </Table>
-          <Form.Control
-            className="poll-width"
-            type="text"
-            placeholder="Private Key"
-            onChange={(e) => updateKey(e)}
-          />
+          <InputGroup hasValidation className="poll-width gap-1">
+            <Form.Control
+              value={privateKey}
+              type="text"
+              placeholder="Private Key"
+              onChange={(e) => updateKey(e)}
+              isInvalid={isKeyInValid}
+            />
+            <Button
+              variant="secondary"
+              size="sm"
+              active
+              onClick={() => readText()}
+            >
+              Paste
+            </Button>
+            <Form.Control.Feedback type="invalid" className="text-center">
+              *Valid Key Required*
+            </Form.Control.Feedback>
+          </InputGroup>
           <ReCAPTCHA
             sitekey="6LfmOCYeAAAAAMUmQnR5ROcvnYv0Jcoh0FxgkDbU"
             onChange={() => verifiedCaptcha()}
