@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import AlertBox from "../components/AlertBox.js";
-import { Spinner } from "react-bootstrap";
-import { DANGER, hasToken } from "../util";
+import { Container, Spinner } from "react-bootstrap";
+import { DANGER } from "../util";
 import "../App.scss";
 import axios from "axios";
 import {
@@ -81,15 +81,14 @@ export default function Redirect({ history }) {
         <></>
       )}
       {isRedirecting ? (
-        <div className="d-flex justify-content-center">
+        <div className="d-flex justify-content-center align-items-center flex-column mainLoader ">
           <Spinner
             animation="border"
             role="status"
-            variant="primary"
+            variant="dark"
             className=".loader"
-          >
-            <span className="visually-hidden">Loading...</span>
-          </Spinner>
+          ></Spinner>
+          <span className="">Logging in...</span>
         </div>
       ) : (
         <></>

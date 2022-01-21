@@ -5,7 +5,6 @@ import {
   Form,
   Button,
   Modal,
-  Accordion,
   Spinner,
   InputGroup,
 } from "react-bootstrap";
@@ -16,7 +15,7 @@ import { isAdmin, DANGER, isDefined, hasToken } from "../../util";
 import { FiCheck, FiX } from "react-icons/fi";
 import { FcHighPriority } from "react-icons/fc";
 import ReCAPTCHA from "react-google-recaptcha";
-import Feedback from "react-bootstrap/Feedback";
+import { FaPaste } from "react-icons/fa";
 import axios from "axios";
 import "../../App.scss";
 
@@ -37,6 +36,8 @@ export default function Poll({ history }) {
   const [btnStatus, setBtnStatus] = useState(true);
   const [submitStatus, setsubmitStatus] = useState(false);
   const [isKeyInValid, setIsKeyInValid] = useState(false);
+  const [showInfo, setShowInfo] = useState(true);
+  const handleCloseInfo = () => setShowInfo(false);
 
   const onSelectedChange = (e) => {
     console.log(e.target.id);
@@ -154,6 +155,90 @@ export default function Poll({ history }) {
   return !isAdmin() && hasToken() ? (
     <div className="pd pb-5">
       <NavBar />
+      <Modal show={showInfo} closeOnOverlayClick={false}>
+        <Modal.Header className="color-nav text-light">
+          <Modal.Title>Instructions</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div className="dos ">
+            <div className="fs-3 text-center">
+              <FiCheck size={32} /> Do
+            </div>
+            <blockquote>
+              <li>
+                <small>
+                  You are allowed to use your <b>smart phones or computers</b>
+                  &nbsp;to vote.
+                </small>
+              </li>
+            </blockquote>
+            <blockquote>
+              <li>
+                <small>
+                  Please select your choice by <b>tapping</b> or <b>clicking</b>{" "}
+                  on the check box.
+                </small>
+              </li>
+            </blockquote>
+            <blockquote>
+              <li>
+                <small>
+                  <b>Your vote is secret.</b> Attempt your vote in a secluded
+                  environment.
+                </small>
+              </li>
+            </blockquote>
+          </div>
+          <div className="donts">
+            <div className="text-danger fs-3 text-center">
+              <FiX size={32} /> Do Not
+            </div>
+            <blockquote>
+              <li>
+                <small>
+                  <b>Do not vote for any other person</b>. Impersonating another
+                  voter is an offence.
+                </small>
+              </li>
+            </blockquote>
+            <blockquote>
+              <li>
+                <small>
+                  <b>Do not avoid voting</b>. It is against the law for not
+                  voting.
+                </small>
+              </li>
+            </blockquote>
+            <blockquote>
+              <li>
+                <small>
+                  <b>Do not</b> try to find out how any other voter has voted or
+                  intends to vote.
+                </small>
+              </li>
+            </blockquote>
+          </div>
+          <div className="pdpas">
+            <div className="text-info fs-3 text-center">
+              <FcHighPriority /> &nbsp;PDPA Consent Clause
+            </div>
+            <blockquote>
+              The purpose of the collection of your vote are for election
+              purposes only. MiMi only uses the vote for vote tabulation and
+              will not disclose any vote information and personal data.
+            </blockquote>
+            <blockquote>
+              All information collected from voters will be kept protected. MiMi
+              will not disclose any information without voter's consent.
+            </blockquote>
+          </div>
+        </Modal.Body>
+        <Modal.Footer className="justify-content-center">
+          <Button variant="success text-light" onClick={handleCloseInfo}>
+            Yes, I understand and agree.
+          </Button>
+        </Modal.Footer>
+      </Modal>
       {showModal ? (
         <>
           <Modal show={showModal} onHide={handleCloseModal}>
@@ -187,81 +272,6 @@ export default function Poll({ history }) {
           ) : (
             <></>
           )}
-          <Accordion defaultActiveKey="0" className="poll-width">
-            <Accordion.Item eventKey="0">
-              <Accordion.Header>
-                <div className="text-success fs-3">
-                  <FiCheck size={32} /> Do
-                </div>
-              </Accordion.Header>
-              <Accordion.Body className="ajust-fs">
-                <blockquote>
-                  <li>
-                    You are allowed to use your <b>smart phones or computers</b>
-                    &nbsp;to vote.
-                  </li>
-                </blockquote>
-                <blockquote>
-                  <li>
-                    Please select your choice by <b>tapping</b> or{" "}
-                    <b>clicking</b> on the check box.
-                  </li>
-                </blockquote>
-                <blockquote>
-                  <li>
-                    <b>Your vote is secret.</b> Please attempt your vote in a
-                    secluded environment.
-                  </li>
-                </blockquote>
-              </Accordion.Body>
-            </Accordion.Item>
-            <Accordion.Item eventKey="1">
-              <Accordion.Header>
-                <div className="text-danger fs-3">
-                  <FiX size={32} /> Do NOT
-                </div>
-              </Accordion.Header>
-              <Accordion.Body>
-                <blockquote>
-                  <li>
-                    <b>Do not vote for any other person</b>. Impersonating
-                    another voter is an offence.
-                  </li>
-                </blockquote>
-                <blockquote>
-                  <li>
-                    <b>Do not avoid voting</b>. It is against the law for not
-                    voting.
-                  </li>
-                </blockquote>
-                <blockquote>
-                  <li>
-                    <b>Do not</b> try to find out how any other voter has voted
-                    or intends to vote
-                  </li>
-                </blockquote>
-              </Accordion.Body>
-            </Accordion.Item>
-            <Accordion.Item eventKey="2">
-              <Accordion.Header>
-                <div className="text-info fs-3">
-                  <FcHighPriority /> &nbsp;PDPA Consent Clause
-                </div>
-              </Accordion.Header>
-              <Accordion.Body>
-                <blockquote>
-                  The purpose of the collection of your vote are for election
-                  purposes only. MiMi only uses the vote for vote tabulation and
-                  will not disclose any vote information and personal data.
-                </blockquote>
-                <blockquote>
-                  All information collected from voters will be kept protected.
-                  MiMi shall not disclose any information without voter's
-                  consent.
-                </blockquote>
-              </Accordion.Body>
-            </Accordion.Item>
-          </Accordion>
           <Table className="poll-width text-center table-radius">
             <thead className="color-nav text-light">
               <tr>
@@ -303,13 +313,8 @@ export default function Poll({ history }) {
               onChange={(e) => updateKey(e)}
               isInvalid={isKeyInValid}
             />
-            <Button
-              variant="secondary"
-              size="sm"
-              active
-              onClick={() => readText()}
-            >
-              Paste
+            <Button size="sm" onClick={() => readText()} className="color-nav">
+              <FaPaste />
             </Button>
             <Form.Control.Feedback type="invalid" className="text-center">
               *Valid Key Required*

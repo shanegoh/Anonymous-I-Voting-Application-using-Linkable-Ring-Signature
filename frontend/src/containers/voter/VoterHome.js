@@ -26,7 +26,7 @@ export default function Voter() {
         <Carousel.Item>
           <img
             className="d-block w-100"
-            src="https://i.postimg.cc/PrLLgh8y/shutterstock-245093674-scaled.jpg"
+            src="https://i.postimg.cc/BbCpPghC/1388994.jpg"
             alt="LATEST NEWS"
             id="0"
             onClick={(e) => redirect(e)}
