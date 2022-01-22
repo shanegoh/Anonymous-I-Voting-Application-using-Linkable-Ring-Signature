@@ -8,11 +8,10 @@ import "../../App.scss";
 
 export default function PastEvent({ history }) {
   const [show, setShow] = useState(false); // For storing the state of Modal
-  const handleClose = () => setShow(false); // For dismissing Modal
   const handleShow = () => setShow(true); // For displaying Modal
   const [recordList, setList] = useState([]);
   const [errMsg, setErrMsg] = useState();
-  const [variant, setVariant] = useState();
+  // const [variant, setVariant] = useState();
   const [isLoading, setLoadingStatus] = useState(true);
 
   useEffect(() => {
@@ -33,7 +32,7 @@ export default function PastEvent({ history }) {
         // Set error message
         console.log(err.response.data.message);
         setErrMsg((errMsg) => err.response.data.message);
-        setVariant((variant) => DANGER);
+        // setVariant((variant) => DANGER);
         handleShow(); // Display alert
         setLoadingStatus((isLoading) => false);
       });

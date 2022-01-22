@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import AlertBox from "../components/AlertBox.js";
-import { Container, Spinner } from "react-bootstrap";
+import { Spinner } from "react-bootstrap";
 import { DANGER } from "../util";
 import "../App.scss";
 import axios from "axios";
@@ -19,7 +19,7 @@ export default function Redirect({ history }) {
   const [errMsg, setErrMsg] = useState(); // Logic setting error msg
   const [variant, setVariant] = useState();
   const [isRedirecting, setRedirectingStatus] = useState(true);
-  const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
+  const { isAuthenticated, getAccessTokenSilently } = useAuth0();
 
   useEffect(() => {
     const getUserMetadata = async () => {
@@ -66,7 +66,7 @@ export default function Redirect({ history }) {
       }
     };
     getUserMetadata();
-  }, [getAccessTokenSilently, user?.sub]);
+  }, [getAccessTokenSilently]);
 
   return isAuthenticated ? (
     <div className="d-flex flex-column pt-4 align-items-center ">

@@ -22,7 +22,6 @@ export default function Result() {
   const [variant, setVariant] = useState();
   const [isLoaded, setLoadStatus] = useState(false);
   const [label, setLabel] = useState([]);
-  const [candidateImage, setCandidateImage] = useState([]);
   const [voteCount, setVoteCount] = useState([]);
   const [candidateList, setCandidateList] = useState([]);
 
@@ -45,10 +44,6 @@ export default function Result() {
             setLabel((label) => [
               ...label,
               object.candidate_name + " (" + object.vote_count + ")",
-            ]);
-            setCandidateImage((candidateImage) => [
-              ...candidateImage,
-              object.candidate_image,
             ]);
             setVoteCount((voteCount) => [...voteCount, object.vote_count]);
           });

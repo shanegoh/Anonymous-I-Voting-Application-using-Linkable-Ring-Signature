@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { DateTimePicker } from "react-rainbow-components";
 import { Form } from "react-bootstrap";
 import Candidate from "./Candidate.js";
-import Feedback from "react-bootstrap/Feedback";
 import {
   isDefined,
   DEFAULTSELECTOR,

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import LogoutButton from "../components/LogoutButton.js";
 import { Navbar, Container, Nav } from "react-bootstrap";
 import { Link } from "react-router-dom";

@@ -28,7 +28,6 @@ export default function Upload() {
   const [selectedFile, setSelectedFile] = useState();
   const [btnStatus, setBtnStatus] = useState(true);
   const [isLoading, setIsLoadingStatus] = useState(false);
-  const [excelFile, setExcelFile] = useState([]);
 
   const changeHandler = (e) => {
     console.log(e.target.files[0]);
@@ -69,7 +68,6 @@ export default function Upload() {
           setIsLoadingStatus(false);
           setBtnStatus(false);
           console.log(res.data.excel_file);
-          var first = true;
           res.data.excel_file.forEach((file) => {
             var blob = new Blob([s2ab(atob(file))], {
               type: fileType,

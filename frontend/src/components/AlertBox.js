@@ -1,6 +1,5 @@
 import React from "react";
 import { Alert } from "react-bootstrap";
-import { isDefined } from "../util";
 import "../App.scss";
 
 export default function AlertBox({ err, setShow, errMsg, variant }) {

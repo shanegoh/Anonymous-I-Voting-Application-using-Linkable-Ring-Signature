@@ -46,10 +46,9 @@ class UserService:
         # Get the excel file
         data_xls = pd.read_excel(xlsx_file)
         assert len(data_xls) > 0, "You have uploaded an empty file.."   # Error if user upload empty file, logic not proceeding
-        print("first")
-        # Use Auth0 Client secret and public key to get management_access_token
+        # Use Auth0 API Explorer App Client secret and public key to get management_access_token
         connnection = http.client.HTTPSConnection("dev-a6828r5z.us.auth0.com")
-        payload = "{\"client_id\":\"vMOfBnYOJszlqdGdDek62rMyhsUY9srE\",\"client_secret\":\"27JENkP6Q22nXmTlbUcR44ABceE1DLV3n23QTBUVWL9U6fwIMFgTp0KTmBpacTDk\",\"audience\":\"https://dev-a6828r5z.us.auth0.com/api/v2/\",\"grant_type\":\"client_credentials\"}"
+        payload = "{\"client_id\":\"%s\",\"client_secret\":\"%s\",\"audience\":\"%s\",\"grant_type\":\"%s\"}" % (os.getenv("AUTH0_API_EXP_CLIENT_ID"),os.getenv("AUTH0_API_EXP_CLIENT_SECRET"),os.getenv("AUTH0_API_AUDIENCE"),os.getenv("AUTH0_API_EXP_GRANT_TYPE"))
         headers = { 'content-type': "application/json" }
         connnection.request("POST", "/oauth/token", payload, headers)
         res = connnection.getresponse()
@@ -57,7 +56,6 @@ class UserService:
         print(data)
         jsonData = json.loads(data)
         management_access_token = "Bearer " + jsonData["access_token"]
-        print("Continue")
 
         b64_list = []             # A list to store base64 encoded xlsx files( up to max 2 files )
         userCredential_list = []  # User list for writting into xlsx files containing credentials
