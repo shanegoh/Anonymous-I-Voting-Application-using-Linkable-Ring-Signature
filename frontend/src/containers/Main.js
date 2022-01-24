@@ -4,7 +4,7 @@ import { Card } from "react-bootstrap";
 export default function Main() {
   return (
     <div className="App-header">
-      <Card style={{ width: "30rem", height: "10rem" }}>
+      <Card className="cardHead">
         <Card.Body className="cardBody">
           <Card.Title>Welcome to Mimi</Card.Title>
           <Card.Text style={{ fontSize: "1.5rem" }}>
