@@ -56,6 +56,7 @@ export default function Upload() {
     // If file is correctly selected
     const data = new FormData();
     data.append("file", selectedFile);
+    console.log(selectedFile);
     axios
       .post(process.env.REACT_APP_PATH + "/upload", data, {
         headers: {

@@ -145,13 +145,14 @@ def findResultById(id):
 @requires_auth
 def uploadFile():
     try:
+
         b64_list = UserService().uploadUserInformation(request.files['file'])
         message = "Success"
         status = 200
         return Response(json.dumps({"message": message, "excel_file": b64_list}), status, mimetype='application/json')
 
     except Exception:
-        message = str(sys.exc_info()[1]) 
+        message = "Error, please check your file or else try again."
         print(message)
         return Response(json.dumps({"message": message}), 400, mimetype='application/json') 
 
