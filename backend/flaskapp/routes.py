@@ -10,17 +10,7 @@ import sys
 from flaskapp.util import *
 from flaskapp.services import *
 
-#Controllers APIm
-@app.route("/testRoute")
-@cross_origin(origin='localhost', headers=['Content-Type','Authorization'])
-@requires_auth
-def testRoute():
-    return session['email']
-
-@app.route("/test")
-@cross_origin(origin='localhost', headers=['Content-Type'])
-def test():
-   return "ok"
+#Controllers API
 
 # This is used when user logs in for redirecting (For All Types of Users)
 @app.route("/findUserInformation")
@@ -42,6 +32,7 @@ def findUserInformation():
 @requires_auth
 def findAllEvent():
     try:
+        assert UserService().getUserRoleByEmail(session['email']) == 0, "Invalid Access Rights"
         event = EventService().getAllEventAdmin()
         print(event)
         return jsonify(event)
@@ -57,6 +48,7 @@ def findAllEvent():
 @requires_auth
 def findAllElectionType():
     try:
+        assert UserService().getUserRoleByEmail(session['email']) == 0, "Invalid Access Rights"
         electionTypeList = ElectionTypeService().getAllElectionType();
         areaList = AreaService().getAllAreaType();
         payload = []
@@ -75,6 +67,7 @@ def findAllElectionType():
 @cross_origin(origin='localhost',headers=['Content-Type','Authorization'])
 @requires_auth
 def putEvent(id=-1):
+    assert UserService().getUserRoleByEmail(session['email']) == 0, "Invalid Access Rights"
     electionType = request.json['election_type']
     areaId = request.json['area_id']
     startDateTime = request.json['start_date_time']
@@ -98,6 +91,7 @@ def putEvent(id=-1):
 @requires_auth
 def deleteEvent(id):
     try:
+        assert UserService().getUserRoleByEmail(session['email']) == 0, "Invalid Access Rights"
         CandidateService().deleteCandidateByEventId(id)
         EventService().deleteEventById(id)
         message = "Successfully deleted."
@@ -116,6 +110,7 @@ def deleteEvent(id):
 @requires_auth
 def findPastEvent():
     try:
+        assert UserService().getUserRoleByEmail(session['email']) == 0, "Invalid Access Rights"
         event = EventService().getAllPastEvent()
         assert len(event) > 0, "There is no event for you at the moment."
         return jsonify(event)
@@ -131,6 +126,7 @@ def findPastEvent():
 @requires_auth
 def findResultById(id):
     try:
+        assert UserService().getUserRoleByEmail(session['email']) == 0, "Invalid Access Rights"
         result = CandidateService().getResultByEventId(id)
         return jsonify(result)
     except Exception:
@@ -145,7 +141,7 @@ def findResultById(id):
 @requires_auth
 def uploadFile():
     try:
-
+        assert UserService().getUserRoleByEmail(session['email']) == 0, "Invalid Access Rights"
         b64_list = UserService().uploadUserInformation(request.files['file'])
         message = "Success"
         status = 200
@@ -163,6 +159,7 @@ def uploadFile():
 @requires_auth
 def findElectionForVoter():
     try:
+        assert UserService().getUserRoleByEmail(session['email']) == 1, "Invalid Access Rights"
         user = UserService().getAreaIdByEmail(session['email'])
         areaId = user[0]
         assert VoteHistoryService().validateVoteEligibility(session['email']), "There is no event for you at the moment."
@@ -181,6 +178,7 @@ def findElectionForVoter():
 @requires_auth
 def findCandidateByEventId(id):
     try:
+        assert UserService().getUserRoleByEmail(session['email']) == 1, "Invalid Access Rights"
         candidateList = CandidateService().getCandidateByEventId(id, session['email'])
         print(candidateList)
         return jsonify(candidateList)
@@ -196,6 +194,7 @@ def findCandidateByEventId(id):
 @requires_auth
 def voteCandidate():
     try:
+        assert UserService().getUserRoleByEmail(session['email']) == 1, "Invalid Access Rights"
         CandidateService().voteCandidate(request.json['event_id'], request.json['private_key'], session['email'], request.json['candidate_name'])
         status = 200
         message = "Ok"
@@ -212,6 +211,7 @@ def voteCandidate():
 @requires_auth
 def findEventDetailsById(id):
     try:
+        assert UserService().getUserRoleByEmail(session['email']) == 1, "Invalid Access Rights"
         event = EventService().getEventDetailsById(id)
         candidate = CandidateService().getAllEventCandidates(id)    
         # Get all information about the particular event + candidate
@@ -231,6 +231,7 @@ def findEventDetailsById(id):
 @requires_auth
 def findVoteStatus():
     try:
+        assert UserService().getUserRoleByEmail(session['email']) == 1, "Invalid Access Rights"
         result = VoteHistoryService().getVoteHistory(session['email'])
         return jsonify(result)       
     except Exception:

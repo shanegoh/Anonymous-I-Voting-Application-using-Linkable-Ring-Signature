@@ -9,6 +9,9 @@ class UserDAO:
     def __init__(self, model):
         self.model = model    
 
+    def findUserRoleByEmail(self, email):
+        return Users.query.with_entities(Users.role).filter(Users.email == email).one()[0]
+
     def findUserInformationByEmail(self, email):
         return ( Users.query
                 .with_entities(Users.role, Users.area_id)  

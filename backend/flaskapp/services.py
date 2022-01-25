@@ -14,6 +14,9 @@ import json
 # Business logic
 # A service class which does all the complex logic
 class UserService:
+    def getUserRoleByEmail(self, email):
+        return user_dao.findUserRoleByEmail(email)
+
     def getUserInformation(self, email):
         return dict(user_dao.findUserInformationByEmail(email))
 
