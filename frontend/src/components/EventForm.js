@@ -57,6 +57,7 @@ export default function EventForm({
   const [variant, setVariant] = useState();
   const [invalidSelectA, setInvalidSelectA] = useState(false);
   const [invalidSelectB, setInvalidSelectB] = useState(false);
+  const format = /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
 
   // Validate if the time difference is at least 4 hours
   const validateDateTime = () => {
@@ -146,7 +147,6 @@ export default function EventForm({
     if (jsonArray.length < 2) {
       errors.push("*Insufficient Candidate");
     }
-
     // Validate information of condidate
     for (let x = 0; x < jsonArray.length; x++) {
       if (
@@ -155,6 +155,11 @@ export default function EventForm({
       ) {
         console.log(jsonArray[x].candidate_image.length);
         errors.push("*Required Candidate image and name");
+        break;
+      }
+      // Validate candidate name
+      if (format.test(jsonArray[x].candidate_name)) {
+        errors.push("*Invalid candidate name. No special characters allowed.");
         break;
       }
     }

@@ -9,6 +9,7 @@ import pandas as pd
 import string
 import sys
 import ast
+import re
 # import base64
 import json
 # Business logic
@@ -211,6 +212,8 @@ class EventService:
         result_D = (True if currentDateTime_formatted_UTC < startDateTime_formatted_UTC else False)
         assert result_D == True, "Invalid start time."
 
+        # Filter special character
+        regex = re.compile('[@_!#$%^&*()<>?/\|}{~:]') 
         # Rebuild the json data, if violated, error will be thrown
         # Also store only the image path for candidate image
         candidate_payload = []
@@ -218,6 +221,7 @@ class EventService:
             image_b64 = object['candidate_image']
             base64result = image_b64.split(',')[1];
             as_bytes = bytes(base64result, 'utf-8')
+            assert regex.search(object['candidate_name']) == None, "Invalid Candidate Name. No Special characters allowed."
             image_path = "img/" + object['candidate_name'] + ".png"
             with open(image_path, "wb") as fh:
               fh.write(base64.decodebytes(as_bytes))
