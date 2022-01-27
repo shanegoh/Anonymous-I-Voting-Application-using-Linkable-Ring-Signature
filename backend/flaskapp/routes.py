@@ -83,7 +83,25 @@ def putEvent(id=-1):
         return Response(json.dumps({"message": message}), 400, mimetype='application/json') 
                  
 
+# This is used to view candidates for the election event (For Admin)
+@app.route("/findEventDetailsById/<id>")
+@cross_origin(origin='localhost',headers=['Content-Type','Authorization'])
+@requires_auth
+def findEventDetailsById(id):
+    try:
+        assert UserService().getUserRoleByEmail(session['email']) == 0, "Invalid Access Rights"
+        event = EventService().getEventDetailsById(id)
+        candidate = CandidateService().getAllEventCandidates(id)    
+        # Get all information about the particular event + candidate
+        event['candidates'] = candidate
+        print(event)
 
+    except Exception:
+        message = str(sys.exc_info()[1]) 
+        print(message)
+        return Response(json.dumps({"message": message}), 404, mimetype='application/json') 
+
+    return jsonify(event)
 
 # This is used to delete events (For Admin/Electoral Board Users)
 @app.route("/deleteEventById/<id>", methods=['DELETE'])
@@ -204,27 +222,6 @@ def voteCandidate():
         print(message)
         return Response(json.dumps({"message": message}), 404, mimetype='application/json')    
           
-
-# This is used to view candidates for the election event (For Voters)
-@app.route("/findEventDetailsById/<id>")
-@cross_origin(origin='localhost',headers=['Content-Type','Authorization'])
-@requires_auth
-def findEventDetailsById(id):
-    try:
-        assert UserService().getUserRoleByEmail(session['email']) == 1, "Invalid Access Rights"
-        event = EventService().getEventDetailsById(id)
-        candidate = CandidateService().getAllEventCandidates(id)    
-        # Get all information about the particular event + candidate
-        event['candidates'] = candidate
-        print(event)
-
-    except Exception:
-        message = str(sys.exc_info()[1]) 
-        print(message)
-        return Response(json.dumps({"message": message}), 404, mimetype='application/json') 
-
-    return jsonify(event)
-
 # This is used to view vote status for voters (For Voters)       
 @app.route("/findVoteStatus", methods=["GET"])
 @cross_origin(origin='localhost',headers=['Content-Type','Authorization'])
