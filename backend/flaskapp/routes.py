@@ -198,7 +198,7 @@ def findCandidateByEventId(id):
     try:
         assert UserService().getUserRoleByEmail(session['email']) == 1, "Invalid Access Rights"
         candidateList = CandidateService().getCandidateByEventId(id, session['email'])
-        print(candidateList)
+        assert len(candidateList) != 0, "Event not available."
         return jsonify(candidateList)
     except Exception:
         message = str(sys.exc_info()[1]) 

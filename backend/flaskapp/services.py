@@ -377,6 +377,8 @@ class CandidateService:
 
     def getResultByEventId(self, eventId):
         candidateResult = candidate_dao.findResultByEventId(eventId, NOT_DELETED, EXPIRED)
+        print(len(candidateResult))
+        assert len(candidateResult) != 0, "Event has not ended or no such event."
         candidateResult_dict_list = []
         for record in candidateResult:
             candidateResult_dict_list.append(dict(record))

@@ -15,7 +15,7 @@ import * as XLSX from "xlsx";
 
 Chart.register(ArcElement, Tooltip, Legend);
 
-export default function Result() {
+export default function Result({ history }) {
   const [show, setShow] = useState(false); // Logic for displaying alert
   const handleShow = () => setShow(true); // Logic for displaying alert
   const [errMsg, setErrMsg] = useState();
@@ -51,11 +51,8 @@ export default function Result() {
       })
       .catch((err) => {
         // Set error message
-        console.log(err);
         console.log(err.response.data.message);
-        setErrMsg((errMsg) => err.response.data.message);
-        setVariant((variant) => DANGER);
-        handleShow(); // Display alert
+        history.push("/admin/pastevent"); // return back to past event
       });
   }, []);
 

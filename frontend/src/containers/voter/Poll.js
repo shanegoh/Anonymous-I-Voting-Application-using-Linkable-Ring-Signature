@@ -125,7 +125,7 @@ export default function Poll({ history }) {
       })
       .catch((err) => {
         // Set error message
-        console.log(err.response.data.message);
+        // console.log(err.response.data.message);
         // redirect user if candidate is not found( which means that event id is not found too)
         history.push("/voter/upcomingelections");
       });
