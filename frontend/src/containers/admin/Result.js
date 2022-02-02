@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { isAdmin, DANGER, fileType, fileExtension, hasToken } from "../../util";
+import { isAdmin, fileType, fileExtension, hasToken } from "../../util";
 import { Redirect, useParams } from "react-router-dom";
 import NavBar from "../../components/NavBar.js";
 import { Pie } from "react-chartjs-2";
@@ -15,7 +15,7 @@ import * as XLSX from "xlsx";
 
 Chart.register(ArcElement, Tooltip, Legend);
 
-export default function Result({ history }) {
+export default function Result() {
   const [show, setShow] = useState(false); // Logic for displaying alert
   const handleShow = () => setShow(true); // Logic for displaying alert
   const [errMsg, setErrMsg] = useState();
@@ -52,7 +52,7 @@ export default function Result({ history }) {
       .catch((err) => {
         // Set error message
         console.log(err.response.data.message);
-        history.push("/admin/pastevent"); // return back to past event
+        window.history.back(); // return back to past event
       });
   }, []);
 
