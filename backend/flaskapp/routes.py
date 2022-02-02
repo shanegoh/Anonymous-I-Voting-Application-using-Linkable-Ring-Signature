@@ -161,7 +161,7 @@ def uploadFile():
     try:
         assert UserService().getUserRoleByEmail(session['email']) == 0, "Invalid Access Rights"
         b64_list = UserService().uploadUserInformation(request.files['file'])
-        message = "Success"
+        message = "Please check your downloaded file(s) for more information."
         status = 200
         return Response(json.dumps({"message": message, "excel_file": b64_list}), status, mimetype='application/json')
 

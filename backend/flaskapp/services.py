@@ -51,7 +51,7 @@ class UserService:
         data_xls = pd.read_excel(xlsx_file)
         assert len(data_xls) > 0, "You have uploaded an empty file.."   # Error if user upload empty file, logic not proceeding
         # Use Auth0 API Explorer App Client secret and public key to get management_access_token
-        connnection = http.client.HTTPSConnection("dev-a6828r5z.us.auth0.com")
+        connnection = http.client.HTTPSConnection(os.getenv("AUTH0_DOMAIN"))
         payload = "{\"client_id\":\"%s\",\"client_secret\":\"%s\",\"audience\":\"%s\",\"grant_type\":\"%s\"}" % (os.getenv("AUTH0_API_EXP_CLIENT_ID"),os.getenv("AUTH0_API_EXP_CLIENT_SECRET"),os.getenv("AUTH0_API_AUDIENCE"),os.getenv("AUTH0_API_EXP_GRANT_TYPE"))
         headers = { 'content-type': "application/json" }
         connnection.request("POST", "/oauth/token", payload, headers)
