@@ -31,4 +31,4 @@ Before Everything, make sure you downloaded your npm and node.js(v16.13.1):
 
 	Warning!
 	This application is integrated with Auth0 Services. Auth0 provides 22 days of free trail.
-	Thus, this project only 22 days from the date of submission.
+	Thus, this project is only valid for 22 days from the date of submission.
