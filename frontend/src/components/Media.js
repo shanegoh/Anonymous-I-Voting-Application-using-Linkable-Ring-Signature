@@ -66,27 +66,3 @@ export default function Media() {
     </div>
   );
 }
-
-/* <div className="bg-light border">
-<Card style={{ width: "30rem", height: "10rem" }}>
-  <Card.Body className="cardBody">
-    <Card.Title>Welcome to Mimi</Card.Title>
-    <Card.Text style={{ fontSize: "1.5rem" }}>
-      Please sign in to continue
-    </Card.Text>
-  </Card.Body>
-</Card> */
-
-//   <Navbar className="color-nav" variant="dark">
-//   <Container fluid>
-//     <Navbar.Brand>Mimi</Navbar.Brand>
-//     <Nav>
-//       <Nav.Link className="nav-links">Home</Nav.Link>
-//       <Nav.Link className="nav-links">Features</Nav.Link>
-//       <Nav.Link className="nav-links">Pricing</Nav.Link>
-//     </Nav>
-//     <Nav>
-//       <LogoutButton />
-//     </Nav>
-//   </Container>
-// </Navbar>;

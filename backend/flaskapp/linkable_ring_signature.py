@@ -87,18 +87,13 @@ def verify_ring_signature(message, y, c_0, s, Y, G=SECP256k1.generator, hash_fun
     c = [c_0] + [0] * (n - 1)
 
     H = H2(y, hash_func=hash_func)
-    # print ("H=",H)
 
     for i in range(n):
         z_1 = (G * s[i]) + (y[i] * c[i])
         z_2 = (H * s[i]) + (Y * c[i])
 
-        # print ("z_1=",z_1)
-        # print ("z_2=",z_2)
-
         if i < n - 1:
             c[i + 1] = H1([y, Y, message, z_1, z_2], hash_func=hash_func)
-            # print ("c=",c[i+1])
         else:
             return c_0 == H1([y, Y, message, z_1, z_2], hash_func=hash_func)
 
@@ -361,7 +356,6 @@ def check_keyImage(signature,keyimage):
     return False if keyimage != "" and n_keyimage != keyimage else True
     
 def generate_keys(numOfParticipants):
-    # x = [5612102642020642792203604729503329546870419488994227640238410962336591034111,97148831986497178251981347099741561152929354799719003736306468101246934956731,73582564991556101489090114036789577051420144847960038776033502314051350434733,58959788109781048630827926226104720045842317320518204126269224311951440226761,41745480486210574223547556272772914684478811935146531809992005566760468807878]
     x = [ randrange(SECP256k1.order) for i in range(numOfParticipants)]
     y = list(map(lambda xi: SECP256k1.generator * xi, x))
     return x , y

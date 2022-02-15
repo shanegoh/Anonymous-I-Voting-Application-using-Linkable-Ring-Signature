@@ -313,6 +313,12 @@ class CandidateService:
         return candidate_list_dict
     
     def deleteCandidateByEventId(self, id):
+        result_start_date_time = event_dao.findEventStartDateTime(id, NOT_DELETED, NOT_EXPIRED)
+        start = result_start_date_time[0] 
+        date_time_now_UTC = datetime.now(timezone.utc)
+        startDateTime_formatted_UTC = datetime.strftime(start, '%Y-%m-%d %H:%M:%S')
+        currentDateTime_formatted_UTC = datetime.strftime(date_time_now_UTC, '%Y-%m-%d %H:%M:%S')
+        assert (currentDateTime_formatted_UTC < startDateTime_formatted_UTC), "Unable to delete ongoing event."
         return candidate_dao.deleteCandidateByEventId(id, DELETED)
 
     def getCandidateByEventId(self, id, email):

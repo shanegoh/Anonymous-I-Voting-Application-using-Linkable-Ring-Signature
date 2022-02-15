@@ -1,4 +1,4 @@
-from flaskapp.util import DELETED, NOT_DELETED, NOT_EXPIRED
+from flaskapp.util import NOT_DELETED, NOT_EXPIRED
 from flaskapp.models import Users, Event, ElectionType, Candidate, Area, KeyImage, VoteHistory
 from flaskapp.db import db
 from datetime import datetime, timezone

@@ -57,37 +57,6 @@ def get_token_auth_header():
     token = parts[1]
     return token
 
-
-# Format error response and append status code
-def get_id_token_auth_header():
-    """Obtains the Access Token from the Authorization Header
-    """
-    auth = request.headers.get("Idtoken", None)
-    if not auth:
-        raise AuthError({"code": "id_token_header_missing",
-                        "description":
-                            "id_token header is expected"}, 401)
-
-    parts = auth.split()
-
-    if parts[0].lower() != "bearer":
-        raise AuthError({"code": "invalid_header",
-                        "description":
-                            "id_token header must start with"
-                            " Bearer"}, 401)
-    elif len(parts) == 1:
-        raise AuthError({"code": "invalid_header",
-                        "description": "id_token not found"}, 401)
-    elif len(parts) > 2:
-        raise AuthError({"code": "invalid_header",
-                        "description":
-                            "id_token header must be"
-                            " Bearer token"}, 401)
-
-    id_token = parts[1]
-    return id_token
-
-
 def requires_auth(f):
     """Determines if the Access Token is valid
     """
@@ -136,67 +105,3 @@ def requires_auth(f):
         raise AuthError({"code": "invalid_header",
                         "description": "Unable to find appropriate key"}, 401)
     return decorated
-
-
-def requires_id_token(f):
-    """Determines if the id Token is valid
-    """
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        token = get_id_token_auth_header()
-        jsonurl = urlopen("https://"+AUTH0_DOMAIN+"/.well-known/jwks.json")
-        jwks = json.loads(jsonurl.read())
-        unverified_header = jwt.get_unverified_header(token)
-        rsa_key = {}
-        for key in jwks["keys"]:
-            if key["kid"] == unverified_header["kid"]:
-                rsa_key = {
-                    "kty": key["kty"],
-                    "kid": key["kid"],
-                    "use": key["use"],
-                    "n": key["n"],
-                    "e": key["e"]
-                }
-        if rsa_key:
-            try:
-                payload = jwt.decode(
-                    token,
-                    rsa_key,
-                    algorithms=ALGORITHMS,
-                    audience="S6jOFF5O6Tom8mVGaMuaJxbIuvhqKa4r",
-                    issuer="https://"+AUTH0_DOMAIN+"/"
-                )
-            except jwt.ExpiredSignatureError:
-                raise AuthError({"code": "token_expired",
-                                "description": "token is expired"}, 401)
-            except jwt.JWTClaimsError:
-                raise AuthError({"code": "invalid_claims",
-                                "description":
-                                    "incorrect claims,"
-                                    "please check the audience and issuer"}, 401)
-            except Exception:
-                raise AuthError({"code": "invalid_header",
-                                "description":
-                                    "Unable to id"
-                                    " token."}, 401)
-
-            _request_ctx_stack.top.current_user = payload
-            return f(*args, **kwargs)
-        raise AuthError({"code": "invalid_header",
-                        "description": "Unable to find appropriate key"}, 401)
-    return decorated
-
-
-def requires_scope(required_scope):
-  """Determines if the required scope is present in the Access Token
-  Args:
-      required_scope (str): The scope required to access the resource
-  """
-  token = get_token_auth_header()
-  unverified_claims = jwt.get_unverified_claims(token)
-  if unverified_claims.get("scope"):
-          token_scopes = unverified_claims["scope"].split()
-          for token_scope in token_scopes:
-              if token_scope == required_scope:
-                  return True
-  return False

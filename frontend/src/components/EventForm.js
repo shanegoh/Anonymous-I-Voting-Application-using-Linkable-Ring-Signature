@@ -215,7 +215,7 @@ export default function EventForm({
               setVariant((variant) => DANGER);
               handleShow(); // Display alert
               history.push("/admin/home");
-            }, 5000);
+            }, 2000);
           } else {
             setErrMsg((errMsg) => err.response.data.message);
             setVariant((variant) => DANGER);
@@ -230,6 +230,9 @@ export default function EventForm({
     setErrMsg((errMsg) => message);
     setVariant((variant) => DANGER);
     handleShow();
+    setTimeout(() => {
+      history.push("/admin/home");
+    }, 2000);
   };
 
   return (
