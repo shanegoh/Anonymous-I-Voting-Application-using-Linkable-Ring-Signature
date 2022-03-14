@@ -31,4 +31,4 @@ Before Everything, make sure you downloaded your npm and node.js(v16.13.1):
 
 	Warning!
 	This application is integrated with Auth0 Services. Auth0 provides 22 days of free trial.
-	https://mimis.social is valid till 20th April 2022.
+	https://mimis.social is valid till 20th March 2022.
