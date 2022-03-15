@@ -9,23 +9,23 @@ NodeJs & NPM from https://nodejs.org/en/
 
 
 1. Change Directory to frontend folder in a separate command prompt/terminal. Run the command:
-`
+```
 yarn install or npm install
-`
+```
 2. To start the frontend server, run the command:
-`
-nom start
-`
+```
+npm start
+```
 
 3. Change Directory to backend folder in separate command prompt/terminal. Then, run the commands:
-`
+```
 Pip install virtualenv
 pip install Flask
 pip install -r requirements.txt
 virtualenv virtualEnv
 virtualEnv/Scripts/activate ( for windows )
 source virtualEnv/bin/activate ( for linux )
-`
+```
 	
 	
 	(Back End) 
