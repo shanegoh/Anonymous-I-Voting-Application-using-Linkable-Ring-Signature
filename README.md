@@ -46,7 +46,7 @@ flask run
 
 
 ### Warning!
-This application is integrated with Auth0 Services and thus required to run the application. 
+This application is integrated with Auth0 Services and thus required to run this application. Auth0 is used for authentication and authorization for this application. 
 https://mimis.social is valid till 20th March 2022.
 
 
