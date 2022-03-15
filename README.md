@@ -49,5 +49,8 @@ flask run
 This application is integrated with Auth0 Services and thus required to run the application. 
 https://mimis.social is valid till 20th March 2022.
 
+
+
+
 #### Contact
 For more information or assistance, you can reach me on [LinkedIn](https://www.linkedin.com/in/wenhangoh/).
