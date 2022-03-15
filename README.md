@@ -1,4 +1,4 @@
-# FYP-21-S4-09
+# I-Voting Application Using Linkable Ring Signature
 The instructions below are for localhost.
 Make sure you have downloaded your npm and node.js(v16.13.1):
 	NodeJs & NPM -> https://nodejs.org/en/
