@@ -8,7 +8,6 @@ NodeJs & NPM from https://nodejs.org/en/
 > As for the error occured when installing requirements, install visual studio, select Desktop development with C++
 
 1. Change Directory to frontend folder in a separate command prompt/terminal. Run the command below:
-> yarn install or npm install
 ```
 yarn install or npm install
 ```
