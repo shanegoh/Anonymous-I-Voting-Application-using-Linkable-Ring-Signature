@@ -19,7 +19,7 @@ npm start
 
 3. Change Directory to backend folder in separate command prompt/terminal. Then, run the commands:
 ```
-Pip install virtualenv
+pip install virtualenv
 pip install Flask
 pip install -r requirements.txt
 virtualenv virtualEnv
