@@ -26,19 +26,13 @@ virtualenv virtualEnv
 virtualEnv/Scripts/activate ( for windows )
 source virtualEnv/bin/activate ( for linux )
 ```
-	
-	
-	(Back End) 
-	Change Directory to backend folder(Separate command prompt)
-	Installation
 
-	
-	
-	Start back-end Server
-	-> set FLASK_APP=flaskapp
-	-> set FLASK_ENV=development
-	-> flask run
-
+4. To start backend server, run the commands:
+```
+set FLASK_APP=flaskapp
+set FLASK_ENV=development
+flask run
+```
 	Warning!
 	This application is integrated with Auth0 Services. Auth0 provides 22 days of free trial.
 	https://mimis.social is valid till 20th March 2022.
