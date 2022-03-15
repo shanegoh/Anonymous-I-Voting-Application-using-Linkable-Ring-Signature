@@ -7,7 +7,7 @@ As for the error occured when installing requirements, install visual studio, se
 ```
 (Front End)
 Change Directory to frontend folder(Separate command prompt)
-Installation command below: ` yarn install or npm install`
+Installation command: ```yarn install or npm install```
 ```
 
 
