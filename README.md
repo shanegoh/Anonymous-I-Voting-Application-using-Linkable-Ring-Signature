@@ -8,13 +8,13 @@ NodeJs & NPM from https://nodejs.org/en/
 >As for the error occured when installing python requirements, install visual studio, select Desktop development with C++.
 
 #### Installation for frontend
-1. Change Directory to frontend folder in a separate command prompt/terminal. Run the command:
+**Change Directory to frontend folder in a separate command prompt/terminal. Run the command:**
 ```
 yarn install or npm install
 ```
 
 #### Installation for backend
-2. Change Directory to backend folder in separate command prompt/terminal. Then, run the commands:
+**Change Directory to backend folder in separate command prompt/terminal. Then, run the commands:**
 ```
 pip install virtualenv
 pip install Flask
@@ -25,11 +25,11 @@ source virtualEnv/bin/activate ( for linux )
 ```
 
 #### Start Local Server
-To start the frontend server, run the command:
+**To start the frontend server, run the command:**
 ```
 npm start
 ```
-To start backend server, run the commands:
+**To start backend server, run the commands:**
 ```
 set FLASK_APP=flaskapp
 set FLASK_ENV=development
