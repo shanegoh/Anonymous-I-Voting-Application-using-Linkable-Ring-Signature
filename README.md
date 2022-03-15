@@ -4,10 +4,12 @@
 	NodeJs & NPM -> https://nodejs.org/en/
 	Make sure you installed pip and python version is 3.10.0.
 	As for the error occured when installing requirements, install visual studio, select Desktop development with C++
-`
+```
 (Front End)
 Change Directory to frontend folder(Separate command prompt)
 Installation
+```
+`
 yarn install or npm install
 `
 	
