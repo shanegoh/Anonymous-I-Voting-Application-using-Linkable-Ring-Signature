@@ -7,13 +7,13 @@ NodeJs & NPM from https://nodejs.org/en/
 **Make sure you installed pip and python version is 3.10.0.**
 >As for the error occured when installing python requirements, install visual studio, select Desktop development with C++.
 
-#### Installation for frontend
+### Installation for frontend
 **Change Directory to frontend folder in a separate command prompt/terminal. Run the command:**
 ```
 yarn install or npm install
 ```
 
-#### Installation for backend
+### Installation for backend
 **Change Directory to backend folder in separate command prompt/terminal. Then, run the commands:**
 ```
 pip install virtualenv
@@ -24,7 +24,7 @@ virtualEnv/Scripts/activate ( for windows )
 source virtualEnv/bin/activate ( for linux )
 ```
 
-#### Start Local Server
+### Start Local Server
 **To start the frontend server, run the command:**
 ```
 npm start
