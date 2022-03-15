@@ -5,9 +5,9 @@
 NodeJs & NPM from https://nodejs.org/en/
 
 **Make sure you installed pip and python version is 3.10.0.**
->As for the error occured when installing requirements, install visual studio, select Desktop development with C++
+>As for the error occured when installing python requirements, install visual studio, select Desktop development with C++.
 
-
+#### Installation for frontend
 1. Change Directory to frontend folder in a separate command prompt/terminal. Run the command:
 ```
 yarn install or npm install
@@ -39,5 +39,4 @@ flask run
 This application is integrated with Auth0 Services and thus required to run the application. 
 For more information or assistance, you can reach me at shanegohwenhan@gmail.com
 
-### PS
 https://mimis.social is valid till 20th March 2022.
