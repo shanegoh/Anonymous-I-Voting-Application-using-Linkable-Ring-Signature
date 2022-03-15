@@ -8,10 +8,11 @@
 (Front End)
 Change Directory to frontend folder(Separate command prompt)
 Installation
-```
 `
 yarn install or npm install
 `
+```
+
 	
 	Start front-end Server
 	-> npm start
