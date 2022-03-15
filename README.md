@@ -33,6 +33,8 @@ set FLASK_APP=flaskapp
 set FLASK_ENV=development
 flask run
 ```
-	Warning!
-	This application is integrated with Auth0 Services. Auth0 provides 22 days of free trial.
-	https://mimis.social is valid till 20th March 2022.
+
+
+###Warning!
+This application is integrated with Auth0 Services. Auth0 provides 22 days of free trial.
+https://mimis.social is valid till 20th March 2022.
