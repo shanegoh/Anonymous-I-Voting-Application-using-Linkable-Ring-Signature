@@ -53,4 +53,4 @@ You can view the working product here at https://mimis.social -> Valid till 20th
 For more information or assistance, you can reach me on [LinkedIn](https://www.linkedin.com/in/wenhangoh/).
 
 #### Declaration
-This project is hosted by University Of Wollongong.
+This project is an Final Year Project in University of Wollongong. Duration: 09/21 - 03/22.
