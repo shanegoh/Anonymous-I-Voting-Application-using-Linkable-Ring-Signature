@@ -1,5 +1,6 @@
 # FYP-21-S4-09
-Before Everything, make sure you downloaded your npm and node.js(v16.13.1):
+The instructions below are for localhost.
+Make sure you have downloaded your npm and node.js(v16.13.1):
 	NodeJs & NPM -> https://nodejs.org/en/
 	Make sure you installed pip and python version is 3.10.0.
 	As for the error occured when installing requirements, install visual studio, select Desktop development with C++
