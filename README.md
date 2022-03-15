@@ -16,17 +16,22 @@ yarn install or npm install
 ```
 nom start
 ```
+
+3. Change Directory to backend folder in separate command prompt/terminal. Then, run the commands:
+```
+Pip install virtualenv
+pip install Flask
+pip install -r requirements.txt
+virtualenv virtualEnv
+virtualEnv/Scripts/activate ( for windows )
+source virtualEnv/bin/activate ( for linux )
+```
 	
 	
 	(Back End) 
 	Change Directory to backend folder(Separate command prompt)
 	Installation
-	-> pip install virtualenv
-	-> pip install Flask
-	-> pip install -r requirements.txt
-	-> virtualenv virtualEnv
-	-> virtualEnv/Scripts/activate ( for windows )
-	-> source virtualEnv/bin/activate ( for linux )
+
 	
 	
 	Start back-end Server
