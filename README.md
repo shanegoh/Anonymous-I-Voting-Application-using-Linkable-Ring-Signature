@@ -5,7 +5,8 @@
 NodeJs & NPM from https://nodejs.org/en/
 
 **Make sure you installed pip and python version is 3.10.0.**
-> As for the error occured when installing requirements, install visual studio, select Desktop development with C++
+>As for the error occured when installing requirements, install visual studio, select Desktop development with C++
+
 
 1. Change Directory to frontend folder in a separate command prompt/terminal. Run the command below:
 ```
