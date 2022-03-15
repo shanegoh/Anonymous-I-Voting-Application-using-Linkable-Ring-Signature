@@ -1,5 +1,5 @@
 # I-Voting Application Using Linkable Ring Signature
-The instructions below are for localhost.
+## The instructions below are for localhost.
 Make sure you have downloaded your npm and node.js(v16.13.1):
 	NodeJs & NPM -> https://nodejs.org/en/
 	Make sure you installed pip and python version is 3.10.0.
