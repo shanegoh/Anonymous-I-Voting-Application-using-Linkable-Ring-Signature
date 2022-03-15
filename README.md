@@ -10,9 +10,7 @@ NodeJs & NPM from https://nodejs.org/en/
 1. Change Directory to frontend folder in a separate command prompt/terminal. Run the command below:
 > yarn install or npm install
 ```
-(Front End)
-Change Directory to frontend folder(Separate command prompt)
-Installation command: `yarn install or npm install`
+yarn install or npm install
 ```
 
 
