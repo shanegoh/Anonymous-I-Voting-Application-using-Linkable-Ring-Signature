@@ -37,7 +37,7 @@ flask run
 
 ### Warning!
 This application is integrated with Auth0 Services and thus required to run the application. 
-For more information or assistance, you can reach me at [shanegohwenhan@gmail.com](url)
+For more information or assistance, you can reach me at shanegohwenhan@gmail.com
 
 ### PS
 https://mimis.social is valid till 20th March 2022.
