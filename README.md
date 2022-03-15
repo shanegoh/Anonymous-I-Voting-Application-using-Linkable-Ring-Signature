@@ -12,7 +12,7 @@ It is designed using the Linkable Ring Signature protocol.
 2. NodeJs & NPM from https://nodejs.org/en/
 
 3. **Make sure you installed pip and python version is 3.10.0.**
->As for the error occured when installing python requirements, install visual studio, select Desktop development with C++.
+  >As for the error occured when installing python requirements, install visual studio, select Desktop development with C++.
 
 ### Installation for frontend
 **Change Directory to frontend folder in a separate command prompt/terminal. Run the command:**
