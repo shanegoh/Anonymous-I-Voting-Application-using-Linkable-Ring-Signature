@@ -9,9 +9,9 @@ As for the error occured when installing requirements, install visual studio, se
 Change Directory to frontend folder(Separate command prompt)
 Installation command below:
 ```
-`
-yarn install or npm install
-`
+	`
+	yarn install or npm install
+	`
 
 	
 	Start front-end Server
