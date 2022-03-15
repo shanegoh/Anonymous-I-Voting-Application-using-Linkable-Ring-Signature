@@ -1,7 +1,9 @@
 # I-Voting Application Using Linkable Ring Signature
 
 ## Summary
-`Mimi is an online web-based internet voting platform implemented as a software as a service application that provides government officials to run elections and allows authorized participants to vote. It is designed using the Linkable Ring Signature protocol.`
+Mimi is an online web-based internet voting platform implemented as a software as a service application that 
+provides government officials to run elections and allows authorized participants to vote. 
+It is designed using the Linkable Ring Signature protocol.
 
 
 ## Instructions
