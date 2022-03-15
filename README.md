@@ -36,5 +36,8 @@ flask run
 
 
 ### Warning!
-This application is integrated with Auth0 Services. Auth0 provides 22 days of free trial.
+This application is integrated with Auth0 Services and thus required to run the application. 
+For more information or assistance, you can reach me at [shanegohwenhan@gmail.com](url)
+
+### PS
 https://mimis.social is valid till 20th March 2022.
