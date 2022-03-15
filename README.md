@@ -12,12 +12,9 @@ NodeJs & NPM from https://nodejs.org/en/
 ```
 yarn install or npm install
 ```
-2. To start the frontend server, run the command:
-```
-npm start
-```
 
-3. Change Directory to backend folder in separate command prompt/terminal. Then, run the commands:
+#### Installation for backend
+2. Change Directory to backend folder in separate command prompt/terminal. Then, run the commands:
 ```
 pip install virtualenv
 pip install Flask
@@ -27,7 +24,12 @@ virtualEnv/Scripts/activate ( for windows )
 source virtualEnv/bin/activate ( for linux )
 ```
 
-4. To start backend server, run the commands:
+#### Start Local Server
+To start the frontend server, run the command:
+```
+npm start
+```
+To start backend server, run the commands:
 ```
 set FLASK_APP=flaskapp
 set FLASK_ENV=development
