@@ -7,7 +7,7 @@ Authlib==0.15.5
 backports.entry-points-selectable==1.1.1
 base58==2.1.1
 bitarray==1.2.2
-certifi==2021.10.8
+certifi==2022.12.7
 cffi==1.15.0
 charset-normalizer==2.0.8
 click==8.0.3
