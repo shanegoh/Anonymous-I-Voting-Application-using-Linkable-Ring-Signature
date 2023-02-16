@@ -77,5 +77,5 @@ varint==1.0.2
 virtualenv==20.10.0
 web3==5.25.0
 websockets==9.1
-Werkzeug==2.0.2
+Werkzeug==2.2.3
 yarl==1.7.2
